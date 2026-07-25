@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+// Our own site layout styles: the full-screen canvas + section sizing.
+// (Next.js has no separate "main.js" file - global CSS is imported
+// directly here, in the root layout, which wraps every page.)
+import "../src/styles/base.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,7 +31,16 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {/* This canvas is empty for now. Later, JavaScript will draw an
+            animated WebGL/3D background onto it. It's pinned to fill the
+            whole screen and sits BEHIND the content (see base.css). */}
+        <canvas id="webgl"></canvas>
+
+        {/* Everything visitors actually read/see goes in here. This
+            wrapper sits ON TOP of the canvas above. */}
+        <div id="app">{children}</div>
+      </body>
     </html>
   );
 }
