@@ -65,15 +65,6 @@ const directionalLight = new THREE.DirectionalLight(0xffffff, 2)
 directionalLight.position.set(5, 3, 5)
 scene.add(directionalLight)
 
-// ---- Temporary test object ----------------------------------------------
-// A plain wireframe sphere, added only so you can SEE that the scene
-// is actually rendering. This is a placeholder - it will be replaced
-// with real 3D content later.
-const testSphereGeometry = new THREE.SphereGeometry(2, 32, 32)
-const testSphereMaterial = new THREE.MeshBasicMaterial({ wireframe: true })
-const testSphere = new THREE.Mesh(testSphereGeometry, testSphereMaterial)
-scene.add(testSphere)
-
 // ---- Keeping things the right size on window resize ----------------------
 // Whenever the browser window changes size, the camera and renderer
 // need to be told the new size, or the scene will look stretched or
