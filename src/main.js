@@ -1,12 +1,14 @@
 // This is the JavaScript entry point that index.html loads.
 // It loads our stylesheet (dark background + section layout), starts
 // up the 3D scene on the <canvas id="webgl">, turns on smooth
-// scrolling for the page, and builds the moon.
+// scrolling for the page, builds the moon, and connects scrolling to
+// the camera's movement through the scene.
 import './styles/base.css'
 import * as THREE from 'three'
 import scene from './scene/scene.js'
 import { createMoon } from './scene/moon.js'
 import './motion/lenis.js'
+import { init as initScrollTimeline } from './motion/scrollTimeline.js'
 
 // Importing scene.js above runs its setup code right away: it builds
 // the 3D scene, camera, lights, and starts the animation loop that
@@ -24,3 +26,6 @@ const manager = new THREE.LoadingManager()
 
 // Build the moon and add it into the 3D scene.
 createMoon(scene, manager)
+
+// Hook up scrolling so it drives the camera's journey through space.
+initScrollTimeline(scene.camera)
