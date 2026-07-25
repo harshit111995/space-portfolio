@@ -4,11 +4,13 @@
 // scrolling for the page, builds the moon and the starry backdrop,
 // and connects scrolling to the camera's movement through the scene.
 import './styles/base.css'
+import './styles/panels.css'
 import * as THREE from 'three'
 import scene from './scene/scene.js'
 import { createMoon } from './scene/moon.js'
 import { createStars, createNebula } from './scene/stars.js'
 import { createPlanets } from './scene/planets.js'
+import { registerTarget, initRaycaster } from './scene/raycaster.js'
 import './motion/lenis.js'
 import { init as initScrollTimeline } from './motion/scrollTimeline.js'
 
@@ -34,7 +36,14 @@ createStars(scene)
 createNebula(scene, manager)
 
 // Build Mars, Venus, and Earth (with its clouds) along the camera's path.
-createPlanets(scene, manager)
+const { mars, venus, earth } = createPlanets(scene, manager)
+
+// Make each planet hoverable: moving the mouse over one shows its
+// matching HTML panel and switches the cursor to a pointer.
+registerTarget(mars, 'panel-experience')
+registerTarget(venus, 'panel-casestudies')
+registerTarget(earth, 'panel-contact')
+initRaycaster(scene.camera)
 
 // Hook up scrolling so it drives the camera's journey through space.
 initScrollTimeline(scene.camera)
