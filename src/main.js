@@ -13,6 +13,7 @@ import { createPlanets } from './scene/planets.js'
 import { registerTarget, initRaycaster } from './scene/raycaster.js'
 import './motion/lenis.js'
 import { init as initScrollTimeline } from './motion/scrollTimeline.js'
+import { initTextReveals } from './motion/textReveal.js'
 
 // Importing scene.js above runs its setup code right away: it builds
 // the 3D scene, camera, lights, and starts the animation loop that
@@ -47,3 +48,10 @@ initRaycaster(scene.camera)
 
 // Hook up scrolling so it drives the camera's journey through space.
 initScrollTimeline(scene.camera)
+
+// Set up the letter-by-letter heading reveals. This file (main.js) is
+// loaded as a <script type="module">, and browsers only run module
+// scripts after the whole page's HTML has been read and built - so
+// the headings are guaranteed to already exist here, without needing
+// to wait for any extra "DOM ready" event.
+initTextReveals()
