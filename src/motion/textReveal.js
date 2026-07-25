@@ -66,6 +66,35 @@ export function initTextReveals() {
   headings.forEach((heading) => {
     const characterSpans = splitIntoCharacterSpans(heading)
 
+    // ---- Hero is a special case ---------------------------------------------
+    // Hero is visible the instant the page loads (scrollY = 0), so a
+    // normal ScrollTrigger fires it immediately - while it's still
+    // hidden behind the loading screen (src/ui/loader.js). That meant
+    // it had already finished assembling before the visitor ever saw
+    // it happen. Instead, Hero now waits for the visitor's own "Enter"
+    // click, which fires a page-wide 'experience:start' event (see
+    // loader.js). { once: true } here means this listener can only
+    // ever run one time - the same one-time guarantee ScrollTrigger's
+    // own once: true gives every other heading below.
+    if (heading.closest('section').id === 'hero') {
+      window.addEventListener(
+        'experience:start',
+        () => {
+          // This is the exact same animation as every other heading
+          // below - only WHEN it runs is different for Hero.
+          animate(characterSpans, {
+            opacity: 1,
+            translateY: 0,
+            delay: stagger(30),
+            duration: 600,
+            easing: 'easeOutExpo',
+          })
+        },
+        { once: true },
+      )
+      return // Hero is fully handled above - skip its ScrollTrigger below.
+    }
+
     // ScrollTrigger's only job here is to watch this heading's
     // position and fire once when it scrolls far enough into view.
     //   start: 'top 80%' -> fires once the TOP of the heading reaches
