@@ -14,6 +14,7 @@ import { registerTarget, initRaycaster } from './scene/raycaster.js'
 import './motion/lenis.js'
 import { init as initScrollTimeline } from './motion/scrollTimeline.js'
 import { initTextReveals } from './motion/textReveal.js'
+import { initDragLook } from './ui/cursor.js'
 
 // Importing scene.js above runs its setup code right away: it builds
 // the 3D scene, camera, lights, and starts the animation loop that
@@ -48,6 +49,11 @@ initRaycaster(scene.camera)
 
 // Hook up scrolling so it drives the camera's journey through space.
 initScrollTimeline(scene.camera)
+
+// Let the visitor click-and-drag to look around, like turning their
+// head - this only changes which way the camera points, never where
+// it is, so it can't interfere with the scroll journey above.
+initDragLook(scene.camera)
 
 // Set up the letter-by-letter heading reveals. This file (main.js) is
 // loaded as a <script type="module">, and browsers only run module
