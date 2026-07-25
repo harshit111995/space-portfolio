@@ -1,7 +1,11 @@
 // This is the JavaScript entry point that index.html loads.
-// Right now its only job is to load our stylesheet, which controls
-// the dark background, the full-screen canvas, and the section layout.
+// It loads our stylesheet (dark background + section layout) and then
+// starts up the 3D scene that lives on the <canvas id="webgl">
+// sitting behind the page content.
 import './styles/base.css'
+import './scene/scene.js'
 
-// The <canvas id="webgl"> in index.html stays empty for now.
-// Later, JavaScript here will draw an animated WebGL/3D scene onto it.
+// Importing scene.js above runs its setup code right away: it builds
+// the 3D scene, camera, lights, and a temporary test sphere, then
+// starts the animation loop that draws it every frame. Nothing else
+// needs to happen here yet.
