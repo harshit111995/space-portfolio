@@ -1,0 +1,90 @@
+/* ===================================================================
+   BASE.CSS
+   This file controls the basic "skeleton" layout of the whole site.
+   There are two layers stacked on top of each other:
+
+     1. #webgl  -> a full-screen canvas, sitting BEHIND everything.
+                   It's empty for now. Later, animated 3D/WebGL
+                   visuals will be drawn onto it with JavaScript.
+
+     2. #app    -> a wrapper around all the real page content
+                   (the <section> blocks). It sits IN FRONT of the
+                   canvas so people can always read the text.
+
+   Nothing in here is animated yet - this is just the plain layout,
+   dark background, and text styling.
+   =================================================================== */
+
+/* ---- Reset ----------------------------------------------------------
+   Browsers add their own default spacing/margins to elements. We
+   remove that here so our full-screen layout behaves predictably. */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Make sure the page can always be a full 100% tall, so "100vh"
+   (100% of the viewport height) works correctly on every section. */
+html,
+body {
+  height: 100%;
+}
+
+/* Dark background for the whole site, with light text so it stays
+   readable on top of that dark background. */
+body {
+  background: #0a0a0a;
+  color: #f3f4f6;
+  font-family: system-ui, sans-serif;
+}
+
+/* ---- Layer 1: the WebGL canvas ---------------------------------------
+   position: fixed  -> stays glued to the screen, doesn't scroll away.
+   top/left: 0       -> starts at the very top-left corner.
+   width/height: 100vw/100vh -> always covers the full screen.
+   z-index: 1        -> stacking order: this is the BACK layer. */
+#webgl {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+}
+
+/* ---- Layer 2: the page content wrapper -------------------------------
+   position: relative + z-index: 2 -> this places all real content
+   ABOVE the canvas, so it's always visible and readable. */
+#app {
+  position: relative;
+  z-index: 2;
+}
+
+/* ---- Each section of the one-page site -------------------------------
+   min-height: 100vh -> every section is at least one full screen tall,
+   so scrolling from one section to the next feels like turning a page.
+   The flex/centering rules just center the placeholder heading and
+   paragraph text in the middle of the screen for now. */
+section {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Placeholder heading style for each section. */
+section h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Placeholder paragraph style: capped width so lines of text don't
+   stretch too wide to read comfortably. */
+section p {
+  max-width: 60ch;
+  line-height: 1.6;
+}
