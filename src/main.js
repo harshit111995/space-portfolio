@@ -15,6 +15,7 @@ import './motion/lenis.js'
 import { init as initScrollTimeline } from './motion/scrollTimeline.js'
 import { initTextReveals } from './motion/textReveal.js'
 import { initDragLook } from './ui/cursor.js'
+import { initLoader } from './ui/loader.js'
 
 // Importing scene.js above runs its setup code right away: it builds
 // the 3D scene, camera, lights, and starts the animation loop that
@@ -29,6 +30,12 @@ import { initDragLook } from './ui/cursor.js'
 // hand it to anything that loads assets, so overall loading progress
 // could be reported in one place later (e.g. a loading screen).
 const manager = new THREE.LoadingManager()
+
+// Show the loading screen and connect it to that LoadingManager right
+// away, BEFORE anything below starts loading its images - this way it
+// never misses any progress, and the scene stays hidden behind it
+// until the visitor deliberately clicks "Enter."
+initLoader(manager)
 
 // Build the moon and add it into the 3D scene.
 createMoon(scene, manager)
