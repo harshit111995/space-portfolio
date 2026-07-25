@@ -56,7 +56,7 @@ export function init(camera) {
   //   16         56%  camera.position.z = -80   (Venus)
   //   16         72%  camera.position.z = -110  (constellations)
   //   16         88%  camera.position.z = -145  (stars)
-  //   12        100%  camera.position.z = -175  (Earth)
+  //   12        100%  camera.position.z = -168  (Earth)
   timeline
     // Lock in the exact starting value, so the journey always begins
     // at z = 10 no matter what the camera was doing before.
@@ -69,7 +69,10 @@ export function init(camera) {
     .to(camera.position, { z: -80, duration: 16, ease: 'none' })
     .to(camera.position, { z: -110, duration: 16, ease: 'none' })
     .to(camera.position, { z: -145, duration: 16, ease: 'none' })
-    .to(camera.position, { z: -175, duration: 12, ease: 'none' })
+    // Final keyframe changed from -175 to -168, so the journey ends
+    // slightly short of Earth's new position (see planets.js) instead
+    // of arriving almost level with it.
+    .to(camera.position, { z: -168, duration: 12, ease: 'none' })
 
   // Note: only the camera moves here. No meshes/objects in the scene
   // are touched by this file.

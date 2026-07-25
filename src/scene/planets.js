@@ -27,7 +27,10 @@ export function createPlanets(sceneApi, manager) {
     metalness: 0,
   })
   const mars = new THREE.Mesh(marsGeometry, marsMaterial)
-  mars.position.set(12, 2, -45)
+  // Moved closer to the camera's path and slightly ahead of the
+  // camera's z=-45 keyframe, so Mars is already growing into view
+  // (not edge-on and tiny) by the time the camera arrives.
+  mars.position.set(6, 1, -55)
   sceneApi.scene.add(mars)
 
   // ---- Venus -------------------------------------------------------------
@@ -38,7 +41,9 @@ export function createPlanets(sceneApi, manager) {
     metalness: 0,
   })
   const venus = new THREE.Mesh(venusGeometry, venusMaterial)
-  venus.position.set(-14, -3, -80)
+  // Moved closer to the camera's path and slightly ahead of the
+  // camera's z=-80 keyframe, for the same reason as Mars above.
+  venus.position.set(-7, -2, -92)
   sceneApi.scene.add(venus)
 
   // ---- Earth ---------------------------------------------------------------
@@ -49,7 +54,12 @@ export function createPlanets(sceneApi, manager) {
     metalness: 0,
   })
   const earth = new THREE.Mesh(earthGeometry, earthMaterial)
-  earth.position.set(10, 0, -175)
+  // Re-tuned again: centering Earth's x back to 0 and pushing it
+  // further out to z=-185 (paired with extending the camera's final
+  // keyframe to z=-168 in scrollTimeline.js) gives more travel room
+  // before the journey ends, so Earth stays in view longer instead of
+  // swinging off-screen right as the camera arrives.
+  earth.position.set(0, -1, -185)
   sceneApi.scene.add(earth)
 
   // Earth's clouds: a second sphere, very slightly bigger (6.1 vs 6)
