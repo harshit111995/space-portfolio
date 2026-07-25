@@ -8,6 +8,7 @@ import * as THREE from 'three'
 import scene from './scene/scene.js'
 import { createMoon } from './scene/moon.js'
 import { createStars, createNebula } from './scene/stars.js'
+import { createPlanets } from './scene/planets.js'
 import './motion/lenis.js'
 import { init as initScrollTimeline } from './motion/scrollTimeline.js'
 
@@ -31,6 +32,9 @@ createMoon(scene, manager)
 // Build the star field and the Milky Way backdrop that surrounds it.
 createStars(scene)
 createNebula(scene, manager)
+
+// Build Mars, Venus, and Earth (with its clouds) along the camera's path.
+createPlanets(scene, manager)
 
 // Hook up scrolling so it drives the camera's journey through space.
 initScrollTimeline(scene.camera)
