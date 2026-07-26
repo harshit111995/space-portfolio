@@ -42,20 +42,128 @@ export function initLoader(manager) {
   })
 
   // ---- The shuttle -----------------------------------------------------
-  // A simple rocket built entirely out of basic SVG shapes (a
-  // triangle nose, a rounded body, a window, two fins, and a base) -
-  // no external image file needed.
+  // Same basic rocket shape as before (nose, body, window, two fins,
+  // an engine base), but rebuilt with metallic-looking gradients
+  // instead of flat single colors, plus a soft glowing engine and a
+  // faint outer glow, so it reads as a lit-up craft in the dark
+  // rather than flat 2D clip-art. Still just plain SVG shapes - no
+  // external image file needed.
   const shuttleWrapper = document.createElement('div')
   shuttleWrapper.innerHTML = `
-    <svg width="80" height="120" viewBox="0 0 80 120" xmlns="http://www.w3.org/2000/svg">
-      <path d="M40 0 L60 42 L20 42 Z" fill="#e5e7eb" />
-      <rect x="20" y="42" width="40" height="48" rx="6" fill="#f3f4f6" />
-      <circle cx="40" cy="58" r="8" fill="#38bdf8" />
-      <path d="M20 68 L4 96 L20 90 Z" fill="#9ca3af" />
-      <path d="M60 68 L76 96 L60 90 Z" fill="#9ca3af" />
-      <rect x="26" y="90" width="28" height="8" fill="#6b7280" />
+    <svg width="90" height="130" viewBox="0 0 90 130" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <!-- The hull's metallic look: a light highlight fading down to
+             a darker steel tone, like light catching a curved metal
+             surface, instead of one flat fill color. -->
+        <linearGradient id="hullGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#f8fafc" />
+          <stop offset="45%" stop-color="#cbd5e1" />
+          <stop offset="100%" stop-color="#64748b" />
+        </linearGradient>
+
+        <!-- The nose cone gets its own similar gradient, angled
+             slightly differently so it doesn't look like a flat
+             continuation of the body panel below it. -->
+        <linearGradient id="noseGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#e2e8f0" />
+          <stop offset="100%" stop-color="#475569" />
+        </linearGradient>
+
+        <!-- The porthole window: brighter in the middle, like it's
+             glowing from a light inside the craft. -->
+        <radialGradient id="windowGradient" cx="35%" cy="35%" r="65%">
+          <stop offset="0%" stop-color="#e0f2fe" />
+          <stop offset="50%" stop-color="#38bdf8" />
+          <stop offset="100%" stop-color="#0369a1" />
+        </radialGradient>
+
+        <!-- The engine's glow: bright white-blue in the center,
+             fading out to fully see-through at the edge. -->
+        <radialGradient id="thrusterGradient" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#ffffff" />
+          <stop offset="40%" stop-color="#7dd3fc" />
+          <stop offset="100%" stop-color="#0ea5e9" stop-opacity="0" />
+        </radialGradient>
+
+        <!-- feGaussianBlur softens a sharp-edged shape into a hazy
+             glow - this is what turns the engine gradient above into
+             something that reads as GLOWING light, not a painted disc. -->
+        <filter id="softGlow" x="-100%" y="-100%" width="300%" height="300%">
+          <feGaussianBlur stdDeviation="4" />
+        </filter>
+
+        <!-- A wider, gentler blur used for the faint glow around the
+             whole craft. -->
+        <filter id="outerGlow" x="-60%" y="-60%" width="220%" height="220%">
+          <feGaussianBlur stdDeviation="6" />
+        </filter>
+      </defs>
+
+      <!-- A faint, blurred glow behind the whole craft, as if it's
+           lit up against the dark background rather than pasted flat
+           on top of it. -->
+      <g filter="url(#outerGlow)" opacity="0.35">
+        <rect x="22" y="44" width="46" height="52" rx="8" fill="#7dd3fc" />
+      </g>
+
+      <!-- The engine's glow, blurred into a soft halo underneath the
+           craft (separate from the exhaust-progress-bar element
+           further down the page, which is unchanged). -->
+      <ellipse cx="45" cy="100" rx="14" ry="10" fill="url(#thrusterGradient)" filter="url(#softGlow)" />
+
+      <!-- Nose cone -->
+      <path d="M45 4 L67 46 L23 46 Z" fill="url(#noseGradient)" />
+
+      <!-- Main hull -->
+      <rect x="22" y="46" width="46" height="52" rx="8" fill="url(#hullGradient)" />
+
+      <!-- Faint panel-seam lines across the hull, so it reads as
+           several metal panels bolted together rather than one flat
+           shape. -->
+      <g stroke="#475569" stroke-width="1" opacity="0.4">
+        <line x1="22" y1="60" x2="68" y2="60" />
+        <line x1="22" y1="76" x2="68" y2="76" />
+        <line x1="36" y1="46" x2="36" y2="98" />
+        <line x1="54" y1="46" x2="54" y2="98" />
+      </g>
+
+      <!-- Porthole window -->
+      <circle cx="45" cy="64" r="9" fill="url(#windowGradient)" stroke="#0c4a6e" stroke-width="1" />
+
+      <!-- Solar-panel-like fins, with a few thin lines suggesting
+           individual panel cells rather than a plain flat triangle. -->
+      <path d="M22 76 L4 106 L22 100 Z" fill="url(#hullGradient)" />
+      <path d="M68 76 L86 106 L68 100 Z" fill="url(#hullGradient)" />
+      <g stroke="#334155" stroke-width="0.75" opacity="0.5">
+        <line x1="14" y1="86" x2="20" y2="84" />
+        <line x1="10" y1="94" x2="20" y2="91" />
+        <line x1="76" y1="86" x2="70" y2="84" />
+        <line x1="80" y1="94" x2="70" y2="91" />
+      </g>
+
+      <!-- Engine base -->
+      <rect x="30" y="98" width="30" height="9" rx="2" fill="#334155" />
     </svg>
   `
+
+  // ---- Idle float + drift, while loading -----------------------------------
+  // A gentle, continuous animation so the craft feels alive rather
+  // than a static picture: it slowly rises and sinks (translateY)
+  // while very slightly rocking side to side (rotate).
+  //   direction: 'alternate' -> after reaching the end values, it
+  //                             plays back in reverse to return to
+  //                             the start, instead of snapping back
+  //   loop: true              -> repeats this forever
+  //   duration: 1500          -> each leg (there, or back) takes 1.5s,
+  //                             so one full up-and-down cycle is ~3s
+  animate(shuttleWrapper, {
+    translateY: [-8, 8],
+    rotate: [-2, 2],
+    duration: 1500,
+    direction: 'alternate',
+    loop: true,
+    easing: 'easeInOutSine',
+  })
 
   // ---- The exhaust plume -------------------------------------------------
   // An empty rectangle directly under the shuttle. Its HEIGHT is what
@@ -68,7 +176,9 @@ export function initLoader(manager) {
     width: '18px',
     height: '0px',
     marginTop: '-4px', // tucks it slightly up under the shuttle's base
-    background: 'linear-gradient(to bottom, #fbbf24, #f97316, transparent)',
+    // Re-tinted to a cool blue-white, matching the redesigned engine
+    // glow above, instead of the old orange/yellow flame colors.
+    background: 'linear-gradient(to bottom, #e0f2fe, #38bdf8, transparent)',
     borderRadius: '0 0 8px 8px',
     // A short transition makes each height update glide smoothly
     // instead of jumping in hard steps between progress updates.
