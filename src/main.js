@@ -16,6 +16,7 @@ import { init as initScrollTimeline } from './motion/scrollTimeline.js'
 import { initTextReveals } from './motion/textReveal.js'
 import { initDragLook } from './ui/cursor.js'
 import { initLoader } from './ui/loader.js'
+import { initAudio } from './ui/audio.js'
 
 // Importing scene.js above runs its setup code right away: it builds
 // the 3D scene, camera, lights, and starts the animation loop that
@@ -36,6 +37,10 @@ const manager = new THREE.LoadingManager()
 // never misses any progress, and the scene stays hidden behind it
 // until the visitor deliberately clicks "Enter."
 initLoader(manager)
+
+// Set up the ambient sound toggle. It stays silent until the visitor
+// clicks "Enter" above (see src/ui/loader.js and src/ui/audio.js).
+initAudio()
 
 // Build the moon and add it into the 3D scene.
 createMoon(scene, manager)
