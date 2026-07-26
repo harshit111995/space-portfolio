@@ -96,11 +96,30 @@ function addUpdate(fn) {
   updateCallbacks.push(fn)
 }
 
+// ---- Pausing when the tab is hidden -----------------------------------
+// If the visitor switches to a different tab (or minimizes the
+// window), there's no point spending battery/CPU drawing a scene
+// nobody can see. document.hidden is true whenever the page is in the
+// background; the "visibilitychange" event fires whenever that flips.
+let isTabVisible = !document.hidden
+
+document.addEventListener('visibilitychange', () => {
+  isTabVisible = !document.hidden
+})
+
 function tick() {
-  for (const fn of updateCallbacks) {
-    fn()
+  // Skip all of our own animation updates AND the actual drawing while
+  // the tab is hidden. We don't need to save or restore anything by
+  // hand for this to work correctly: things like the camera's
+  // position are controlled elsewhere (by the scroll-driven timeline),
+  // not by this loop, so whenever we resume, tick() simply picks up
+  // wherever that already is - nothing gets frozen incorrectly.
+  if (isTabVisible) {
+    for (const fn of updateCallbacks) {
+      fn()
+    }
+    renderer.render(scene, camera)
   }
-  renderer.render(scene, camera)
   requestAnimationFrame(tick)
 }
 tick()

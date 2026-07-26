@@ -88,3 +88,24 @@ section p {
   max-width: 60ch;
   line-height: 1.6;
 }
+
+/* ---- Keyboard focus visibility -----------------------------------------
+   When someone navigates with a keyboard (pressing Tab) instead of a
+   mouse, every interactive element needs a clear, visible ring
+   showing which one is currently selected - otherwise a keyboard
+   user has no way to tell where they are on the page.
+   :focus-visible (rather than plain :focus) is what makes this ring
+   show up for keyboard navigation specifically, without also drawing
+   it for an ordinary mouse click - browsers already make that
+   distinction for us.
+   This covers links, buttons (which includes the audio toggle, since
+   it's a <button>), and every kind of form field, so a contact form
+   added later is already covered too. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid rgba(120, 170, 230, 0.9);
+  outline-offset: 2px;
+}
