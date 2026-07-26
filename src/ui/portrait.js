@@ -7,6 +7,7 @@
 // ===================================================================
 
 import gsap from 'gsap'
+import ScrollTrigger from 'gsap/ScrollTrigger'
 
 export function initPortraitParallax() {
   const portrait = document.querySelector('.portrait')
@@ -33,5 +34,54 @@ export function initPortraitParallax() {
     // drifting) rather than floating loosely on top of everything.
     xTo(normalizedX * 10)
     yTo(normalizedY * 10)
+  })
+
+  // ---- Only show the portrait once the visitor reaches Contact -----------
+  // The portrait is position: fixed (so the cursor-parallax above can
+  // keep moving it), which means it starts out hidden by default (see
+  // the opacity/visibility/pointer-events rules in portrait.css) -
+  // otherwise it would float on top of every section, including the
+  // Hero text at the very top of the page. This ScrollTrigger reveals
+  // it only once the Contact section actually scrolls into view.
+  //
+  // ScrollTrigger was already switched on in src/motion/lenis.js -
+  // this reuses that same setup. It does NOT create a new Lenis
+  // instance or register the plugin again.
+  //
+  // autoAlpha is a GSAP shortcut that animates opacity AND toggles
+  // visibility together, in the correct order: switching to "visible"
+  // right away when fading IN (so the fade-in is actually seen), but
+  // only switching to "hidden" once a fade OUT has fully finished (so
+  // it fades away smoothly instead of vanishing instantly).
+  function revealPortrait() {
+    gsap.to(portrait, {
+      autoAlpha: 1,
+      pointerEvents: 'auto',
+      duration: 0.6,
+    })
+  }
+
+  function hidePortrait() {
+    gsap.to(portrait, {
+      autoAlpha: 0,
+      pointerEvents: 'none',
+      duration: 0.6,
+    })
+  }
+
+  // start: 'top 60%' -> the trigger point is when the top of the
+  // Contact section reaches 60% of the way down the screen.
+  // Both "entering" callbacks (scrolling down into view, or scrolling
+  // back down into view) reveal it; both "leaving" callbacks
+  // (scrolling past it in either direction) hide it again - so it's
+  // only ever visible while Contact is actually on screen, regardless
+  // of which way the visitor is scrolling.
+  ScrollTrigger.create({
+    trigger: '#contact',
+    start: 'top 60%',
+    onEnter: revealPortrait,
+    onEnterBack: revealPortrait,
+    onLeave: hidePortrait,
+    onLeaveBack: hidePortrait,
   })
 }

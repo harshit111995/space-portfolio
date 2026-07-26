@@ -45,6 +45,19 @@
   /* Above the 3D canvas and page content, same tier as the other
      small UI pieces (the audio toggle, etc). */
   z-index: 5;
+
+  /* ---- Hidden by default -----------------------------------------------
+     Because this element is position: fixed, it would otherwise float
+     on top of EVERY section - including overlapping the Hero text
+     right at the top of the page. Instead, it starts fully hidden and
+     unclickable, and src/ui/portrait.js reveals it (via GSAP) only
+     once the visitor actually scrolls down to the Contact section.
+     All three together (not just opacity) make sure it's genuinely
+     out of the way: invisible, removed from layout-hit-testing, and
+     unable to intercept clicks/hover. */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .portrait img {
