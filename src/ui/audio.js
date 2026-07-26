@@ -23,6 +23,13 @@ export function initAudio() {
   // Starts silent - whenever playback actually begins (further down),
   // we fade the volume up smoothly rather than starting at full volume.
   audio.volume = 0
+  // Without this, the browser downloads the whole audio file right
+  // away, on page load - even though sound is off by default and
+  // most visitors may never turn it on. "none" tells the browser not
+  // to fetch anything until playback is actually requested (the first
+  // .play() call, further down, which only ever happens after the
+  // visitor has both clicked Enter AND turned the toggle on).
+  audio.preload = 'none'
 
   // Offering TWO <source> files lets the browser pick whichever
   // format it actually supports - .webm first (smaller file), with
