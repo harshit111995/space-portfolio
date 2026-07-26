@@ -13,6 +13,7 @@
 // ===================================================================
 
 import gsap from 'gsap'
+import { prefersReducedMotion } from './reducedMotion.js'
 
 export function init(camera) {
   // ---- The scroll-driven timeline --------------------------------------
@@ -26,12 +27,18 @@ export function init(camera) {
   //   scrub: 1           -> instead of jumping to match scroll position
   //                        instantly, it takes about 1 second to catch
   //                        up, which feels smoother than a hard 1-to-1 link
+  //
+  // If reduced motion is on, scrub becomes "true" instead of "1" -
+  // that ties the camera EXACTLY to the current scroll position with
+  // no added catch-up delay, since that delay is itself a kind of
+  // motion some visitors have asked to avoid. The camera still moves
+  // through the whole journey as you scroll either way.
   const timeline = gsap.timeline({
     scrollTrigger: {
       trigger: '#app',
       start: 'top top',
       end: 'bottom bottom',
-      scrub: 1,
+      scrub: prefersReducedMotion ? true : 1,
     },
   })
 

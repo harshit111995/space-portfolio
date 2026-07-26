@@ -17,6 +17,7 @@
 
 import ScrollTrigger from 'gsap/ScrollTrigger'
 import { animate, stagger } from 'animejs'
+import { prefersReducedMotion } from './reducedMotion.js'
 
 // Takes one heading element, breaks its text into one <span> per
 // character (keeping spaces as their own characters so words don't
@@ -64,6 +65,40 @@ export function initTextReveals() {
   const headings = document.querySelectorAll('section h2')
 
   headings.forEach((heading) => {
+    // ---- Reduced motion: one quick, simple fade instead ---------------------
+    // Visitors who've turned on "reduce motion" don't get the long
+    // cascading letter-by-letter animation at all - the heading is
+    // never split into per-character spans, and instead just fades in
+    // as one whole piece, quickly. WHEN it fades in still follows the
+    // same rules as normal (Hero waits for Enter, others wait for
+    // scroll), only the animation itself is replaced with something
+    // much shorter and simpler.
+    if (prefersReducedMotion) {
+      heading.style.opacity = '0'
+
+      const revealWholeHeading = () => {
+        animate(heading, {
+          opacity: 1,
+          duration: 200,
+          easing: 'easeOutExpo',
+        })
+      }
+
+      if (heading.closest('section').id === 'hero') {
+        window.addEventListener('experience:start', revealWholeHeading, { once: true })
+      } else {
+        ScrollTrigger.create({
+          trigger: heading,
+          start: 'top 80%',
+          once: true,
+          onEnter: revealWholeHeading,
+        })
+      }
+
+      return // This heading is fully handled - skip the normal version below.
+    }
+
+    // ---- Normal (motion allowed): the full character-by-character reveal ----
     const characterSpans = splitIntoCharacterSpans(heading)
 
     // ---- Hero is a special case ---------------------------------------------
