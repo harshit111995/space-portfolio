@@ -6,6 +6,7 @@
 // ===================================================================
 
 import * as THREE from 'three'
+import { getQuality } from './quality.js'
 
 // ---- Tracking the mouse position ------------------------------------
 // These two numbers store where the mouse currently is, "normalized"
@@ -47,10 +48,16 @@ export function createMoon(sceneApi, manager) {
   //   displacementScale  -> how far the surface can be pushed, in scene units
   //   roughness          -> how matte (1) vs shiny (0) the surface looks
   //   metalness          -> how metallic the surface looks (0 = not at all)
+  // Pushing the surface in and out (the crater bumps) is expensive
+  // for weaker mobile GPUs, so it's switched off there - the color
+  // photo texture still shows, just without the raised relief.
+  // getQuality() is only checked here, once, when the moon is built.
+  const displacementScale = getQuality() === 'mobile' ? 0 : 0.08
+
   const material = new THREE.MeshStandardMaterial({
     map: colorMap,
     displacementMap: displacementMap,
-    displacementScale: 0.08,
+    displacementScale,
     roughness: 0.95,
     metalness: 0,
   })

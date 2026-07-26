@@ -7,6 +7,7 @@
 // ===================================================================
 
 import * as THREE from 'three'
+import { getQuality } from './quality.js'
 
 // Grab the canvas that's already sitting in index.html. We don't
 // create a new canvas - we just tell Three.js to draw into this one.
@@ -43,8 +44,13 @@ const renderer = new THREE.WebGLRenderer({
 })
 
 // High-end screens can report a devicePixelRatio of 3 or more.
-// Capping it at 2 keeps things sharp without wasting performance.
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+// Capping it keeps things sharp without wasting performance - mobile
+// gets a lower cap (1.5 instead of 2) since rendering extra pixels is
+// more costly for weaker phone GPUs. getQuality() is checked once
+// here, when the scene first loads, and that same answer is reused
+// below on resize - it's never re-checked per frame.
+const maxPixelRatio = getQuality() === 'mobile' ? 1.5 : 2
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, maxPixelRatio))
 renderer.setSize(window.innerWidth, window.innerHeight)
 
 // Tone mapping + color space: these settings make lighting and colors
@@ -72,7 +78,9 @@ scene.add(directionalLight)
 function handleResize() {
   camera.aspect = window.innerWidth / window.innerHeight
   camera.updateProjectionMatrix()
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+  // Reuses the same maxPixelRatio decided once above - resizing the
+  // window doesn't change whether this counts as "mobile."
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, maxPixelRatio))
   renderer.setSize(window.innerWidth, window.innerHeight)
 }
 window.addEventListener('resize', handleResize)

@@ -6,6 +6,7 @@
 // ===================================================================
 
 import * as THREE from 'three'
+import { getQuality } from './quality.js'
 
 // A few reference colors to mix between - real stars aren't all pure
 // white, they range from cool pale blue through white to warm yellow,
@@ -45,7 +46,11 @@ function randomPointOnSphere(radius) {
 // THREE.Scene (sceneApi.scene) plus addUpdate(), which lets us hook
 // into the single shared animation loop instead of starting our own.
 export function createStars(sceneApi) {
-  const starCount = 12000
+  // Fewer stars on mobile - it's a lot less work for the GPU to draw,
+  // and at a normal phone viewing distance the difference isn't very
+  // noticeable. getQuality() is only checked here, once, when the
+  // stars are first built - not on every frame.
+  const starCount = getQuality() === 'mobile' ? 6000 : 12000
 
   // ---- Positions and colors for every star -------------------------------
   // Each star needs 3 numbers for its position (x, y, z) and 3 more
