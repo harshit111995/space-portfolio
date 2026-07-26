@@ -10,9 +10,19 @@
 // allowed to move the camera along its path. Keeping those two
 // completely separate is what stops drag-to-look from ever fighting
 // with or breaking the scroll animation.
+//
+// The scroll timeline ALSO now has its own gentle "banking" camera
+// rotation as it passes each stop. That's a second source wanting to
+// affect the same camera.rotation - so instead of this file setting
+// camera.rotation directly (which would erase whatever the timeline
+// had just set, or vice versa, depending on which ran last each
+// frame), it reads the timeline's cinematicRotation value and ADDS
+// its own drag offset on top of it. Both sources combine instead of
+// overwriting each other.
 // ===================================================================
 
 import sceneApi from '../scene/scene.js'
+import { cinematicRotation } from '../motion/scrollTimeline.js'
 
 export function initDragLook(camera) {
   const canvas = document.querySelector('#webgl')
@@ -98,12 +108,12 @@ export function initDragLook(camera) {
     currentOffsetX += (targetOffsetX - currentOffsetX) * dampFactor
     currentOffsetY += (targetOffsetY - currentOffsetY) * dampFactor
 
-    // Add the offset on top of the camera's normal forward-facing
-    // rotation (which is 0, since nothing else ever rotates the
-    // camera). This only ever sets camera.ROTATION, never
-    // camera.position - the scroll timeline owns position, and this
-    // file never touches it.
-    camera.rotation.y = -currentOffsetX
-    camera.rotation.x = -currentOffsetY
+    // Add the drag offset ON TOP of the scroll timeline's own
+    // cinematic banking rotation, rather than overwriting it - this
+    // is the one place both rotation sources actually combine. This
+    // only ever sets camera.ROTATION, never camera.position - the
+    // scroll timeline owns position, and this file never touches it.
+    camera.rotation.y = cinematicRotation.y - currentOffsetX
+    camera.rotation.x = cinematicRotation.x - currentOffsetY
   })
 }
