@@ -1,0 +1,61 @@
+/* ===================================================================
+   PORTRAIT.CSS
+   Styles the contact-section photo as a round "porthole," like a
+   window on a spacecraft: a circular frame with a thin bright ring,
+   a dark bevelled inner edge, and a soft blue glow around the outside.
+   =================================================================== */
+
+.portrait {
+  position: fixed;
+
+  /* Off to the left side of the screen, roughly vertically centered -
+     this keeps it clear of the centered heading/paragraph text and
+     the panel-contact card, which both sit in the middle column. */
+  left: 6vw;
+  top: 50vh;
+  /* Shifts it up by half its own height (110px = 220px / 2) so "top:
+     50vh" ends up centering it vertically. We use a margin for this,
+     not "transform: translateY(-50%)", because the parallax effect in
+     src/ui/portrait.js ALSO moves this element using transform - if
+     centering used transform too, the two would overwrite each other. */
+  margin-top: -110px;
+
+  width: 220px;
+  height: 220px;
+
+  /* A circle, with anything outside it (the corners of the photo)
+     clipped away by overflow: hidden below. */
+  border-radius: 50%;
+  overflow: hidden;
+
+  /* A thin, bright ring around the edge - like the metal rim of a
+     porthole window. */
+  border: 1px solid rgba(255, 255, 255, 0.25);
+
+  /* Two shadows at once:
+       inset ... -> a soft dark shadow curving in from the inner edge,
+                    giving the glass a slight "bevelled" depth
+       (no inset) -> a soft blue glow spreading outward, tinted like
+                    Earth, so the porthole feels lit from within the
+                    scene rather than pasted on top of it. */
+  box-shadow:
+    inset 0 0 30px rgba(0, 0, 0, 0.6),
+    0 0 40px rgba(90, 150, 220, 0.3);
+
+  /* Above the 3D canvas and page content, same tier as the other
+     small UI pieces (the audio toggle, etc). */
+  z-index: 5;
+}
+
+.portrait img {
+  /* Fill the entire circle exactly. */
+  width: 100%;
+  height: 100%;
+
+  /* object-fit: cover scales the photo up just enough to fill the
+     circle completely without stretching or squashing it - any extra
+     is cropped off, rather than the image being distorted to fit. */
+  object-fit: cover;
+
+  display: block;
+}
