@@ -96,4 +96,40 @@ export function initRaycaster(camera) {
       document.body.style.cursor = 'default'
     }
   })
+
+  // ---- Touch support: tap to reveal ---------------------------------------
+  // Touchscreens have no "hover" - there's no cursor resting on a
+  // planet before you commit to touching it. So instead, a tap does
+  // right away what hovering does on desktop above: raycast once,
+  // right when the tap lifts, and show/hide panels based on whatever
+  // (if anything) was tapped.
+  //
+  // Listening on the whole window, not just the canvas, for the same
+  // reason drag-to-look does in src/ui/cursor.js: the canvas sits
+  // BEHIND the page's text content, which covers the full screen and
+  // would otherwise catch every tap before it ever reached the canvas.
+  window.addEventListener('touchend', (event) => {
+    const touch = event.changedTouches[0]
+    if (!touch) return
+
+    // Same conversion to the -1..1 range THREE.Raycaster expects, just
+    // using the tap's position instead of the mouse's.
+    const tapPosition = new THREE.Vector2(
+      (touch.clientX / window.innerWidth) * 2 - 1,
+      -(touch.clientY / window.innerHeight) * 2 + 1,
+    )
+
+    raycaster.setFromCamera(tapPosition, camera)
+    const meshes = targets.map((target) => target.mesh)
+    const hits = raycaster.intersectObjects(meshes, false)
+
+    // Tapping a planet shows its panel (and hides any other open
+    // one, via showPanelFor below). Tapping empty space hits nothing,
+    // so hitTarget stays null, which closes every panel - the exact
+    // same showPanelFor() used by the mouse-hover path above.
+    const hitTarget =
+      hits.length > 0 ? targets.find((target) => target.mesh === hits[0].object) : null
+
+    showPanelFor(hitTarget)
+  })
 }
