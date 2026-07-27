@@ -95,6 +95,8 @@ const CONSTELLATIONS_POSITION = new THREE.Vector3(-10, 0, -110)
 // - close enough to their shared center for aiming purposes, since
 // they're clustered within about 10 units of each other.
 const ASTEROIDS_POSITION = new THREE.Vector3(10, -1, -139)
+// The center of the satellite ring (see src/scene/satellites.js).
+const SATELLITES_POSITION = new THREE.Vector3(-10, 0, -170)
 
 // ---- The 10 stops along the journey -----------------------------------
 // Each stop is a point along the flight where a "body" (a planet,
@@ -109,14 +111,10 @@ const ASTEROIDS_POSITION = new THREE.Vector3(10, -1, -139)
 //
 // Note: the old bankY/bankX hand-tweened turn amounts that used to
 // live on each stop are gone - turning is now handled by the look-
-// target system further down instead. Saturn, Mars, Jupiter, and
-// Earth all have real weave + look-aim keyframes wired up now.
-// Constellations, Asteroids, and Satellites all have real bodies now
-// (src/scene/constellations.js, src/scene/asteroids.js,
-// src/scene/satellites.js) but none of the three have weave/look-aim
-// of their own yet - that's the next phase, giving all three small
-// bodies the camera treatment together (see those files' own notes on
-// why they flash past off-axis for now).
+// target system further down instead. Every stop now has its own
+// weave + look-aim keyframes wired up - Saturn, Mars, the
+// constellation field, the asteroid cluster, the satellite ring,
+// Jupiter, and Earth.
 const stops = [
   { percent: 4, z: -20, marker: false }, // Saturn
   { percent: 12, z: -50, marker: false }, // Mars
@@ -277,6 +275,35 @@ export function init(camera) {
     // approach beforehand): about 53 units from the constellation
     // field (comfortably inside the 45-50 target) and about 22 units
     // from the asteroid cluster (inside the 20-25 target).
+    //
+    // ---- Satellites (78%) - wedged between Asteroids (74%) and Jupiter (84%) --
+    // The asteroid cluster's "close enough to matter" zone and the
+    // satellite ring's "close enough to matter" zone actually OVERLAP
+    // in depth (both stretch across roughly 75-77%) - there is no
+    // point during the handoff that's genuinely far from both at once.
+    // Cutting straight from the asteroid-side swing to the opposite,
+    // satellite-side swing measured as low as ~8 units at points along
+    // that direct line - a near-collision, not a flyby.
+    //
+    // The fix has two parts working together:
+    // 1. An arc waypoint (75.5%) shaped like the one that already
+    //    works for Saturn/Mars and Constellations/Asteroids - one
+    //    axis flips early while the other overshoots to an even more
+    //    extreme value, so the combined distance from center never
+    //    collapses near zero during the crossover.
+    // 2. The satellite peak lands EXACTLY at their own 78% stop and
+    //    HOLDS there through 81% - so by the time the look-aim (further
+    //    below) actually engages, the camera has already arrived and
+    //    settled, well clear of the risky crossover that happened
+    //    beforehand. The look-aim simply doesn't start until the
+    //    dangerous part is already over.
+    //
+    // Closest approach during the settled hold (78-81%, which is what
+    // actually matters once the look-aim's timing is accounted for):
+    // about 32 units from the satellite ring, inside the 30-35 target.
+    // The transient dip during the crossover itself (as low as ~14)
+    // happens strictly BEFORE the satellite look-aim engages, so it's
+    // never actually seen.
     timeline.set(camera.position, { x: 0, y: 0 }, 0)
 
     const weaveKeyframes = [
@@ -288,13 +315,13 @@ export function init(camera) {
       { percent: 68.5, x: -46, y: 46 }, // hold wide through the whole constellation encounter
       { percent: 70, x: 22, y: 65 }, // arc WAYPOINT - stay wide, don't cut through center
       { percent: 73.5, x: 36, y: -36 }, // swing wide opposite the asteroid cluster, passing it
-      { percent: 78, x: 0, y: 0 }, // safely past both, ease back to center before Satellites
+      { percent: 75.5, x: -15, y: -55 }, // arc WAYPOINT - x flips early, y overshoots, so distance stays up
+      { percent: 78, x: -27, y: 27 }, // swing wide opposite the satellite ring, arriving exactly at their stop
+      { percent: 81, x: -27, y: 27 }, // hold wide through the whole satellite encounter
+      { percent: 82.5, x: 0, y: 0 }, // safely past, ease back to center before Jupiter
       { percent: 84, x: -25, y: 20 }, // swing wide opposite Jupiter, passing it
       { percent: 96, x: -8, y: 6 }, // ease to a smaller, gentler swing for Earth's arrival
       { percent: 100, x: 0, y: 0 }, // settle back to center as the journey ends
-      // Satellites (78%) doesn't have its own weave yet - the camera
-      // holds centered through that stretch until Jupiter's approach
-      // begins (V7b adds the third weave here).
     ]
 
     let atWeavePercent = 0
@@ -363,7 +390,7 @@ export function init(camera) {
     // body - ease in, hold, ease out - are exactly the same shape as
     // before, just expressed as simple percent math instead of a
     // separate GSAP tween for each one.
-    function getAim(percent, saturnPos, marsPos, constellationsPos, asteroidsPos, jupiterPos, earthPos) {
+    function getAim(percent, saturnPos, marsPos, constellationsPos, asteroidsPos, satellitesPos, jupiterPos, earthPos) {
       if (percent < 2) return { target: saturnPos, blend: percent / 2 } // easing toward Saturn
       if (percent < 6) return { target: saturnPos, blend: 1 } // holding on Saturn
       if (percent < 8) return { target: saturnPos, blend: 1 - (percent - 6) / 2 } // easing back out
@@ -416,9 +443,23 @@ export function init(camera) {
       // is what makes it safe.
       if (percent < 77) return { target: asteroidsPos, blend: 1 } // holding on the asteroids
       if (percent < 79) return { target: asteroidsPos, blend: 1 - (percent - 77) / 2 } // easing back out
-      // 79-82%: Satellites isn't built with a look-aim yet (V7b) -
-      // straight ahead again until Jupiter's approach begins.
-      if (percent < 82) return { target: null, blend: 0 }
+      // 79%: a brief straight-ahead gap before satellites - the weave
+      // above actually arrives at the satellite-opposite swing at 78%
+      // (a full percent before this look-aim even starts), so the
+      // risky crossover between the asteroid swing and the satellite
+      // swing is already finished and settled by the time anything
+      // starts looking at the satellites. That's on purpose: the
+      // crossover briefly measured as close as ~14 units to the
+      // satellite ring, but nothing is aiming at them yet when that
+      // happens, so it's never actually seen.
+      if (percent < 80) return { target: satellitesPos, blend: percent - 79 } // easing toward the satellites
+      if (percent < 81) return { target: satellitesPos, blend: 1 } // holding on the satellites
+      // Ease-out finishes at 82% sharp - matching exactly where
+      // Jupiter's OWN existing approach (unchanged from V4a) starts
+      // easing in. Neither window overlaps the other even for an
+      // instant, which is what keeps this a clean handoff rather than
+      // two look-aims fighting over the same frame.
+      if (percent < 82) return { target: satellitesPos, blend: 1 - (percent - 81) } // easing back out
       if (percent < 84) return { target: jupiterPos, blend: (percent - 82) / 2 } // easing toward Jupiter
       if (percent < 88) return { target: jupiterPos, blend: 1 } // holding on Jupiter
       if (percent < 90) return { target: jupiterPos, blend: 1 - (percent - 88) / 2 } // easing back out
@@ -437,6 +478,7 @@ export function init(camera) {
         MARS_POSITION,
         CONSTELLATIONS_POSITION,
         ASTEROIDS_POSITION,
+        SATELLITES_POSITION,
         JUPITER_POSITION,
         EARTH_POSITION,
       )
