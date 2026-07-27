@@ -62,7 +62,9 @@ const stops = [
   { percent: 84, z: -200, bankY: 0.12, bankX: 0.05, marker: true }, // Jupiter
   { percent: 92, z: -230, bankY: -0.12, bankX: -0.05, marker: true }, // Testimonials
   { percent: 96, z: -260, bankY: 0.12, bankX: 0.05, marker: false }, // Earth
-  { percent: 100, z: -290, bankY: 0, bankX: 0, marker: true }, // unassigned - see note to Harshit
+  // Confirmed: this final stop is just where the camera's journey
+  // ends, not a body location - no marker belongs here.
+  { percent: 100, z: -290, bankY: 0, bankX: 0, marker: false },
 ]
 
 // ---- Temporary placeholder markers --------------------------------------
