@@ -11,6 +11,7 @@ import scene from './scene/scene.js'
 import { createMoon } from './scene/moon.js'
 import { createStars, createNebula } from './scene/stars.js'
 import { createPlanets } from './scene/planets.js'
+import { createSaturn } from './scene/saturn.js'
 import { registerTarget, initRaycaster } from './scene/raycaster.js'
 import './motion/lenis.js'
 import { init as initScrollTimeline } from './motion/scrollTimeline.js'
@@ -53,6 +54,10 @@ createNebula(scene, manager)
 
 // Build Mars, Venus, and Earth (with its clouds) along the camera's path.
 const { mars, venus, earth } = createPlanets(scene, manager)
+
+// Build Saturn (the entrepreneur-journey planet) at the 4% stop - the
+// first brand-new v2 body, not just a repositioned v1 one.
+const saturn = createSaturn(scene, manager)
 
 // v2: the old v1 single hover-panel-per-planet behavior is retired -
 // a scroll-card system replaces it in a later phase. Commented out

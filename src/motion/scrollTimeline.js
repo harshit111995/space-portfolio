@@ -53,7 +53,7 @@ export const cinematicRotation = { x: 0, y: 0 }
 // spot. Every other stop still gets its placeholder box until its
 // real body is built in a later phase.
 const stops = [
-  { percent: 4, z: -20, bankY: 0.12, bankX: 0.05, marker: true }, // Saturn (not yet built)
+  { percent: 4, z: -20, bankY: 0.12, bankX: 0.05, marker: false }, // Saturn
   { percent: 12, z: -50, bankY: -0.12, bankX: -0.05, marker: false }, // Mars
   { percent: 37, z: -80, bankY: 0.12, bankX: 0.05, marker: false }, // Venus
   { percent: 69, z: -110, bankY: -0.12, bankX: -0.05, marker: true }, // Constellations
