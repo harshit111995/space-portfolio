@@ -39,6 +39,31 @@
     <!-- Everything a visitor actually reads/sees lives inside this
          wrapper. It sits ON TOP of the canvas above. -->
     <div id="app">
+      <!-- These two empty markers don't show anything themselves -
+           they exist purely as "hooks" for GSAP's ScrollTrigger to
+           PIN (freeze in place on screen) while the camera parks at
+           Saturn and Mars. Pinning an element makes the page stop
+           visually scrolling past it for a stretch, while still
+           consuming real scroll distance underneath - see
+           src/motion/scrollTimeline.js for how long each pin lasts
+           and what the camera does during it. Real card content for
+           Mars arrives inside #pin-mars in a later phase; for now
+           it's just proving the hold itself stays rock-still.
+
+           The two "runway" divs below them are just as important as
+           the markers themselves: they're empty spacers that give the
+           camera actual scroll distance to WEAVE IN and settle before
+           each pin grabs hold, and to depart/re-approach between
+           Saturn's pin and Mars's pin. Without these, a pin sitting
+           at the very top of the page would freeze the camera the
+           instant scrolling begins, with no room left for the
+           "arrive" half of "arrive, park, hold, depart" to actually
+           happen. -->
+      <div class="pin-runway pin-runway--approach" aria-hidden="true"></div>
+      <div id="pin-saturn" class="pin-marker" aria-hidden="true"></div>
+      <div class="pin-runway pin-runway--between" aria-hidden="true"></div>
+      <div id="pin-mars" class="pin-marker" aria-hidden="true"></div>
+
       <!-- 1. HERO: the first thing a visitor sees. -->
       <section id="hero">
         <h2>Hero</h2>

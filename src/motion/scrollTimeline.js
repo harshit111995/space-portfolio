@@ -53,10 +53,42 @@
 //    near enough to look like a flyby at this camera's field of view.
 //    The weave below now swings much wider (roughly 40 units clear
 //    of Saturn, 20-25 of Mars).
+//
+// ---- Round three: Saturn and Mars became real PINNED parks ---------------
+// Every stop so far has been a FLYBY - the camera swings past a body
+// on the S-curve and keeps moving. Saturn and Mars are now something
+// different: a genuine PARK. The camera arrives, comes to a complete
+// stop (position AND look direction both frozen, not just "slow"),
+// holds there for a real stretch of scroll, then departs. This is the
+// model for what every future "content" stop (cards, panels) will
+// need - somewhere for that content to be revealed against a
+// perfectly still backdrop, since a moving camera underneath moving
+// content would be distracting and would need every card animation to
+// account for a moving frame of reference.
+//
+// This needed a REAL ScrollTrigger pin on a DOM element (see
+// index.html's #pin-saturn / #pin-mars, and setupParkedStop() below) -
+// not just holding the camera's own numbers steady - because pinning
+// is what freezes the actual PAGE content in the viewport while
+// consuming real scroll distance underneath. Freezing the camera
+// alone, with no matching DOM pin, would mean the backdrop stops
+// moving while the page keeps scrolling normally past it underneath -
+// exactly backwards from what a "parked" moment needs.
+//
+// Pinning a DOM element inserts extra scroll distance into the page
+// (see pinSpacing in setupParkedStop()) - the whole point of a park is
+// that it consumes real scroll length while the camera does nothing.
+// That means the page is now TALLER than it was, which shifts exactly
+// how many scroll pixels correspond to Saturn/Mars's percentages -
+// this file handles that by MEASURING the real pixel size of each
+// pin (via GSAP, after creating it) and converting that measurement
+// into percentages, rather than guessing fixed percent numbers by
+// hand the way every other stop still does.
 // ===================================================================
 
 import * as THREE from 'three'
 import gsap from 'gsap'
+import ScrollTrigger from 'gsap/ScrollTrigger'
 import { prefersReducedMotion } from './reducedMotion.js'
 import sceneApi from '../scene/scene.js'
 
@@ -74,7 +106,10 @@ import sceneApi from '../scene/scene.js'
 // minus its own drag offset - both sources combine, and because this
 // object is refreshed fresh every single frame, the drag offset
 // always decays back to whatever this file says the base should be
-// right now, never to zero and never compounding on itself.
+// right now, never to zero and never compounding on itself. This is
+// exactly how drag-to-look keeps working even while parked: the park
+// only ever touches this "base" value, and cursor.js's own offset
+// still layers on top of it completely independently.
 export const lookBaseRotation = { x: 0, y: 0 }
 
 // This file needs to know WHERE each body is so it can aim the camera
@@ -98,6 +133,22 @@ const ASTEROIDS_POSITION = new THREE.Vector3(10, -1, -139)
 // The center of the satellite ring (see src/scene/satellites.js).
 const SATELLITES_POSITION = new THREE.Vector3(-10, 0, -170)
 
+// ---- Where the camera PARKS for Saturn and Mars ---------------------------
+// Unlike every flyby stop (which swings WIDE to the opposite side of
+// the body while still moving), a park is a single fixed camera spot
+// that doesn't move at all while pinned. Both of these sit at exactly
+// the SAME z depth as the body itself, looking sideways at it - a
+// clean, simple profile shot, and a deliberate choice: looking
+// straight along a pure sideways direction (no up/down tilt at all)
+// can never run into the "looking almost straight up or down" camera
+// math instability that other stops have had to work around.
+//   Saturn: offset (-18, 18) from origin, camera-to-Saturn distance
+//   ~36.8 units - inside the requested 35-40 unit "Jupiter-style" range.
+//   Mars: offset (12, -11), camera-to-Mars distance ~25.1 units -
+//   matching Mars's own previous flyby target distance.
+const SATURN_PARK = { x: -18, y: 18 }
+const MARS_PARK = { x: 12, y: -11 }
+
 // ---- The 10 stops along the journey -----------------------------------
 // Each stop is a point along the flight where a "body" (a planet,
 // certificate, project card, etc.) sits.
@@ -109,26 +160,29 @@ const SATELLITES_POSITION = new THREE.Vector3(-10, 0, -170)
 // those, since something real already fills the spot. Every other
 // stop still gets its placeholder box until its real body is built.
 //
-// Note: the old bankY/bankX hand-tweened turn amounts that used to
-// live on each stop are gone - turning is now handled by the look-
-// target system further down instead. Every stop now has its own
-// weave + look-aim keyframes wired up - Saturn, Mars, the
-// constellation field, the asteroid cluster, the satellite ring,
-// Jupiter, and Earth.
-const stops = [
-  { percent: 4, z: -20, marker: false }, // Saturn
-  { percent: 12, z: -50, marker: false }, // Mars
-  { percent: 37, z: -80, marker: false }, // Venus
-  { percent: 69, z: -110, marker: false }, // Constellations
-  { percent: 74, z: -140, marker: false }, // Asteroids
-  { percent: 78, z: -170, marker: false }, // Satellites
-  { percent: 84, z: -200, marker: false }, // Jupiter
-  { percent: 92, z: -230, marker: true }, // Testimonials
-  { percent: 96, z: -260, marker: false }, // Earth
-  // This final stop is just where the camera's journey ends, not a
-  // body location - no marker belongs here.
-  { percent: 100, z: -290, marker: false },
-]
+// Saturn and Mars don't have fixed percent numbers written here like
+// the rest do - their percentages depend on how many actual pixels
+// their pins turn out to be (which itself depends on the visitor's
+// own screen height), so they get filled in once setupParkedStop()
+// has measured them for real. Every stop from Venus onward keeps its
+// exact same hardcoded percent and z as before - this phase only
+// touches Saturn and Mars.
+function buildStops(saturnHoldStart, marsHoldStart) {
+  return [
+    { percent: saturnHoldStart, z: -20, marker: false }, // Saturn (now a park, not a flyby)
+    { percent: marsHoldStart, z: -50, marker: false }, // Mars (now a park, not a flyby)
+    { percent: 37, z: -80, marker: false }, // Venus
+    { percent: 69, z: -110, marker: false }, // Constellations
+    { percent: 74, z: -140, marker: false }, // Asteroids
+    { percent: 78, z: -170, marker: false }, // Satellites
+    { percent: 84, z: -200, marker: false }, // Jupiter
+    { percent: 92, z: -230, marker: true }, // Testimonials
+    { percent: 96, z: -260, marker: false }, // Earth
+    // This final stop is just where the camera's journey ends, not a
+    // body location - no marker belongs here.
+    { percent: 100, z: -290, marker: false },
+  ]
+}
 
 // ---- Temporary placeholder markers --------------------------------------
 // A small wireframe box at each stop that doesn't have a real body
@@ -136,7 +190,7 @@ const stops = [
 // ones. One shared geometry and material is reused for all of them,
 // since they all look identical - that's lighter on the GPU than
 // making a separate copy for each.
-function addPlaceholderMarkers() {
+function addPlaceholderMarkers(stops) {
   const markerGeometry = new THREE.BoxGeometry(6, 6, 6)
   const markerMaterial = new THREE.MeshBasicMaterial({
     color: 0x6fb7ff,
@@ -156,8 +210,98 @@ function addPlaceholderMarkers() {
   })
 }
 
+// ---- Setting up one real, pinned "park" -----------------------------------
+// This is the piece that makes the hold GENUINELY still, not just
+// "the camera's own numbers happen to stay the same." It pins a real
+// DOM element (elementId) - freezing that section on screen - for a
+// real, explicit amount of scroll distance (holdLengthPx), then
+// reports back exactly where that hold starts and ends, in PERCENT of
+// the whole page's scroll (which is what every camera calculation in
+// this file works in).
+//
+// Pins are created REGARDLESS of reduced motion - freezing the page
+// content so a visitor can read it without it sliding away is a
+// readability aid, not the kind of motion "reduce motion" asks to
+// avoid. Only the camera's fancy off-axis framing/turning (built
+// further below) is skipped under reduced motion, same as every
+// other stop.
+function setupParkedStop(elementId, holdLengthPx) {
+  const trigger = ScrollTrigger.create({
+    trigger: `#${elementId}`,
+    start: 'top top',
+    // "+=N" means "N pixels of scroll AFTER reaching the pin start" -
+    // this is the actual, real hold length. pinSpacing: true is what
+    // makes the page insert that same amount of extra empty space
+    // right after this element, so nothing later on the page jumps
+    // when the pin eventually releases.
+    end: `+=${holdLengthPx}`,
+    pin: true,
+    pinSpacing: true,
+  })
+
+  // ScrollTrigger only finishes calculating exact pixel positions once
+  // it's had a chance to measure the page - refresh() forces that to
+  // happen right now instead of waiting, so the .start/.end read
+  // immediately below are the real, final numbers.
+  ScrollTrigger.refresh()
+
+  return { startPx: trigger.start, endPx: trigger.end }
+}
+
 export function init(camera) {
-  addPlaceholderMarkers()
+  // ---- Pin Saturn and Mars, and measure exactly how big each hold is ------
+  // Saturn gets a SHORT pin (half a viewport-height of scroll) - just
+  // enough to prove the camera genuinely stops. Mars gets a LONG pin
+  // (2.5 viewport-heights) - a real, sustained hold, sized so the
+  // model can be checked thoroughly before any actual card content
+  // exists yet (that arrives in a later phase).
+  //
+  // A note on Mars's exact length: the original ask was room for 9
+  // cards at about half a viewport-height each (4.5 viewport-heights
+  // total). That doesn't quite fit here without ALSO changing Venus's
+  // existing 37% mark (and everything after it) - Venus, Constellations,
+  // and the rest all keep their exact original percentages in this
+  // phase, per the instruction to leave the other 8 stops alone, and
+  // the page's current total length (7 short placeholder sections,
+  // plus the approach/gap runways below) isn't long enough to fit a
+  // full 4.5-viewport-height pin before reaching Venus's fixed spot.
+  // 2 viewport-heights is still comfortably "long" next to Saturn's
+  // half, and proves the same rock-still mechanism just as
+  // conclusively - the exact length is trivial to change here in one
+  // place once real cards make the true required length clear.
+  const saturnHoldLengthPx = window.innerHeight * 0.5
+  const marsHoldLengthPx = window.innerHeight * 2
+
+  const saturnPin = setupParkedStop('pin-saturn', saturnHoldLengthPx)
+  const marsPin = setupParkedStop('pin-mars', marsHoldLengthPx)
+
+  // The master timeline below is scrubbed across the FULL page, from
+  // the top of #app to the bottom - so "percent" always means
+  // "percent of this same total distance." Measuring that same total
+  // AFTER both pins exist (their pinSpacing has already made the page
+  // taller by this point) is what makes the percent conversion below
+  // line up exactly with what the master timeline itself will use.
+  const totalScrollRange = document.getElementById('app').scrollHeight - window.innerHeight
+
+  function pxToPercent(px) {
+    return (px / totalScrollRange) * 100
+  }
+
+  // How many percentage points of gentle approach/departure surround
+  // each hold - the same idea as every other stop's "ease in / hold /
+  // ease out" shape, just sized in percent here since that's what's
+  // being computed, rather than picked by hand. Kept fairly small
+  // since the "between" runway (see index.html/base.css) connecting
+  // Saturn's release to Mars's arrival is itself narrow.
+  const EASE_MARGIN = 1.5
+
+  const saturnHoldStart = pxToPercent(saturnPin.startPx)
+  const saturnHoldEnd = pxToPercent(saturnPin.endPx)
+  const marsHoldStart = pxToPercent(marsPin.startPx)
+  const marsHoldEnd = pxToPercent(marsPin.endPx)
+
+  const stops = buildStops(saturnHoldStart, marsHoldStart)
+  addPlaceholderMarkers(stops)
 
   // ---- The scroll-driven timeline --------------------------------------
   //   trigger: "#app"   -> watch scroll progress across our whole page
@@ -189,6 +333,14 @@ export function init(camera) {
   // simply the gap between that stop's percent and the previous one,
   // so they land at exactly the right point in the scroll no matter
   // how uneven the spacing between stops is.
+  //
+  // Saturn and Mars each get an EXTRA keyframe added right after their
+  // own entry, repeating the exact same z value at the hold's END
+  // percent - two keyframes with an identical value means GSAP tweens
+  // from that value to... itself, over that stretch, which is just a
+  // plain, flat, unmoving hold. That's the entire trick behind the
+  // "genuinely frozen" position requirement - no special "pause the
+  // timeline" logic needed anywhere.
   timeline.set(camera.position, { z: 10 })
 
   let previousPercent = 0
@@ -199,118 +351,41 @@ export function init(camera) {
       ease: 'none',
     })
     previousPercent = stop.percent
+
+    if (stop.z === -20) {
+      // Saturn: hold flat through the end of its pin.
+      timeline.to(camera.position, { z: stop.z, duration: saturnHoldEnd - previousPercent, ease: 'none' })
+      previousPercent = saturnHoldEnd
+    }
+    if (stop.z === -50) {
+      // Mars: hold flat through the end of its pin.
+      timeline.to(camera.position, { z: stop.z, duration: marsHoldEnd - previousPercent, ease: 'none' })
+      previousPercent = marsHoldEnd
+    }
   }
 
   // Everything below (the sideways weave and the look-target aiming)
   // is skipped entirely under reduced motion: the camera still flies
   // the full journey (position.z, above), it just goes dead straight
   // with no turning, which is the calmest option for a visitor who
-  // has asked their system to reduce motion.
+  // has asked their system to reduce motion. The z-position HOLD above
+  // still happens either way, since that's just "the camera pauses
+  // for a while," not a turn or an off-axis swing.
   if (!prefersReducedMotion) {
     // ---- The camera's sideways weave (position.x / position.y) -------------
-    // Saturn sits off to the +x/-y side at (8, -8, -20). Mars sits off
-    // to the -x/+y side at (-10, 1, -50) (moved there for this test -
-    // see src/scene/planets.js). Instead of flying a straight line
-    // through x=0,y=0 the whole time, the camera swings out to the
-    // OPPOSITE side of each body as it passes, then eases back to
-    // center before the next one.
-    //
-    // The swing is now much wider than the first attempt, AND it takes
-    // a different SHAPE. Passing 15 units from Saturn was enough to
-    // avoid hitting its mesh, but Saturn (radius 5, rings out to 9)
-    // still filled most of the screen at that distance - it read as
-    // "too close," not "flying by."
-    //
-    // The naive fix - just widen the swing at each stop and go
-    // straight back to center in between - turned out to still dip
-    // too close: cutting straight from "far on Saturn's opposite side"
-    // to "far on Mars's opposite side" means passing back THROUGH the
-    // middle, and for a moment near that midpoint the camera is both
-    // close to center AND not yet far past either body in depth. So
-    // instead of a straight line between the two swings, there's an
-    // extra waypoint (at 9%) that keeps the camera out on a wide ARC
-    // the whole time, never cutting back near the middle until it's
-    // safely past both bodies.
-    //
-    // Closest approach with this shape: about 31 units from Saturn,
-    // about 23 units from Mars - short of the original "40 for
-    // Saturn" target (Saturn and Mars are only 8 scroll-percent apart,
-    // and swinging a wide arc between two nearby stops that fast has
-    // a real geometric limit), but roughly DOUBLE the old 15-16 units,
-    // confirmed by eye to no longer overfill the frame (see the phase
-    // notes/commit message for the actual screenshots checked).
-    //
-    // Jupiter (84%) and Earth (96%) are spaced much farther apart than
-    // Saturn/Mars were (12 scroll-percent, versus 8) - plenty of room
-    // for the camera to swing wide for Jupiter and ease back down to a
-    // gentler, smaller swing for Earth without ever needing the extra
-    // "stay wide" arc waypoint Saturn/Mars required. Earth's swing is
-    // deliberately much smaller than Jupiter's - it's the destination,
-    // meant to read as a more direct, centered arrival rather than a
-    // wide flyby - and it stays swung out (rather than returning to
-    // dead-center) all the way to 100%, since the journey simply ends
-    // there; there's nothing after Earth to fly on toward.
-    //
-    // ---- Constellations (69%) and Asteroids (74%) - a tighter, harder case --
-    // These two stops are only 5 scroll-percent apart (Saturn/Mars had
-    // 8) - the tightest pair yet. Two things had to change to make it
-    // work:
-    //
-    // 1. The constellation FIELD sits only 10 units off the camera's
-    //    default straight path (x = -10). That means simply flying
-    //    STRAIGHT (x = 0) while passing its depth already brings the
-    //    camera within about 10-13 units of it - nowhere near the
-    //    45-50 unit target. A brief peak swing isn't enough here; the
-    //    camera has to swing out EARLY and STAY swung out (sustained,
-    //    not just a momentary peak) for the whole approach, using the
-    //    long, mostly-empty 30-69% stretch as runway.
-    // 2. The tight 69-74% gap between Constellations and Asteroids
-    //    still needs the same "arc waypoint" trick as Saturn/Mars -
-    //    cutting straight from one wide swing to the opposite wide
-    //    swing would pass back through the middle at the worst possible
-    //    moment.
-    //
-    // Closest approach with this shape (measured only during each
-    // body's actual encounter window, not during the unrelated
-    // approach beforehand): about 53 units from the constellation
-    // field (comfortably inside the 45-50 target) and about 22 units
-    // from the asteroid cluster (inside the 20-25 target).
-    //
-    // ---- Satellites (78%) - wedged between Asteroids (74%) and Jupiter (84%) --
-    // The asteroid cluster's "close enough to matter" zone and the
-    // satellite ring's "close enough to matter" zone actually OVERLAP
-    // in depth (both stretch across roughly 75-77%) - there is no
-    // point during the handoff that's genuinely far from both at once.
-    // Cutting straight from the asteroid-side swing to the opposite,
-    // satellite-side swing measured as low as ~8 units at points along
-    // that direct line - a near-collision, not a flyby.
-    //
-    // The fix has two parts working together:
-    // 1. An arc waypoint (75.5%) shaped like the one that already
-    //    works for Saturn/Mars and Constellations/Asteroids - one
-    //    axis flips early while the other overshoots to an even more
-    //    extreme value, so the combined distance from center never
-    //    collapses near zero during the crossover.
-    // 2. The satellite peak lands EXACTLY at their own 78% stop and
-    //    HOLDS there through 81% - so by the time the look-aim (further
-    //    below) actually engages, the camera has already arrived and
-    //    settled, well clear of the risky crossover that happened
-    //    beforehand. The look-aim simply doesn't start until the
-    //    dangerous part is already over.
-    //
-    // Closest approach during the settled hold (78-81%, which is what
-    // actually matters once the look-aim's timing is accounted for):
-    // about 32 units from the satellite ring, inside the 30-35 target.
-    // The transient dip during the crossover itself (as low as ~14)
-    // happens strictly BEFORE the satellite look-aim engages, so it's
-    // never actually seen.
+    // Saturn and Mars now PARK (arrive at a single fixed spot and stay
+    // there) instead of swinging past on a flyby - see SATURN_PARK /
+    // MARS_PARK above for the exact parked positions and why they're
+    // shaped the way they are. Every stop from Venus onward keeps its
+    // completely unchanged flyby weave.
     timeline.set(camera.position, { x: 0, y: 0 }, 0)
 
     const weaveKeyframes = [
-      { percent: 4, x: -30, y: 30 }, // swing wide opposite Saturn, passing it
-      { percent: 9, x: 12, y: 38 }, // arc WAYPOINT - stay far out, don't cut through center
-      { percent: 13, x: 18, y: -18 }, // swing wide opposite Mars, passing it
-      { percent: 30, x: 0, y: 0 }, // safely past both, ease back to center
+      { percent: saturnHoldStart, x: SATURN_PARK.x, y: SATURN_PARK.y }, // arrive at Saturn's parked framing
+      { percent: saturnHoldEnd, x: SATURN_PARK.x, y: SATURN_PARK.y }, // hold rock-still through the whole park
+      { percent: marsHoldStart, x: MARS_PARK.x, y: MARS_PARK.y }, // arrive at Mars's parked framing
+      { percent: marsHoldEnd, x: MARS_PARK.x, y: MARS_PARK.y }, // hold rock-still through the whole park
+      { percent: marsHoldEnd + EASE_MARGIN, x: 0, y: 0 }, // depart, ease back to center before Venus
       { percent: 52, x: -46, y: 46 }, // swing wide opposite the constellation field, EARLY
       { percent: 68.5, x: -46, y: 46 }, // hold wide through the whole constellation encounter
       { percent: 70, x: 22, y: 65 }, // arc WAYPOINT - stay wide, don't cut through center
@@ -386,17 +461,24 @@ export function init(camera) {
     // Works out which body (if any) the camera should be aiming at
     // right now, and how far blended toward it we should be (0 =
     // fully neutral/straight ahead, 1 = fully locked onto the body),
-    // purely from the current scrub percent. The three phases per
-    // body - ease in, hold, ease out - are exactly the same shape as
-    // before, just expressed as simple percent math instead of a
-    // separate GSAP tween for each one.
+    // purely from the current scrub percent. For Saturn and Mars, the
+    // "hold" phase is a TRUE pin - blend simply stays at 1 for the
+    // entire measured hold range, exactly as long as the real DOM pin
+    // lasts, instead of a hand-picked percent width.
     function getAim(percent, saturnPos, marsPos, constellationsPos, asteroidsPos, satellitesPos, jupiterPos, earthPos) {
-      if (percent < 2) return { target: saturnPos, blend: percent / 2 } // easing toward Saturn
-      if (percent < 6) return { target: saturnPos, blend: 1 } // holding on Saturn
-      if (percent < 8) return { target: saturnPos, blend: 1 - (percent - 6) / 2 } // easing back out
-      if (percent < 10) return { target: marsPos, blend: (percent - 8) / 2 } // easing toward Mars
-      if (percent < 14) return { target: marsPos, blend: 1 } // holding on Mars
-      if (percent < 16) return { target: marsPos, blend: 1 - (percent - 14) / 2 } // easing back out
+      if (percent < saturnHoldStart) return { target: saturnPos, blend: percent / saturnHoldStart } // easing toward Saturn
+      if (percent < saturnHoldEnd) return { target: saturnPos, blend: 1 } // PARKED on Saturn - the true pin
+      if (percent < saturnHoldEnd + EASE_MARGIN) {
+        return { target: saturnPos, blend: 1 - (percent - saturnHoldEnd) / EASE_MARGIN } // easing back out
+      }
+      if (percent < marsHoldStart - EASE_MARGIN) return { target: null, blend: 0 } // straight ahead, traveling toward Mars
+      if (percent < marsHoldStart) {
+        return { target: marsPos, blend: 1 - (marsHoldStart - percent) / EASE_MARGIN } // easing toward Mars
+      }
+      if (percent < marsHoldEnd) return { target: marsPos, blend: 1 } // PARKED on Mars - the true pin
+      if (percent < marsHoldEnd + EASE_MARGIN) {
+        return { target: marsPos, blend: 1 - (percent - marsHoldEnd) / EASE_MARGIN } // easing back out
+      }
       // 16-58%: Venus and the long empty stretch after it aren't built
       // with a look-aim yet - straight ahead, same as before.
       if (percent < 58) return { target: null, blend: 0 }
@@ -487,7 +569,13 @@ export function init(camera) {
         // "If the camera were sitting exactly where it is right now,
         // what orientation would point it at this body?" - recomputed
         // every frame because the camera's own position (from the
-        // weave above) is different every frame too.
+        // weave above) is different every frame too. During a park,
+        // camera.position isn't changing at all (see the flat weave
+        // hold above), so this naturally recomputes the EXACT SAME
+        // orientation every single frame too - a still position looking
+        // at a still target is, itself, a still orientation. That's
+        // what makes the hold genuinely frozen rather than just
+        // "close enough."
         aimScratch.position.copy(camera.position)
         aimScratch.lookAt(aim.target)
 

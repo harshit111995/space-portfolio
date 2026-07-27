@@ -61,6 +61,33 @@ body {
   z-index: 2;
 }
 
+/* ---- Pin markers (Saturn/Mars camera parks) --------------------------
+   These are plain <div>s, not <section>s, specifically so the
+   min-height: 100vh rule below does NOT apply to them - their actual
+   height doesn't matter at all. GSAP's ScrollTrigger pins them and
+   controls exactly how much scroll distance the "park" lasts for
+   entirely from JavaScript (see src/motion/scrollTimeline.js), not
+   from anything set here in CSS. */
+.pin-marker {
+  height: 1px;
+}
+
+/* ---- Pin runways (approach/departure scroll room) ---------------------
+   Plain empty spacers, same reasoning as .pin-marker above (not
+   <section>s, so min-height: 100vh doesn't apply - their height is
+   exactly and only what's set here). These exist to give the camera
+   real scroll distance to weave in before a pin engages, and to
+   depart/re-approach between the Saturn and Mars pins - see the
+   comment above these elements in index.html for the full reasoning,
+   and src/motion/scrollTimeline.js for how these heights get read
+   back and turned into the camera's ease-in/ease-out windows. */
+.pin-runway--approach {
+  height: 20vh;
+}
+.pin-runway--between {
+  height: 30vh;
+}
+
 /* ---- Each section of the one-page site -------------------------------
    min-height: 100vh -> every section is at least one full screen tall,
    so scrolling from one section to the next feels like turning a page.
