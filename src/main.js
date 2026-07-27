@@ -27,6 +27,7 @@ import { initPortraitParallax } from './ui/portrait.js'
 import { initStatsCounter } from './motion/statsCounter.js'
 import { initTestimonialsReveal } from './motion/testimonialsReveal.js'
 import { initEducationReveal } from './motion/educationReveal.js'
+import { initSkillsReveal } from './motion/skillsReveal.js'
 
 // Importing scene.js above runs its setup code right away: it builds
 // the 3D scene, camera, lights, and starts the animation loop that
@@ -121,3 +122,7 @@ initTestimonialsReveal()
 // Fade and lift the 3 education entries into place once the visitor
 // actually arrives at the education/asteroids stop.
 initEducationReveal()
+
+// Fade and lift the 6 skill category cards into place once the
+// visitor actually arrives at the skills/satellites stop.
+initSkillsReveal()

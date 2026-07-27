@@ -266,3 +266,67 @@
   font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.55);
 }
+
+/* ---- The Skills grid (6 category cards) ----------------------------------
+   Unlike the stats/testimonials/education rows above (a flex row that
+   wraps), this uses CSS grid with "auto-fit" columns - a good fit
+   here specifically because there are 6 same-size cards meant to read
+   as a tidy block/grid, not a single line of items. auto-fit
+   automatically fits as many 240px-or-wider columns as the screen has
+   room for (3 on a wide desktop, 2 on a tablet, 1 on a narrow phone)
+   without needing separate rules for each screen size. */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.25rem;
+  max-width: 960px;
+  width: 100%;
+}
+
+.skill-category {
+  padding: 1.25rem 1.5rem;
+  border-radius: 16px;
+  text-align: left;
+
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+
+  /* Starting, hidden state for the reveal animation - see
+     src/motion/skillsReveal.js, same pattern as the testimonial cards
+     and education entries. Under reduced motion, that file skips the
+     animation and jumps these two values straight to their finished
+     state. */
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+.skill-category-title {
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+/* Each category's items are a plain <ul>/<li> list in index.html (the
+   most correct HTML for "a list of things"), but they're NOT shown as
+   a normal bullet-point list - list-style: none removes the bullets,
+   and flex + wrap turns them into small side-by-side "pill" tags that
+   wrap onto as many lines as each card needs. */
+.skill-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+}
+
+.skill-items li {
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  white-space: nowrap;
+}

@@ -248,14 +248,95 @@
       <div class="pin-runway" aria-hidden="true"></div>
 
       <!-- 7. SATELLITES - Skills. -->
+      <!-- 7. SATELLITES - Skills. The 6 category cards below start
+           invisible and shifted down slightly (see the
+           ".skill-category" rule in src/styles/content.css) -
+           src/motion/skillsReveal.js fades and lifts them into place,
+           one after another, the moment this stop actually becomes
+           active - the same pattern already used for the Moon's
+           stats, the testimonials cards, and the education panel. -->
       <div id="pin-satellites" class="pin-marker">
         <div class="pin-content">
           <h2>Skills</h2>
-          <p>
-            Ut enim ad minima veniam, quis nostrum exercitationem ullam
-            corporis suscipit laboriosam, nisi ut aliquid ex ea commodi
-            consequatur.
-          </p>
+          <div class="skills-grid">
+            <div class="skill-category">
+              <h3 class="skill-category-title">Programmatic Platforms</h3>
+              <ul class="skill-items">
+                <li>DV360</li>
+                <li>Trade Desk</li>
+                <li>Amazon DSP</li>
+                <li>StackAdapt</li>
+                <li>Quantcast</li>
+                <li>Outbrain</li>
+                <li>CM360</li>
+                <li>Displayce</li>
+                <li>Vistar</li>
+                <li>Adjust</li>
+                <li>Appsflyer</li>
+              </ul>
+            </div>
+
+            <div class="skill-category">
+              <h3 class="skill-category-title">Media Channels</h3>
+              <ul class="skill-items">
+                <li>CTV</li>
+                <li>DOOH</li>
+                <li>PDOOH</li>
+                <li>Display</li>
+                <li>Video</li>
+                <li>Social</li>
+                <li>Search</li>
+                <li>Native</li>
+                <li>Audio</li>
+              </ul>
+            </div>
+
+            <div class="skill-category">
+              <h3 class="skill-category-title">Analytics</h3>
+              <ul class="skill-items">
+                <li>GA4</li>
+                <li>Tableau</li>
+                <li>Salesforce</li>
+                <li>Microsoft Clarity</li>
+                <li>Adobe Analytics</li>
+                <li>Nielsen Adintel</li>
+              </ul>
+            </div>
+
+            <div class="skill-category">
+              <h3 class="skill-category-title">Ad Serving</h3>
+              <ul class="skill-items">
+                <li>Google</li>
+                <li>Meta</li>
+                <li>TikTok</li>
+                <li>Snapchat</li>
+                <li>LinkedIn</li>
+                <li>Twitter Ads</li>
+              </ul>
+            </div>
+
+            <div class="skill-category">
+              <h3 class="skill-category-title">Marketing Automation</h3>
+              <ul class="skill-items">
+                <li>Braze</li>
+                <li>Mailchimp</li>
+                <li>HubSpot</li>
+                <li>Zoho</li>
+                <li>ActiveCampaign</li>
+              </ul>
+            </div>
+
+            <div class="skill-category">
+              <h3 class="skill-category-title">Core Competencies</h3>
+              <ul class="skill-items">
+                <li>Omnichannel buying</li>
+                <li>Yield optimization</li>
+                <li>CAC/LTV</li>
+                <li>Audience segmentation</li>
+                <li>Budget management</li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
 
