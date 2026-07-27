@@ -103,20 +103,21 @@ const EARTH_POSITION = new THREE.Vector3(5, -3, -260)
 // live on each stop are gone - turning is now handled by the look-
 // target system further down instead. Saturn, Mars, Jupiter, and
 // Earth all have real weave + look-aim keyframes wired up now.
-// Constellations/Satellites are the two remaining not-yet-built stops
-// - they still fly dead straight with no turn for now, which is
-// expected and temporary, not a bug. The Asteroids stop now has a
-// real body (src/scene/asteroids.js) but no weave/look-aim of its own
-// yet - that's coming once Constellations and Satellites exist too,
-// so all three small bodies get the camera treatment together (see
-// that file's own notes on why it flashes past off-axis for now).
+// Constellations is the one remaining not-yet-built stop - it still
+// flies dead straight with no turn for now, which is expected and
+// temporary, not a bug. The Asteroids and Satellites stops now have
+// real bodies (src/scene/asteroids.js, src/scene/satellites.js) but
+// no weave/look-aim of their own yet - that's coming once
+// Constellations exists too, so all three small bodies get the
+// camera treatment together (see those files' own notes on why they
+// flash past off-axis for now).
 const stops = [
   { percent: 4, z: -20, marker: false }, // Saturn
   { percent: 12, z: -50, marker: false }, // Mars
   { percent: 37, z: -80, marker: false }, // Venus
   { percent: 69, z: -110, marker: true }, // Constellations
   { percent: 74, z: -140, marker: false }, // Asteroids
-  { percent: 78, z: -170, marker: true }, // Satellites
+  { percent: 78, z: -170, marker: false }, // Satellites
   { percent: 84, z: -200, marker: false }, // Jupiter
   { percent: 92, z: -230, marker: true }, // Testimonials
   { percent: 96, z: -260, marker: false }, // Earth

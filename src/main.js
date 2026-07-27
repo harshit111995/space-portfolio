@@ -14,6 +14,7 @@ import { createPlanets } from './scene/planets.js'
 import { createSaturn } from './scene/saturn.js'
 import { createJupiter } from './scene/jupiter.js'
 import { createAsteroids } from './scene/asteroids.js'
+import { createSatellites } from './scene/satellites.js'
 import { registerTarget, initRaycaster } from './scene/raycaster.js'
 import './motion/lenis.js'
 import { init as initScrollTimeline } from './motion/scrollTimeline.js'
@@ -68,6 +69,11 @@ const jupiter = createJupiter(scene, manager)
 // LoadingManager needed here - unlike every other body so far, these
 // are built from pure shape math, not a downloaded photo texture.
 const asteroids = createAsteroids(scene)
+
+// Build the 6 procedural satellites at the skills stop (78%). Also no
+// LoadingManager needed - these are assembled entirely from
+// primitives (boxes and a cone), not a downloaded texture.
+const satellites = createSatellites(scene)
 
 // v2: the old v1 single hover-panel-per-planet behavior is retired -
 // a scroll-card system replaces it in a later phase. Commented out
