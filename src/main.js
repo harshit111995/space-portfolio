@@ -15,6 +15,7 @@ import { createSaturn } from './scene/saturn.js'
 import { createJupiter } from './scene/jupiter.js'
 import { createAsteroids } from './scene/asteroids.js'
 import { createSatellites } from './scene/satellites.js'
+import { createConstellations } from './scene/constellations.js'
 import { registerTarget, initRaycaster } from './scene/raycaster.js'
 import './motion/lenis.js'
 import { init as initScrollTimeline } from './motion/scrollTimeline.js'
@@ -74,6 +75,11 @@ const asteroids = createAsteroids(scene)
 // LoadingManager needed - these are assembled entirely from
 // primitives (boxes and a cone), not a downloaded texture.
 const satellites = createSatellites(scene)
+
+// Build the 8 certificate constellations at the certificates stop
+// (69%). Also no LoadingManager needed - the star glow is a small
+// canvas-drawn sprite, not a downloaded texture.
+const constellations = createConstellations(scene)
 
 // v2: the old v1 single hover-panel-per-planet behavior is retired -
 // a scroll-card system replaces it in a later phase. Commented out
