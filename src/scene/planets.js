@@ -61,7 +61,13 @@ export function createPlanets(sceneApi, manager) {
   // v2 spine: repositioned onto the new 96%-stop marker (z=-260),
   // near the end of the journey by Contact, replacing that wireframe
   // placeholder.
-  earth.position.set(10, -1, -260)
+  //
+  // Pulled much closer to the camera's central axis than Jupiter/
+  // Saturn/Mars (10 -> 5 on x) for the S-curve camera phase: Earth is
+  // the journey's destination, not a body being passed on the way to
+  // somewhere else, so its arrival is meant to read as a more direct,
+  // centered approach rather than a wide flyby.
+  earth.position.set(5, -3, -260)
   sceneApi.scene.add(earth)
 
   // Earth's clouds: a second sphere, very slightly bigger (6.1 vs 6)

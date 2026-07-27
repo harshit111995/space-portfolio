@@ -77,13 +77,16 @@ import sceneApi from '../scene/scene.js'
 // right now, never to zero and never compounding on itself.
 export const lookBaseRotation = { x: 0, y: 0 }
 
-// This file needs to know WHERE Saturn and Mars are so it can aim the
-// camera at them, but it doesn't import the actual meshes from
-// src/scene/saturn.js / src/scene/planets.js - those files own the
-// real bodies, this just needs the same coordinates. If either body's
-// position ever changes there, update these two points to match.
+// This file needs to know WHERE each body is so it can aim the camera
+// at them, but it doesn't import the actual meshes from
+// src/scene/saturn.js / src/scene/jupiter.js / src/scene/planets.js -
+// those files own the real bodies, this just needs the same
+// coordinates. If a body's position ever changes there, update the
+// matching point here too.
 const SATURN_POSITION = new THREE.Vector3(8, -8, -20)
 const MARS_POSITION = new THREE.Vector3(-10, 1, -50)
+const JUPITER_POSITION = new THREE.Vector3(14, -10, -200)
+const EARTH_POSITION = new THREE.Vector3(5, -3, -260)
 
 // ---- The 10 stops along the journey -----------------------------------
 // Each stop is a point along the flight where a "body" (a planet,
@@ -98,11 +101,11 @@ const MARS_POSITION = new THREE.Vector3(-10, 1, -50)
 //
 // Note: the old bankY/bankX hand-tweened turn amounts that used to
 // live on each stop are gone - turning is now handled by the look-
-// target system further down instead. Only Saturn and Mars have real
-// weave + look-target keyframes wired up so far (this phase proves
-// the mechanism on two bodies, one from each side, before it's rolled
-// out to the rest). Every stop after Mars still flies dead straight
-// with no turn for now - that's expected and temporary, not a bug.
+// target system further down instead. Saturn, Mars, Jupiter, and
+// Earth all have real weave + look-aim keyframes wired up now.
+// Constellations/Asteroids/Satellites are the three small, not-yet-
+// built stops left - they still fly dead straight with no turn for
+// now, which is expected and temporary, not a bug.
 const stops = [
   { percent: 4, z: -20, marker: false }, // Saturn
   { percent: 12, z: -50, marker: false }, // Mars
@@ -110,7 +113,7 @@ const stops = [
   { percent: 69, z: -110, marker: true }, // Constellations
   { percent: 74, z: -140, marker: true }, // Asteroids
   { percent: 78, z: -170, marker: true }, // Satellites
-  { percent: 84, z: -200, marker: true }, // Jupiter
+  { percent: 84, z: -200, marker: false }, // Jupiter
   { percent: 92, z: -230, marker: true }, // Testimonials
   { percent: 96, z: -260, marker: false }, // Earth
   // This final stop is just where the camera's journey ends, not a
@@ -227,16 +230,30 @@ export function init(camera) {
     // a real geometric limit), but roughly DOUBLE the old 15-16 units,
     // confirmed by eye to no longer overfill the frame (see the phase
     // notes/commit message for the actual screenshots checked).
+    //
+    // Jupiter (84%) and Earth (96%) are spaced much farther apart than
+    // Saturn/Mars were (12 scroll-percent, versus 8) - plenty of room
+    // for the camera to swing wide for Jupiter and ease back down to a
+    // gentler, smaller swing for Earth without ever needing the extra
+    // "stay wide" arc waypoint Saturn/Mars required. Earth's swing is
+    // deliberately much smaller than Jupiter's - it's the destination,
+    // meant to read as a more direct, centered arrival rather than a
+    // wide flyby - and it stays swung out (rather than returning to
+    // dead-center) all the way to 100%, since the journey simply ends
+    // there; there's nothing after Earth to fly on toward.
     timeline.set(camera.position, { x: 0, y: 0 }, 0)
 
     const weaveKeyframes = [
       { percent: 4, x: -30, y: 30 }, // swing wide opposite Saturn, passing it
       { percent: 9, x: 12, y: 38 }, // arc WAYPOINT - stay far out, don't cut through center
       { percent: 13, x: 18, y: -18 }, // swing wide opposite Mars, passing it
-      { percent: 30, x: 0, y: 0 }, // only now, safely past both, ease back to center
-      // No further weave keyframes yet - the camera stays centered
-      // (x=0, y=0) for the rest of the journey until the remaining
-      // bodies get their own weave in a later phase.
+      { percent: 30, x: 0, y: 0 }, // safely past both, ease back to center
+      { percent: 84, x: -25, y: 20 }, // swing wide opposite Jupiter, passing it
+      { percent: 96, x: -8, y: 6 }, // ease to a smaller, gentler swing for Earth's arrival
+      { percent: 100, x: 0, y: 0 }, // settle back to center as the journey ends
+      // Constellations/Asteroids/Satellites (69-78%) don't have their
+      // own weave yet - the camera just holds its post-Mars centered
+      // line through that stretch until Jupiter's approach begins.
     ]
 
     let atWeavePercent = 0
@@ -305,18 +322,29 @@ export function init(camera) {
     // body - ease in, hold, ease out - are exactly the same shape as
     // before, just expressed as simple percent math instead of a
     // separate GSAP tween for each one.
-    function getAim(percent, saturnPos, marsPos) {
+    function getAim(percent, saturnPos, marsPos, jupiterPos, earthPos) {
       if (percent < 2) return { target: saturnPos, blend: percent / 2 } // easing toward Saturn
       if (percent < 6) return { target: saturnPos, blend: 1 } // holding on Saturn
       if (percent < 8) return { target: saturnPos, blend: 1 - (percent - 6) / 2 } // easing back out
       if (percent < 10) return { target: marsPos, blend: (percent - 8) / 2 } // easing toward Mars
       if (percent < 14) return { target: marsPos, blend: 1 } // holding on Mars
       if (percent < 16) return { target: marsPos, blend: 1 - (percent - 14) / 2 } // easing back out
-      return { target: null, blend: 0 } // straight ahead - not built for the rest yet
+      // 16-82%: Constellations/Asteroids/Satellites aren't built yet -
+      // straight ahead, same as before.
+      if (percent < 82) return { target: null, blend: 0 }
+      if (percent < 84) return { target: jupiterPos, blend: (percent - 82) / 2 } // easing toward Jupiter
+      if (percent < 88) return { target: jupiterPos, blend: 1 } // holding on Jupiter
+      if (percent < 90) return { target: jupiterPos, blend: 1 - (percent - 88) / 2 } // easing back out
+      if (percent < 94) return { target: null, blend: 0 } // straight ahead again before Earth
+      if (percent < 96) return { target: earthPos, blend: (percent - 94) / 2 } // easing toward Earth
+      // 96-100%: holds on Earth all the way to the end of the journey
+      // instead of easing back out - there's no "next stop" to release
+      // toward, so it stays locked on the destination.
+      return { target: earthPos, blend: 1 }
     }
 
     sceneApi.addUpdate(() => {
-      const aim = getAim(progress.percent, SATURN_POSITION, MARS_POSITION)
+      const aim = getAim(progress.percent, SATURN_POSITION, MARS_POSITION, JUPITER_POSITION, EARTH_POSITION)
 
       if (aim.target) {
         // "If the camera were sitting exactly where it is right now,
