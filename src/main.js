@@ -13,6 +13,7 @@ import { createStars, createNebula } from './scene/stars.js'
 import { createPlanets } from './scene/planets.js'
 import { createSaturn } from './scene/saturn.js'
 import { createJupiter } from './scene/jupiter.js'
+import { createAsteroids } from './scene/asteroids.js'
 import { registerTarget, initRaycaster } from './scene/raycaster.js'
 import './motion/lenis.js'
 import { init as initScrollTimeline } from './motion/scrollTimeline.js'
@@ -62,6 +63,11 @@ const saturn = createSaturn(scene, manager)
 
 // Build Jupiter (the volunteering-stop planet) at the 84% stop.
 const jupiter = createJupiter(scene, manager)
+
+// Build the 3 procedural asteroids at the education stop (74%). No
+// LoadingManager needed here - unlike every other body so far, these
+// are built from pure shape math, not a downloaded photo texture.
+const asteroids = createAsteroids(scene)
 
 // v2: the old v1 single hover-panel-per-planet behavior is retired -
 // a scroll-card system replaces it in a later phase. Commented out
