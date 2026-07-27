@@ -4,7 +4,6 @@
 // scrolling for the page, builds the moon and the starry backdrop,
 // and connects scrolling to the camera's movement through the scene.
 import './styles/base.css'
-import './styles/panels.css'
 import './styles/portrait.css'
 import * as THREE from 'three'
 import scene from './scene/scene.js'

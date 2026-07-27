@@ -36,13 +36,18 @@ export function initPortraitParallax() {
     yTo(normalizedY * 10)
   })
 
-  // ---- Only show the portrait once the visitor reaches Contact -----------
+  // ---- Only show the portrait once the visitor reaches Earth/Contact -----
   // The portrait is position: fixed (so the cursor-parallax above can
   // keep moving it), which means it starts out hidden by default (see
   // the opacity/visibility/pointer-events rules in portrait.css) -
-  // otherwise it would float on top of every section, including the
-  // Hero text at the very top of the page. This ScrollTrigger reveals
-  // it only once the Contact section actually scrolls into view.
+  // otherwise it would float on top of every stop, including the very
+  // first one at the top of the page. This ScrollTrigger reveals it
+  // only once Earth's stop (#pin-earth, the last of the 10 camera
+  // stops - see index.html and src/motion/scrollTimeline.js) actually
+  // scrolls into view. This used to watch a separate #contact
+  // <section> instead - that section has been removed (its content,
+  // including this portrait, now lives directly inside #pin-earth), so
+  // watching for #contact specifically would never fire again.
   //
   // ScrollTrigger was already switched on in src/motion/lenis.js -
   // this reuses that same setup. It does NOT create a new Lenis
@@ -69,19 +74,32 @@ export function initPortraitParallax() {
     })
   }
 
-  // start: 'top 60%' -> the trigger point is when the top of the
-  // Contact section reaches 60% of the way down the screen.
-  // Both "entering" callbacks (scrolling down into view, or scrolling
-  // back down into view) reveal it; both "leaving" callbacks
-  // (scrolling past it in either direction) hide it again - so it's
-  // only ever visible while Contact is actually on screen, regardless
-  // of which way the visitor is scrolling.
+  // start: 'top top' -> the trigger point is the exact same moment
+  // Earth's own camera pin engages (see src/motion/scrollTimeline.js) -
+  // both watch for the top of #pin-earth reaching the top of the
+  // screen. Deliberately NOT "top 60%" (an earlier attempt): #pin-earth
+  // itself is now a practically-zero-height element (its real content
+  // lives in a separately-sized child, .pin-content - see
+  // src/styles/base.css for why), so measuring "60% of the way down
+  // the screen" against the marker's OWN tiny height put the reveal
+  // window entirely BEFORE the pin engages, meaning the portrait would
+  // reveal briefly during the approach and then hide again right as
+  // the camera actually parked on Earth - confirmed directly, exactly
+  // backwards from what's wanted. Locking onto "top top" instead ties
+  // the reveal to the exact same moment as the pin, regardless of the
+  // marker's own size.
+  //
+  // There's also no onLeave here (only onLeaveBack, for scrolling back
+  // UP away from Earth) - Earth is the final stop with nothing after
+  // it, so once a visitor arrives there's never a "next" moment to
+  // hide the portrait for going forward; it stays up for the rest of
+  // the page, the same way the camera itself stays locked on Earth
+  // rather than easing away from it.
   ScrollTrigger.create({
-    trigger: '#contact',
-    start: 'top 60%',
+    trigger: '#pin-earth',
+    start: 'top top',
     onEnter: revealPortrait,
     onEnterBack: revealPortrait,
-    onLeave: hidePortrait,
     onLeaveBack: hidePortrait,
   })
 }

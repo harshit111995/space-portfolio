@@ -7,9 +7,10 @@
                    It's empty for now. Later, animated 3D/WebGL
                    visuals will be drawn onto it with JavaScript.
 
-     2. #app    -> a wrapper around all the real page content
-                   (the <section> blocks). It sits IN FRONT of the
-                   canvas so people can always read the text.
+     2. #app    -> a wrapper around all the real page content (the
+                   10 .pin-marker stops, see index.html). It sits IN
+                   FRONT of the canvas so people can always read the
+                   text.
 
    Nothing in here is animated yet - this is just the plain layout,
    dark background, and text styling.
@@ -61,39 +62,41 @@ body {
   z-index: 2;
 }
 
-/* ---- Pin markers (Saturn/Mars camera parks) --------------------------
-   These are plain <div>s, not <section>s, specifically so the
-   min-height: 100vh rule below does NOT apply to them - their actual
-   height doesn't matter at all. GSAP's ScrollTrigger pins them and
-   controls exactly how much scroll distance the "park" lasts for
-   entirely from JavaScript (see src/motion/scrollTimeline.js), not
-   from anything set here in CSS. */
+/* ---- Pin markers - each one IS a stop, holding that stop's content ----
+   Every one of the 10 .pin-marker divs (see index.html) holds its
+   stop's real heading + text, wrapped in one extra child div
+   (.pin-content, below). Splitting it into two layers like this looks
+   like more than is needed, but it fixes a real bug found while
+   testing: giving the MARKER ITSELF a full screen-height (so its text
+   could be nicely centered) made the page noticeably longer than
+   intended - every single stop was adding an EXTRA, unwanted
+   screen-height of scroll distance on top of its actual intended hold
+   length. The reason: GSAP's pin only "freezes" the marker in place
+   for its own reserved hold length - it does NOT stop the marker from
+   ALSO taking up its own ordinary, real space in the page immediately
+   BEFORE and AFTER that hold (the same way any normal, un-pinned
+   element would). A marker that's a full screen tall was therefore
+   quietly adding a full screen-height of real, ordinary page length on
+   top of the pin - the exact amount by which testing found the page
+   coming out too long.
+   The fix: the marker itself (.pin-marker) is left with NO real size
+   of its own at all - practically 0, same as it was back when it held
+   no content. All of the actual visible sizing/centering instead lives
+   on the CHILD (.pin-content) below, which is deliberately taken out
+   of the page's normal flow (position: absolute) so it can be a full
+   screen tall WITHOUT that height ever being counted as extra page
+   length - it just visually fills the screen while its parent marker
+   is pinned there, and takes up none of the actual scrollable
+   distance itself. */
 .pin-marker {
-  height: 1px;
+  position: relative;
 }
 
-/* ---- Pin runways (approach/departure scroll room) ---------------------
-   Plain empty spacers, same reasoning as .pin-marker above (not
-   <section>s, so min-height: 100vh doesn't apply - their height is
-   exactly and only what's set here). These exist to give the camera
-   real scroll distance to weave in before a pin engages, and to
-   depart/re-approach between the Saturn and Mars pins - see the
-   comment above these elements in index.html for the full reasoning,
-   and src/motion/scrollTimeline.js for how these heights get read
-   back and turned into the camera's ease-in/ease-out windows. */
-.pin-runway--approach {
-  height: 20vh;
-}
-.pin-runway--between {
-  height: 30vh;
-}
-
-/* ---- Each section of the one-page site -------------------------------
-   min-height: 100vh -> every section is at least one full screen tall,
-   so scrolling from one section to the next feels like turning a page.
-   The flex/centering rules just center the placeholder heading and
-   paragraph text in the middle of the screen for now. */
-section {
+.pin-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -103,17 +106,29 @@ section {
   padding: 2rem;
 }
 
-/* Placeholder heading style for each section. */
-section h2 {
+/* Heading style for each stop. */
+.pin-content h2 {
   font-size: 2.5rem;
   margin-bottom: 1rem;
 }
 
-/* Placeholder paragraph style: capped width so lines of text don't
-   stretch too wide to read comfortably. */
-section p {
+/* Paragraph style: capped width so lines of text don't stretch too
+   wide to read comfortably. */
+.pin-content p {
   max-width: 60ch;
   line-height: 1.6;
+}
+
+/* ---- Pin runways (weave/approach scroll room between stops) -----------
+   Plain empty spacers. Every one of these is the same height - about
+   one screen-height of scroll - giving the camera room to weave from
+   the body it just left toward the next one before that next pin
+   grabs hold. See the comment above these elements in index.html for
+   the full reasoning, and src/motion/scrollTimeline.js for how each
+   pin's OWN hold length (very different from stop to stop) gets set
+   instead. */
+.pin-runway {
+  height: 100vh;
 }
 
 /* ---- Keyboard focus visibility -----------------------------------------

@@ -39,144 +39,223 @@
     <!-- Everything a visitor actually reads/sees lives inside this
          wrapper. It sits ON TOP of the canvas above. -->
     <div id="app">
-      <!-- These two empty markers don't show anything themselves -
-           they exist purely as "hooks" for GSAP's ScrollTrigger to
-           PIN (freeze in place on screen) while the camera parks at
-           Saturn and Mars. Pinning an element makes the page stop
-           visually scrolling past it for a stretch, while still
-           consuming real scroll distance underneath - see
-           src/motion/scrollTimeline.js for how long each pin lasts
-           and what the camera does during it. Real card content for
-           Mars arrives inside #pin-mars in a later phase; for now
-           it's just proving the hold itself stays rock-still.
+      <!-- The whole camera journey - all 10 stops (Moon, Saturn, Mars,
+           Venus, the constellation field, the asteroids, the
+           satellites, Jupiter, testimonials, Earth) - is built from
+           the same repeating pair of elements:
 
-           The two "runway" divs below them are just as important as
-           the markers themselves: they're empty spacers that give the
-           camera actual scroll distance to WEAVE IN and settle before
-           each pin grabs hold, and to depart/re-approach between
-           Saturn's pin and Mars's pin. Without these, a pin sitting
-           at the very top of the page would freeze the camera the
-           instant scrolling begins, with no room left for the
-           "arrive" half of "arrive, park, hold, depart" to actually
-           happen. -->
-      <div class="pin-runway pin-runway--approach" aria-hidden="true"></div>
-      <div id="pin-saturn" class="pin-marker" aria-hidden="true"></div>
-      <div class="pin-runway pin-runway--between" aria-hidden="true"></div>
-      <div id="pin-mars" class="pin-marker" aria-hidden="true"></div>
+             .pin-runway  -> a plain, empty spacer. It gives the camera
+                              real scroll distance to WEAVE toward the
+                              next body and settle into its framing,
+                              before that body's pin grabs hold.
+                              Without one of these before each pin, the
+                              pin would freeze the camera the instant
+                              its turn begins, with no room for the
+                              "arrive" half of "arrive, park, hold,
+                              depart" to actually happen.
 
-      <!-- 1. HERO: the first thing a visitor sees. -->
-      <section id="hero">
-        <h2>Hero</h2>
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-          enim ad minim veniam, quis nostrud exercitation ullamco laboris
-          nisi ut aliquip ex ea commodo consequat.
-        </p>
-      </section>
+             .pin-marker  -> the actual "hook" GSAP's ScrollTrigger
+                              pins (see src/motion/scrollTimeline.js).
+                              Pinning freezes this element in place on
+                              screen for a stretch, while still
+                              consuming real scroll distance underneath
+                              - that consumed distance is exactly how
+                              long the camera holds rock-still there.
+                              The marker itself is deliberately kept
+                              empty of any real size of its own (see
+                              src/styles/base.css for why - testing
+                              found that giving IT a full screen-height
+                              directly was quietly adding an extra,
+                              unwanted screen-height of scroll to every
+                              single stop).
 
-      <!-- 2. ABOUT: a short introduction / bio. -->
-      <section id="about">
-        <h2>About</h2>
-        <p>
-          Duis aute irure dolor in reprehenderit in voluptate velit esse
-          cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-          cupidatat non proident, sunt in culpa qui officia deserunt
-          mollit anim id est laborum.
-        </p>
-      </section>
+             .pin-content -> lives INSIDE each .pin-marker, and is
+                              where that stop's actual heading/text
+                              goes. This is the piece that visually
+                              fills the screen and gets centered nicely
+                              - see src/styles/base.css for how it does
+                              that without adding any extra scroll
+                              length of its own.
 
-      <!-- 3. EXPERIENCE: work history / career timeline. -->
-      <section id="experience">
-        <h2>Experience</h2>
-        <p>
-          Sed ut perspiciatis unde omnis iste natus error sit voluptatem
-          accusantium doloremque laudantium, totam rem aperiam, eaque
-          ipsa quae ab illo inventore veritatis et quasi architecto
-          beatae vitae dicta sunt explicabo.
-        </p>
+           This used to be TWO separate, conflicting layers: this pin
+           scaffold (controlling the camera) PLUS a completely separate
+           set of old <section> elements (plain scrolling placeholder
+           text) that flowed past AFTER it - meaning the page's real
+           content had nothing to do with where the camera actually
+           stopped, and a long stretch of plain text scrolled by after
+           the camera's journey had already finished. Each stop's
+           content now lives INSIDE that stop's own pin-marker instead,
+           so the content you read and the body the camera is parked on
+           are always the same thing at the same time.
 
-        <!-- This panel is hidden until you hover Mars in the 3D scene
-             (see src/scene/raycaster.js) - it then fades in on the
-             left side of the screen, next to the planet. -->
-        <div class="panel panel--left" id="panel-experience">
-          <h3>Experience</h3>
+           Every runway here is the same length (about 1 screen-height
+           worth of scroll) - just a steady, even rhythm of "weave,
+           arrive, hold" repeated ten times. Each pin's OWN hold length
+           is very different from body to body, though (some are brief,
+           some are long) - that's controlled entirely from JavaScript,
+           not from anything here. -->
+      <div class="pin-runway" aria-hidden="true"></div>
+
+      <!-- 1. MOON - the opening stop. Stands in for the old Hero/About
+           text combined into one simple introduction. -->
+      <div id="pin-moon" class="pin-marker">
+        <div class="pin-content">
+          <h2>About</h2>
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+            enim ad minim veniam, quis nostrud exercitation ullamco
+            laboris nisi ut aliquip ex ea commodo consequat.
+          </p>
+        </div>
+      </div>
+
+      <div class="pin-runway" aria-hidden="true"></div>
+
+      <!-- 2. SATURN - Entrepreneur. -->
+      <div id="pin-saturn" class="pin-marker">
+        <div class="pin-content">
+          <h2>Entrepreneur</h2>
+          <p>
+            Duis aute irure dolor in reprehenderit in voluptate velit esse
+            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+            cupidatat non proident, sunt in culpa qui officia deserunt
+            mollit anim id est laborum.
+          </p>
+        </div>
+      </div>
+
+      <div class="pin-runway" aria-hidden="true"></div>
+
+      <!-- 3. MARS - Experience. Text below is moved over from the old
+           hover-triggered "panel-experience" card (see
+           src/scene/raycaster.js's comment on why that hover system is
+           retired) - same words, now just always-on content for this
+           stop instead of something that only appeared on hover. -->
+      <div id="pin-mars" class="pin-marker">
+        <div class="pin-content">
+          <h2>Experience</h2>
           <p>
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
             do eiusmod tempor incididunt ut labore et dolore magna
             aliqua.
           </p>
         </div>
-      </section>
+      </div>
 
-      <!-- 4. CASE STUDIES: featured projects / portfolio pieces. -->
-      <section id="case-studies">
-        <h2>Case Studies</h2>
-        <p>
-          Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut
-          odit aut fugit, sed quia consequuntur magni dolores eos qui
-          ratione voluptatem sequi nesciunt.
-        </p>
+      <div class="pin-runway" aria-hidden="true"></div>
 
-        <!-- Hidden until you hover Venus - fades in on the right side,
-             next to the planet. -->
-        <div class="panel panel--right" id="panel-casestudies">
-          <h3>Case Studies</h3>
+      <!-- 4. VENUS - Case Studies. Text moved over from the old
+           "panel-casestudies" hover card, same reasoning as Mars above. -->
+      <div id="pin-venus" class="pin-marker">
+        <div class="pin-content">
+          <h2>Case Studies</h2>
           <p>
             Ut enim ad minim veniam, quis nostrud exercitation ullamco
             laboris nisi ut aliquip ex ea commodo consequat.
           </p>
         </div>
-      </section>
+      </div>
 
-      <!-- 5. CERTIFICATES: certifications / qualifications. -->
-      <section id="certificates">
-        <h2>Certificates</h2>
-        <p>
-          Neque porro quisquam est, qui dolorem ipsum quia dolor sit
-          amet, consectetur, adipisci velit, sed quia non numquam
-          eiusmodi tempora incidunt ut labore et dolore magnam aliquam
-          quaerat voluptatem.
-        </p>
-      </section>
+      <div class="pin-runway" aria-hidden="true"></div>
 
-      <!-- 6. SKILLS: a list/grid of skills. -->
-      <section id="skills">
-        <h2>Skills</h2>
-        <p>
-          Ut enim ad minima veniam, quis nostrum exercitationem ullam
-          corporis suscipit laboriosam, nisi ut aliquid ex ea commodi
-          consequatur.
-        </p>
-      </section>
+      <!-- 5. CONSTELLATIONS - Certificates. -->
+      <div id="pin-constellations" class="pin-marker">
+        <div class="pin-content">
+          <h2>Certificates</h2>
+          <p>
+            Neque porro quisquam est, qui dolorem ipsum quia dolor sit
+            amet, consectetur, adipisci velit, sed quia non numquam
+            eiusmodi tempora incidunt ut labore et dolore magnam aliquam
+            quaerat voluptatem.
+          </p>
+        </div>
+      </div>
 
-      <!-- 7. CONTACT: contact form or details go here later. -->
-      <section id="contact">
-        <h2>Contact</h2>
-        <p>
-          Quis autem vel eum iure reprehenderit qui in ea voluptate
-          velit esse quam nihil molestiae consequatur, vel illum qui
-          dolorem eum fugiat quo voluptas nulla pariatur.
-        </p>
+      <div class="pin-runway" aria-hidden="true"></div>
 
-        <!-- Hidden until you hover Earth - fades in centered, but
-             shifted down so it frames underneath the planet instead of
-             sitting directly on top of it. -->
-        <div class="panel panel--center" id="panel-contact">
-          <h3>Contact</h3>
+      <!-- 6. ASTEROIDS - Education. -->
+      <div id="pin-asteroids" class="pin-marker">
+        <div class="pin-content">
+          <h2>Education</h2>
+          <p>
+            Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut
+            odit aut fugit, sed quia consequuntur magni dolores eos qui
+            ratione voluptatem sequi nesciunt.
+          </p>
+        </div>
+      </div>
+
+      <div class="pin-runway" aria-hidden="true"></div>
+
+      <!-- 7. SATELLITES - Skills. -->
+      <div id="pin-satellites" class="pin-marker">
+        <div class="pin-content">
+          <h2>Skills</h2>
+          <p>
+            Ut enim ad minima veniam, quis nostrum exercitationem ullam
+            corporis suscipit laboriosam, nisi ut aliquid ex ea commodi
+            consequatur.
+          </p>
+        </div>
+      </div>
+
+      <div class="pin-runway" aria-hidden="true"></div>
+
+      <!-- 8. JUPITER - Volunteering. -->
+      <div id="pin-jupiter" class="pin-marker">
+        <div class="pin-content">
+          <h2>Volunteering</h2>
+          <p>
+            Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+            accusantium doloremque laudantium, totam rem aperiam, eaque
+            ipsa quae ab illo inventore veritatis et quasi architecto
+            beatae vitae dicta sunt explicabo.
+          </p>
+        </div>
+      </div>
+
+      <div class="pin-runway" aria-hidden="true"></div>
+
+      <!-- 9. TESTIMONIALS - no real 3D body built for this stop yet, so
+           the camera parks on a wireframe placeholder box instead (see
+           addPlaceholderMarkers() in src/motion/scrollTimeline.js) -
+           that box is expected to be there for now, not a bug. -->
+      <div id="pin-testimonials" class="pin-marker">
+        <div class="pin-content">
+          <h2>Testimonials</h2>
+          <p>
+            Quis autem vel eum iure reprehenderit qui in ea voluptate
+            velit esse quam nihil molestiae consequatur, vel illum qui
+            dolorem eum fugiat quo voluptas nulla pariatur.
+          </p>
+        </div>
+      </div>
+
+      <div class="pin-runway" aria-hidden="true"></div>
+
+      <!-- 10. EARTH - Contact, the final stop. Text moved over from the
+           old "panel-contact" hover card, same reasoning as Mars/Venus
+           above. The portrait photo moves here too, for the same
+           reason - it always belonged to this stop, it just used to
+           reveal itself by watching for the old #contact section
+           instead (see src/ui/portrait.js). -->
+      <div id="pin-earth" class="pin-marker">
+        <div class="pin-content">
+          <h2>Contact</h2>
           <p>
             Duis aute irure dolor in reprehenderit in voluptate velit
             esse cillum dolore eu fugiat nulla pariatur.
           </p>
-        </div>
 
-        <!-- A circular "porthole" photo, positioned off to the side
-             so it doesn't sit on top of the heading/paragraph text or
-             the panel above. Styled in src/styles/portrait.css. -->
-        <div class="portrait">
-          <img src="/portrait.webp" alt="Harshit" />
+          <!-- A circular "porthole" photo, positioned off to the side
+               so it doesn't sit on top of the heading/paragraph text
+               above. Styled in src/styles/portrait.css. -->
+          <div class="portrait">
+            <img src="/portrait.webp" alt="Harshit" />
+          </div>
         </div>
-      </section>
+      </div>
     </div>
 
     <script type="module" src="/src/main.js"></script>

@@ -2,7 +2,7 @@
 // SCROLLTIMELINE.JS  (v2 cinematic spine)
 // This file connects scrolling to the camera's position AND where it
 // looks. As you scroll down the page, the camera flies backward
-// through the 3D scene through 10 stops.
+// through the 3D scene, stopping at 10 bodies along the way.
 //
 // It uses GSAP's ScrollTrigger to "scrub" the animation: instead of
 // playing on its own, the animation's progress is tied directly to
@@ -11,79 +11,55 @@
 // src/motion/lenis.js - this file just reuses that, it doesn't set
 // any of that up again.
 //
-// ---- Why this file changed from a straight path to an S-curve -----------
-// The camera used to fly a dead-straight line (only z moved), with a
-// small hand-tweened "banking" rotation added near each stop just to
-// fake the feeling of turning toward it. That straight path created a
-// real geometry problem: a body sitting off to the side would flash
-// past out of view almost entirely (not enough turn to catch it), and
-// a body sitting close to the camera's straight line would have the
-// camera fly nearly INTO it as their depths crossed (tested directly
-// on Saturn - see src/scene/saturn.js's comment on the rejected
-// near-axis position).
+// ---- How the journey got here ------------------------------------------
+// This file went through several earlier shapes before landing on the
+// one below - worth knowing, because a couple of those earlier
+// attempts are the reason certain things here are built the way they
+// are, not just "because":
 //
-// The fix: the camera's x/y position now also moves - weaving out to
-// the side OPPOSITE each upcoming body, so it passes at a safe
-// distance instead of straight through it - and instead of a hand-
-// tweened bank angle, the camera actively points itself at each body
-// as it approaches, using THREE's built-in lookAt().
+//   Straight line, hand-tweened banking -> a body off to the side
+//   would flash past almost unseen, and a body sitting close to the
+//   camera's straight line risked the camera flying nearly INTO it.
 //
-// ---- Round two: the S-curve itself had two more bugs ---------------------
-// Testing the first version of this (by actually scrolling through it,
-// not just checking numbers) found two real problems:
+//   S-curve flyby with a wandering look-target point -> fixed the
+//   above (the camera weaves out to the side opposite each body, and
+//   actively turns to face it using a quaternion slerp instead of
+//   easing a plain point, which is what makes the turning itself feel
+//   smooth instead of lurching - see the big comment further down by
+//   aimScratch/bodyOrientation for exactly why a point doesn't work).
 //
-// 1. A visible LURCH right at the start of each "look back to
-//    straight ahead" turn. The cause: the camera's aim was computed
-//    by easing a plain WORLD-SPACE POINT from the body's position
-//    toward a "neutral" point placed extremely far down the path
-//    (z = -5000), then calling camera.lookAt() on whatever that
-//    eased point currently was. That looks like a smooth change in
-//    raw numbers, but it is NOT a smooth change in ANGLE: because
-//    -5000 is so much farther away than anything else involved, even
-//    a small step toward it collapses the camera's aim to "straight
-//    ahead" almost immediately, instead of gradually. The fix below
-//    interpolates the camera's ORIENTATION directly (a quaternion
-//    slerp), which by definition changes at a constant angular speed
-//    - no more snap.
+//   Two real PARKS proven on Saturn and Mars -> a flyby (swing past,
+//   keep moving) doesn't work once a stop needs to hold content still
+//   long enough to read it. A genuine PARK - arrive, freeze position
+//   AND orientation completely, hold, depart - was built and checked
+//   thoroughly on just these two bodies first, using a real
+//   ScrollTrigger pin on a DOM element to freeze the actual page
+//   underneath the camera too (freezing the camera alone, with
+//   nothing pinning the page, would mean the backdrop stops moving
+//   while the page keeps scrolling normally past it underneath -
+//   backwards from what a parked moment needs).
 //
-// 2. The bodies looked "too close" - filling most of the screen,
-//    with the Hero/About text sitting right on top of a giant dark
-//    planet. The camera was only passing 15-16 units from Saturn and
-//    12-13 units from Mars - enough to clear the mesh, but nowhere
-//    near enough to look like a flyby at this camera's field of view.
-//    The weave below now swings much wider (roughly 40 units clear
-//    of Saturn, 20-25 of Mars).
+// ---- This version: every one of the 10 stops is now a park --------------
+// The proven Saturn/Mars model is now applied to all 10 stops evenly:
+// weave in -> arrive -> freeze (position AND look-orientation both
+// completely still) across a real pinned hold -> depart, weaving
+// toward the next one. The old "flyby swing past while still moving"
+// shape is retired everywhere, not just on two bodies - every stop
+// gets an actual DOM pin (see index.html's 10 #pin-* markers) with its
+// own hold length, and the gaps between them are one consistent, even
+// weave rhythm rather than the old hand-tuned per-body arc waypoints.
 //
-// ---- Round three: Saturn and Mars became real PINNED parks ---------------
-// Every stop so far has been a FLYBY - the camera swings past a body
-// on the S-curve and keeps moving. Saturn and Mars are now something
-// different: a genuine PARK. The camera arrives, comes to a complete
-// stop (position AND look direction both frozen, not just "slow"),
-// holds there for a real stretch of scroll, then departs. This is the
-// model for what every future "content" stop (cards, panels) will
-// need - somewhere for that content to be revealed against a
-// perfectly still backdrop, since a moving camera underneath moving
-// content would be distracting and would need every card animation to
-// account for a moving frame of reference.
-//
-// This needed a REAL ScrollTrigger pin on a DOM element (see
-// index.html's #pin-saturn / #pin-mars, and setupParkedStop() below) -
-// not just holding the camera's own numbers steady - because pinning
-// is what freezes the actual PAGE content in the viewport while
-// consuming real scroll distance underneath. Freezing the camera
-// alone, with no matching DOM pin, would mean the backdrop stops
-// moving while the page keeps scrolling normally past it underneath -
-// exactly backwards from what a "parked" moment needs.
-//
-// Pinning a DOM element inserts extra scroll distance into the page
-// (see pinSpacing in setupParkedStop()) - the whole point of a park is
-// that it consumes real scroll length while the camera does nothing.
-// That means the page is now TALLER than it was, which shifts exactly
-// how many scroll pixels correspond to Saturn/Mars's percentages -
-// this file handles that by MEASURING the real pixel size of each
-// pin (via GSAP, after creating it) and converting that measurement
-// into percentages, rather than guessing fixed percent numbers by
-// hand the way every other stop still does.
+// Pinning inserts extra scroll distance into the page for every one of
+// these 10 holds (see pinSpacing in setupParkedStop()) - the whole
+// point of a park is that it consumes real scroll length while the
+// camera does nothing. This file measures the REAL pixel size of every
+// pin (via GSAP, after creating all 10 and letting it refresh) and
+// converts those measurements into percentages of the page's real
+// total scroll length, rather than guessing fixed percent numbers by
+// hand - the actual on-screen hold length for each body is set once,
+// in one place (HOLD_LENGTH_VH below), and everything else derives
+// from real, measured numbers instead of hand-picked ones that could
+// drift out of sync with how tall the page actually is.
 // ===================================================================
 
 import * as THREE from 'three'
@@ -112,119 +88,156 @@ import sceneApi from '../scene/scene.js'
 // still layers on top of it completely independently.
 export const lookBaseRotation = { x: 0, y: 0 }
 
-// This file needs to know WHERE each body is so it can aim the camera
-// at them, but it doesn't import the actual meshes from
-// src/scene/saturn.js / src/scene/jupiter.js / src/scene/planets.js -
-// those files own the real bodies, this just needs the same
-// coordinates. If a body's position ever changes there, update the
-// matching point here too.
-const SATURN_POSITION = new THREE.Vector3(8, -8, -20)
-const MARS_POSITION = new THREE.Vector3(-10, 1, -50)
-const JUPITER_POSITION = new THREE.Vector3(14, -10, -200)
-const EARTH_POSITION = new THREE.Vector3(5, -3, -260)
-// The constellation FIELD's center (see src/scene/constellations.js) -
-// not any single constellation, since the point of this stop is
-// seeing several figures together, not zooming in on one.
-const CONSTELLATIONS_POSITION = new THREE.Vector3(-10, 0, -110)
-// The average of the 3 asteroid positions (see src/scene/asteroids.js)
-// - close enough to their shared center for aiming purposes, since
-// they're clustered within about 10 units of each other.
-const ASTEROIDS_POSITION = new THREE.Vector3(10, -1, -139)
-// The center of the satellite ring (see src/scene/satellites.js).
-const SATELLITES_POSITION = new THREE.Vector3(-10, 0, -170)
-
-// ---- Where the camera PARKS for Saturn and Mars ---------------------------
-// Unlike every flyby stop (which swings WIDE to the opposite side of
-// the body while still moving), a park is a single fixed camera spot
-// that doesn't move at all while pinned. Both of these sit at exactly
-// the SAME z depth as the body itself, looking sideways at it - a
-// clean, simple profile shot, and a deliberate choice: looking
-// straight along a pure sideways direction (no up/down tilt at all)
-// can never run into the "looking almost straight up or down" camera
-// math instability that other stops have had to work around.
-//   Saturn: offset (-18, 18) from origin, camera-to-Saturn distance
-//   ~36.8 units - inside the requested 35-40 unit "Jupiter-style" range.
-//   Mars: offset (12, -11), camera-to-Mars distance ~25.1 units -
-//   matching Mars's own previous flyby target distance.
-const SATURN_PARK = { x: -18, y: 18 }
-const MARS_PARK = { x: 12, y: -11 }
-
 // ---- The 10 stops along the journey -----------------------------------
-// Each stop is a point along the flight where a "body" (a planet,
-// certificate, project card, etc.) sits.
-//   percent  -> how far down the page (0-100%) this stop happens
-//   z        -> how far along the camera's path this stop is
+// Everything about every stop lives in this one list - its real 3D
+// position (matching wherever its actual body was built - see the
+// matching src/scene/*.js file noted per entry), where the camera
+// PARKS to frame it, and how long (in screen-heights of scroll) its
+// hold lasts.
 //
-// marker: false means "a real body now lives here" (Mars, Venus,
-// Earth, Saturn) - the wireframe placeholder box is skipped for
-// those, since something real already fills the spot. Every other
-// stop still gets its placeholder box until its real body is built.
+// The parked camera spot is deliberately chosen to sit at the exact
+// same Z depth (front-to-back distance) as the body itself, offset
+// only sideways (x/y) - a clean, level, sideways-on shot. This is the
+// same singularity-avoidance trick proven on Saturn/Mars: looking
+// along a PURE sideways direction, with zero up/down tilt, can never
+// hit the "looking almost straight up or down" degenerate case that
+// the camera's look-at math is unstable around (see the big comment
+// on bodyOrientation further down for what that instability actually
+// looks like). Every single park below follows this same rule.
 //
-// Saturn and Mars don't have fixed percent numbers written here like
-// the rest do - their percentages depend on how many actual pixels
-// their pins turn out to be (which itself depends on the visitor's
-// own screen height), so they get filled in once setupParkedStop()
-// has measured them for real. Every stop from Venus onward keeps its
-// exact same hardcoded percent and z as before - this phase only
-// touches Saturn and Mars.
-function buildStops(saturnHoldStart, marsHoldStart) {
-  return [
-    { percent: saturnHoldStart, z: -20, marker: false }, // Saturn (now a park, not a flyby)
-    { percent: marsHoldStart, z: -50, marker: false }, // Mars (now a park, not a flyby)
-    { percent: 37, z: -80, marker: false }, // Venus
-    { percent: 69, z: -110, marker: false }, // Constellations
-    { percent: 74, z: -140, marker: false }, // Asteroids
-    { percent: 78, z: -170, marker: false }, // Satellites
-    { percent: 84, z: -200, marker: false }, // Jupiter
-    { percent: 92, z: -230, marker: true }, // Testimonials
-    { percent: 96, z: -260, marker: false }, // Earth
-    // This final stop is just where the camera's journey ends, not a
-    // body location - no marker belongs here.
-    { percent: 100, z: -290, marker: false },
-  ]
-}
+// The sideways offsets also alternate which side they swing to
+// (positive-x/negative-y, then negative-x/positive-y, then back)
+// stop to stop, so the camera weaves left-right-left down the whole
+// journey rather than drifting to one side and staying there.
+//
+// Distances (how far the parked camera sits from the body) are scaled
+// to each body's own size/importance: the big, dramatic planets
+// (Saturn, Jupiter, Earth) sit around 35-40 units out; the smaller
+// clusters (asteroids, satellites, the testimonials placeholder, the
+// small moon) sit around 20-30; the constellation FIELD (many stars
+// spread wide, not one small object) sits back around 50 so the whole
+// field reads at once. Mars and Venus reuse distances already tuned
+// for them in earlier versions of this file.
+//
+// holdLengthVh is in "screen-heights of scroll" (1 = one full
+// viewport-height of scrolling) - NOT a percent. Percent is a moving
+// target that depends on how tall the WHOLE page ends up (which
+// changes as pins are added), so every hold is defined here in a
+// fixed, real unit instead, and turned into percent further down once
+// the actual page height is known.
+const BODIES = [
+  {
+    id: 'moon', // src/scene/moon.js - the small moon near the start
+    position: new THREE.Vector3(0, -3.2, 0),
+    park: { x: 13, y: -16.2 }, // ~18.4 units out - small object, close-up
+    holdLengthVh: 1.972,
+    marker: false,
+  },
+  {
+    id: 'saturn', // src/scene/saturn.js
+    position: new THREE.Vector3(8, -8, -20),
+    park: { x: -18, y: 18 }, // ~36.8 units out - reused from the Saturn/Mars proof phase
+    holdLengthVh: 1.16,
+    marker: false,
+  },
+  {
+    id: 'mars', // src/scene/planets.js
+    position: new THREE.Vector3(-10, 1, -50),
+    park: { x: 12, y: -11 }, // ~25.1 units out - reused from the Saturn/Mars proof phase
+    holdLengthVh: 3.538,
+    marker: false,
+  },
+  {
+    id: 'venus', // src/scene/planets.js
+    position: new THREE.Vector3(-10, -2, -80),
+    park: { x: -34, y: 12 }, // ~27.8 units out
+    holdLengthVh: 4.727, // the longest hold - this is where case-study cards will live later
+    marker: false,
+  },
+  {
+    id: 'constellations', // src/scene/constellations.js - center of the whole field
+    position: new THREE.Vector3(-10, 0, -110),
+    park: { x: 25, y: -35 }, // ~49.5 units out - pulled back further so the wide field reads at once
+    holdLengthVh: 1.479,
+    marker: false,
+  },
+  {
+    id: 'asteroids', // src/scene/asteroids.js - center of the 3-asteroid cluster
+    position: new THREE.Vector3(10, -1, -139),
+    park: { x: -10, y: 14 }, // ~25 units out
+    holdLengthVh: 0.986,
+    marker: false,
+  },
+  {
+    id: 'satellites', // src/scene/satellites.js - center of the satellite ring
+    position: new THREE.Vector3(-10, 0, -170),
+    park: { x: 8, y: -20 }, // ~26.9 units out
+    holdLengthVh: 1.479,
+    marker: false,
+  },
+  {
+    id: 'jupiter', // src/scene/jupiter.js
+    position: new THREE.Vector3(14, -10, -200),
+    park: { x: -11, y: 18 }, // ~37.5 units out
+    holdLengthVh: 1.189,
+    marker: false,
+  },
+  {
+    id: 'testimonials', // no real body yet - gets a placeholder wireframe box, see below
+    position: new THREE.Vector3(-10, 0, -230),
+    park: { x: 8, y: -16 }, // ~24.1 units out
+    holdLengthVh: 0.986,
+    marker: true,
+  },
+  {
+    id: 'earth', // src/scene/planets.js
+    position: new THREE.Vector3(5, -3, -260),
+    park: { x: -22, y: 27 }, // ~40.4 units out
+    holdLengthVh: 1.479,
+    marker: false,
+  },
+]
 
-// ---- Temporary placeholder markers --------------------------------------
-// A small wireframe box at each stop that doesn't have a real body
-// yet, so the spine's spacing can still be SEEN for the not-yet-built
-// ones. One shared geometry and material is reused for all of them,
-// since they all look identical - that's lighter on the GPU than
-// making a separate copy for each.
-function addPlaceholderMarkers(stops) {
+// ---- Temporary placeholder marker --------------------------------------
+// A small wireframe box for any stop that doesn't have a real body
+// built yet - right now that's only "testimonials" - so the spine's
+// spacing can still be SEEN there before its real content exists.
+function addPlaceholderMarkers(bodies) {
   const markerGeometry = new THREE.BoxGeometry(6, 6, 6)
   const markerMaterial = new THREE.MeshBasicMaterial({
     color: 0x6fb7ff,
     wireframe: true,
   })
 
-  stops.forEach((stop, index) => {
-    if (!stop.marker) return // a real body already occupies this stop
-
+  for (const body of bodies) {
+    if (!body.marker) continue // a real body already occupies this stop
     const marker = new THREE.Mesh(markerGeometry, markerMaterial)
-    // Alternate left/right of the camera's straight path (x = 0), so
-    // the markers read as a curving trail rather than a single
-    // straight line the camera flies directly through.
-    const side = index % 2 === 0 ? 1 : -1
-    marker.position.set(side * 10, 0, stop.z)
+    marker.position.copy(body.position)
     sceneApi.scene.add(marker)
-  })
+  }
 }
 
 // ---- Setting up one real, pinned "park" -----------------------------------
-// This is the piece that makes the hold GENUINELY still, not just
+// This is the piece that makes each hold GENUINELY still, not just
 // "the camera's own numbers happen to stay the same." It pins a real
 // DOM element (elementId) - freezing that section on screen - for a
-// real, explicit amount of scroll distance (holdLengthPx), then
-// reports back exactly where that hold starts and ends, in PERCENT of
-// the whole page's scroll (which is what every camera calculation in
-// this file works in).
+// real, explicit amount of scroll distance (holdLengthPx).
 //
-// Pins are created REGARDLESS of reduced motion - freezing the page
-// content so a visitor can read it without it sliding away is a
-// readability aid, not the kind of motion "reduce motion" asks to
-// avoid. Only the camera's fancy off-axis framing/turning (built
-// further below) is skipped under reduced motion, same as every
-// other stop.
+// refresh() runs again immediately after EVERY single pin is created,
+// not just once at the very end after all 10 exist. This turned out to
+// matter a lot: with 10 markers that each have real, visible content
+// (min-height: 100vh, so their text can be centered nicely on screen),
+// creating all 10 pins first and refreshing only once afterward left
+// each pin measuring the NEXT marker's position against a page that
+// hadn't fully "settled" yet - GSAP hadn't yet finished converting the
+// previous marker's own natural height into its pin's reserved scroll
+// space, so every marker's actual position ended up exactly one extra
+// screen-height too far down the page (confirmed directly: a
+// diagnostic print showed every gap between stops measuring double its
+// intended size). Refreshing right after each one is created gives
+// GSAP a chance to fully settle that marker's spacing before moving on
+// to measure the next one, which is what makes every stop's timing
+// come out exactly as intended.
 function setupParkedStop(elementId, holdLengthPx) {
   const trigger = ScrollTrigger.create({
     trigger: `#${elementId}`,
@@ -238,70 +251,178 @@ function setupParkedStop(elementId, holdLengthPx) {
     pin: true,
     pinSpacing: true,
   })
-
-  // ScrollTrigger only finishes calculating exact pixel positions once
-  // it's had a chance to measure the page - refresh() forces that to
-  // happen right now instead of waiting, so the .start/.end read
-  // immediately below are the real, final numbers.
   ScrollTrigger.refresh()
-
-  return { startPx: trigger.start, endPx: trigger.end }
+  return trigger
 }
 
 export function init(camera) {
-  // ---- Pin Saturn and Mars, and measure exactly how big each hold is ------
-  // Saturn gets a SHORT pin (half a viewport-height of scroll) - just
-  // enough to prove the camera genuinely stops. Mars gets a LONG pin
-  // (2.5 viewport-heights) - a real, sustained hold, sized so the
-  // model can be checked thoroughly before any actual card content
-  // exists yet (that arrives in a later phase).
-  //
-  // A note on Mars's exact length: the original ask was room for 9
-  // cards at about half a viewport-height each (4.5 viewport-heights
-  // total). That doesn't quite fit here without ALSO changing Venus's
-  // existing 37% mark (and everything after it) - Venus, Constellations,
-  // and the rest all keep their exact original percentages in this
-  // phase, per the instruction to leave the other 8 stops alone, and
-  // the page's current total length (7 short placeholder sections,
-  // plus the approach/gap runways below) isn't long enough to fit a
-  // full 4.5-viewport-height pin before reaching Venus's fixed spot.
-  // 2 viewport-heights is still comfortably "long" next to Saturn's
-  // half, and proves the same rock-still mechanism just as
-  // conclusively - the exact length is trivial to change here in one
-  // place once real cards make the true required length clear.
-  const saturnHoldLengthPx = window.innerHeight * 0.5
-  const marsHoldLengthPx = window.innerHeight * 2
+  // ---- Pin all 10 stops, settling each one's spacing before the next ------
+  // Pins are created REGARDLESS of reduced motion - freezing the page
+  // content so a visitor can read it without it sliding away is a
+  // readability aid, not the kind of motion "reduce motion" asks to
+  // avoid. Only the camera's off-axis framing/turning (built further
+  // below) is skipped under reduced motion, same as before.
+  const pinTriggers = BODIES.map((body) =>
+    setupParkedStop(`pin-${body.id}`, body.holdLengthVh * window.innerHeight),
+  )
 
-  const saturnPin = setupParkedStop('pin-saturn', saturnHoldLengthPx)
-  const marsPin = setupParkedStop('pin-mars', marsHoldLengthPx)
+  // One more refresh after all 10 exist, so the percentages read below
+  // reflect the fully-finished page exactly as a visitor would load it.
+  ScrollTrigger.refresh()
 
   // The master timeline below is scrubbed across the FULL page, from
   // the top of #app to the bottom - so "percent" always means
   // "percent of this same total distance." Measuring that same total
-  // AFTER both pins exist (their pinSpacing has already made the page
-  // taller by this point) is what makes the percent conversion below
-  // line up exactly with what the master timeline itself will use.
+  // AFTER all 10 pins exist (their pinSpacing has already made the
+  // page taller by this point) is what makes the percent conversion
+  // below line up exactly with what the master timeline itself uses.
   const totalScrollRange = document.getElementById('app').scrollHeight - window.innerHeight
 
   function pxToPercent(px) {
     return (px / totalScrollRange) * 100
   }
 
+  // Fold each body's real, measured hold boundary (in percent) in
+  // alongside the rest of its info from the BODIES list above.
+  //
+  // holdEnd is capped at 100 here - this matters specifically for
+  // Earth, the very last body. Earth has nothing after it, so its pin
+  // can end up needing SLIGHTLY more scroll room than the page
+  // actually has left to give (see the diagnostic log further down for
+  // the full explanation) - its true, measured holdEnd can come out
+  // as something like 103.57% instead of a clean 100%. That's fine on
+  // its own, but every z-position and weave tween further below is
+  // built by using these hold numbers directly as positions ALONG the
+  // camera's own timeline - and that timeline is stretched by GSAP so
+  // that scrolling through the real page (0-100%) always plays out
+  // its FULL length, whatever that length happens to be. If Earth's
+  // entry were left at 103.57 instead of 100, the camera's timeline
+  // would end up 3.57% "longer" than the real page - and GSAP would
+  // then squeeze that extra length back down to fit the real 0-100%
+  // scroll range, which quietly shifts EVERY stop's actual on-screen
+  // timing earlier than intended (testing caught this directly: by
+  // Jupiter's stop, its held text and its camera framing had visibly
+  // drifted out of sync with each other). Capping at 100 keeps the
+  // camera's timeline exactly as long as the real page, so nothing
+  // downstream needs to be squeezed. It doesn't change what the camera
+  // actually does at Earth - both of Earth's tweens (see the z-position
+  // and weave loops below) already move the camera to the exact same
+  // spot, so trimming WHEN the second one nominally finishes doesn't
+  // change WHERE the camera ends up.
+  const bodies = BODIES.map((body, index) => ({
+    ...body,
+    holdStart: pxToPercent(pinTriggers[index].start),
+    holdEnd: Math.min(pxToPercent(pinTriggers[index].end), 100),
+  }))
+
+  addPlaceholderMarkers(bodies)
+
+  // ---- DIAGNOSTIC LOGGING (temporary - safe to delete once the page's
+  // length is sorted out) --------------------------------------------------
+  // This only PRINTS numbers to the browser console - it doesn't move,
+  // resize, or change anything about the page. The goal is to see
+  // exactly how many real pixels each piece of the journey turned out
+  // to be, so an unexpectedly large segment can be spotted directly
+  // instead of guessed at.
+  //
+  // Two kinds of segment make up the whole page:
+  //   - a PIN HOLD (how long the camera stays frozen on one body) -
+  //     these are set directly from holdLengthVh above, so they should
+  //     match that intended number exactly.
+  //   - a RUNWAY (the plain .pin-runway spacer before each pin, see
+  //     index.html) - every one of these is meant to be exactly one
+  //     screen-height (100vh in CSS, i.e. window.innerHeight in px).
+  //     "runway before moon" is the gap from the very top of the page
+  //     to Moon's pin; the very last line below ("trailing content
+  //     after Earth's pin") is everything left over AFTER Earth's
+  //     hold ends - that includes the one extra runway added to stop
+  //     the old placeholder text bleeding into Earth's frame, PLUS
+  //     that placeholder text's own real (un-forced) height, all
+  //     added together as one number since nothing currently tells
+  //     them apart on the page itself.
+  {
+    const vh = window.innerHeight
+    console.log(`--- Pin/runway diagnostic breakdown (1 viewport-height = ${vh}px) ---`)
+
+    let previousEndPx = 0
+    bodies.forEach((body, index) => {
+      const trigger = pinTriggers[index]
+      const runwayPx = trigger.start - previousEndPx
+      const holdPx = trigger.end - trigger.start
+      console.log(
+        `runway before ${body.id}: ${runwayPx.toFixed(0)}px = ${(runwayPx / vh).toFixed(3)}vh (intended ~1.000vh)`,
+      )
+      console.log(
+        `${body.id} hold: ${holdPx.toFixed(0)}px = ${(holdPx / vh).toFixed(3)}vh (intended ${body.holdLengthVh.toFixed(3)}vh)`,
+      )
+      previousEndPx = trigger.end
+    })
+
+    const appScrollHeight = document.getElementById('app').scrollHeight
+    const trailingPx = appScrollHeight - previousEndPx
+    console.log(
+      `trailing content after Earth's pin: ${trailingPx.toFixed(0)}px = ${(trailingPx / vh).toFixed(3)}vh ` +
+        `(anything left over after Earth's own hold ends - should be 0, since nothing comes after it)`,
+    )
+    console.log(`total #app scrollHeight: ${appScrollHeight}px = ${(appScrollHeight / vh).toFixed(3)}vh`)
+
+    // A note on why this next number can read OVER 100%: Earth is the
+    // very last stop, with nothing after it, so its pin's own end
+    // point sits exactly at the bottom of the whole page. But the
+    // camera's own 0-100% scale (see the master timeline further
+    // below) is measured up to the LAST point a visitor can actually
+    // scroll to, which is always one screen-height SHORT of the
+    // page's absolute bottom edge (you can't scroll a screen-height
+    // "into" content that isn't there). So Earth's pin technically
+    // asks for slightly more scroll room than a visitor can ever
+    // provide - which isn't a bug, it just means Earth simply never
+    // lets go: the moment a visitor hits the true bottom of the page,
+    // they're still within Earth's hold, still perfectly parked on
+    // it, exactly as a "final destination" should behave.
+    //
+    // This reads the true, UNCAPPED number straight from Earth's own
+    // pin trigger, purely for this printout - the "bodies" list used
+    // everywhere else caps this same number at 100 before the camera
+    // timeline is built from it (see the big comment where "bodies" is
+    // put together, above), which is what actually keeps every stop's
+    // timing correct. This log line stays uncapped deliberately, so it
+    // keeps showing the real, honest number instead of hiding it.
+    const earthTrigger = pinTriggers[pinTriggers.length - 1]
+    const trueEarthHoldEndPercent = pxToPercent(earthTrigger.end)
+    console.log(
+      `Earth hold ends at ${trueEarthHoldEndPercent.toFixed(2)}% of total scroll ` +
+        `(reads over 100% because nothing follows it - see the comment above this line; ` +
+        `in practice this means Earth simply holds all the way to the true end of the page)`,
+    )
+  }
+
   // How many percentage points of gentle approach/departure surround
-  // each hold - the same idea as every other stop's "ease in / hold /
-  // ease out" shape, just sized in percent here since that's what's
-  // being computed, rather than picked by hand. Kept fairly small
-  // since the "between" runway (see index.html/base.css) connecting
-  // Saturn's release to Mars's arrival is itself narrow.
-  const EASE_MARGIN = 1.5
-
-  const saturnHoldStart = pxToPercent(saturnPin.startPx)
-  const saturnHoldEnd = pxToPercent(saturnPin.endPx)
-  const marsHoldStart = pxToPercent(marsPin.startPx)
-  const marsHoldEnd = pxToPercent(marsPin.endPx)
-
-  const stops = buildStops(saturnHoldStart, marsHoldStart)
-  addPlaceholderMarkers(stops)
+  // each hold - the same idea as an "ease in / hold / ease out" shape.
+  // The gap between one hold ending and the next beginning is about
+  // one screen-height of scroll everywhere (see the .pin-runway
+  // spacers in index.html), which works out to roughly 3-3.5% of the
+  // total page - EASE_MARGIN is kept comfortably under half of that,
+  // so an ease-out and the next ease-in never overlap, with a little
+  // "straight ahead" gap left over in between.
+  //
+  // 1.3 rather than a rounder number like 1.5: testing found a brief,
+  // small wobble during Venus's departure, right near the very tail
+  // end of its ease-out (~98% of the way through it, when its look-aim
+  // blend was already down near 5%). The cause wasn't a bug in the
+  // blending itself - it's a real moment where the transiting camera's
+  // straight-ahead direction happens to pass almost exactly through
+  // Venus's own bearing, which makes "which way to turn to face it"
+  // become briefly ill-defined (the turn angle needed approaches
+  // zero, so the exact axis to turn around gets noisy) - the same
+  // family of issue as the near-vertical/near-180 cases elsewhere in
+  // this file, just the "near-zero" version of it. Since it only
+  // shows up this late in the ease-out, when blend is already nearly
+  // 0 anyway, shortening the margin slightly so blend reaches exactly
+  // 0 BEFORE that crossing point avoids it entirely - once blend is 0,
+  // the target doesn't matter at all, so it can't matter that this
+  // one particular target briefly gets confused about which way to
+  // turn.
+  const EASE_MARGIN = 1.3
 
   // ---- The scroll-driven timeline --------------------------------------
   //   trigger: "#app"   -> watch scroll progress across our whole page
@@ -328,40 +449,31 @@ export function init(camera) {
 
   // ---- The camera's forward position, through all 10 stops -----------------
   // The timeline's total length is treated as 100 units, matching
-  // scroll percentage 1-to-1. Lock in the exact starting point first,
-  // then chain a .to() for each stop above - each one's "duration" is
-  // simply the gap between that stop's percent and the previous one,
-  // so they land at exactly the right point in the scroll no matter
-  // how uneven the spacing between stops is.
-  //
-  // Saturn and Mars each get an EXTRA keyframe added right after their
-  // own entry, repeating the exact same z value at the hold's END
-  // percent - two keyframes with an identical value means GSAP tweens
-  // from that value to... itself, over that stretch, which is just a
-  // plain, flat, unmoving hold. That's the entire trick behind the
-  // "genuinely frozen" position requirement - no special "pause the
-  // timeline" logic needed anywhere.
+  // scroll percentage 1-to-1. For every body: ease forward from
+  // wherever the camera currently is to this body's own depth,
+  // arriving exactly at holdStart - then a SECOND tween to the exact
+  // same depth, running from holdStart to holdEnd. Two tweens to the
+  // identical value back to back is just a plain, flat, unmoving hold
+  // - that's the entire trick behind the "genuinely frozen" position
+  // requirement, no special "pause the timeline" logic needed
+  // anywhere. Then the next body's approach continues on from there.
   timeline.set(camera.position, { z: 10 })
 
-  let previousPercent = 0
-  for (const stop of stops) {
+  let atZPercent = 0
+  for (const body of bodies) {
     timeline.to(camera.position, {
-      z: stop.z,
-      duration: stop.percent - previousPercent,
+      z: body.position.z,
+      duration: body.holdStart - atZPercent,
       ease: 'none',
     })
-    previousPercent = stop.percent
+    atZPercent = body.holdStart
 
-    if (stop.z === -20) {
-      // Saturn: hold flat through the end of its pin.
-      timeline.to(camera.position, { z: stop.z, duration: saturnHoldEnd - previousPercent, ease: 'none' })
-      previousPercent = saturnHoldEnd
-    }
-    if (stop.z === -50) {
-      // Mars: hold flat through the end of its pin.
-      timeline.to(camera.position, { z: stop.z, duration: marsHoldEnd - previousPercent, ease: 'none' })
-      previousPercent = marsHoldEnd
-    }
+    timeline.to(camera.position, {
+      z: body.position.z,
+      duration: body.holdEnd - atZPercent,
+      ease: 'none',
+    })
+    atZPercent = body.holdEnd
   }
 
   // Everything below (the sideways weave and the look-target aiming)
@@ -373,40 +485,32 @@ export function init(camera) {
   // for a while," not a turn or an off-axis swing.
   if (!prefersReducedMotion) {
     // ---- The camera's sideways weave (position.x / position.y) -------------
-    // Saturn and Mars now PARK (arrive at a single fixed spot and stay
-    // there) instead of swinging past on a flyby - see SATURN_PARK /
-    // MARS_PARK above for the exact parked positions and why they're
-    // shaped the way they are. Every stop from Venus onward keeps its
-    // completely unchanged flyby weave.
+    // Exactly the same two-tweens-to-the-same-value trick as the depth
+    // (z) above, but for the sideways parked offset instead: ease from
+    // the PREVIOUS body's parked spot to THIS body's parked spot,
+    // arriving at holdStart, then hold flat to holdEnd. Because
+    // consecutive bodies' parked spots already alternate sides (see
+    // the BODIES list above), a plain direct line between them reads
+    // as a natural left-right-left weave on its own - no extra
+    // "swing wide" waypoints needed the way the old flyby version
+    // required.
     timeline.set(camera.position, { x: 0, y: 0 }, 0)
 
-    const weaveKeyframes = [
-      { percent: saturnHoldStart, x: SATURN_PARK.x, y: SATURN_PARK.y }, // arrive at Saturn's parked framing
-      { percent: saturnHoldEnd, x: SATURN_PARK.x, y: SATURN_PARK.y }, // hold rock-still through the whole park
-      { percent: marsHoldStart, x: MARS_PARK.x, y: MARS_PARK.y }, // arrive at Mars's parked framing
-      { percent: marsHoldEnd, x: MARS_PARK.x, y: MARS_PARK.y }, // hold rock-still through the whole park
-      { percent: marsHoldEnd + EASE_MARGIN, x: 0, y: 0 }, // depart, ease back to center before Venus
-      { percent: 52, x: -46, y: 46 }, // swing wide opposite the constellation field, EARLY
-      { percent: 68.5, x: -46, y: 46 }, // hold wide through the whole constellation encounter
-      { percent: 70, x: 22, y: 65 }, // arc WAYPOINT - stay wide, don't cut through center
-      { percent: 73.5, x: 36, y: -36 }, // swing wide opposite the asteroid cluster, passing it
-      { percent: 75.5, x: -15, y: -55 }, // arc WAYPOINT - x flips early, y overshoots, so distance stays up
-      { percent: 78, x: -27, y: 27 }, // swing wide opposite the satellite ring, arriving exactly at their stop
-      { percent: 81, x: -27, y: 27 }, // hold wide through the whole satellite encounter
-      { percent: 82.5, x: 0, y: 0 }, // safely past, ease back to center before Jupiter
-      { percent: 84, x: -25, y: 20 }, // swing wide opposite Jupiter, passing it
-      { percent: 96, x: -8, y: 6 }, // ease to a smaller, gentler swing for Earth's arrival
-      { percent: 100, x: 0, y: 0 }, // settle back to center as the journey ends
-    ]
-
     let atWeavePercent = 0
-    for (const kf of weaveKeyframes) {
+    for (const body of bodies) {
       timeline.to(
         camera.position,
-        { x: kf.x, y: kf.y, duration: kf.percent - atWeavePercent, ease: 'none' },
+        { x: body.park.x, y: body.park.y, duration: body.holdStart - atWeavePercent, ease: 'none' },
         atWeavePercent,
       )
-      atWeavePercent = kf.percent
+      atWeavePercent = body.holdStart
+
+      timeline.to(
+        camera.position,
+        { x: body.park.x, y: body.park.y, duration: body.holdEnd - atWeavePercent, ease: 'none' },
+        atWeavePercent,
+      )
+      atWeavePercent = body.holdEnd
     }
 
     // ---- A single scrub-synced progress number --------------------------------
@@ -417,23 +521,43 @@ export function init(camera) {
     // percent separately - guarantees the look-aim below is working
     // from the exact same smoothed, scrubbed number as everything
     // else, with no chance of it drifting out of sync.
+    //
+    // The duration below is NOT hardcoded to 100, even though percent
+    // is a 0-100 value - it's set to match timeline.duration(), the
+    // ACTUAL total length of every z-position and weave tween added
+    // above. Those don't necessarily add up to exactly 100: Earth (the
+    // very last body) has nothing after it, so its own hold can run
+    // slightly past where a visitor can actually scroll to (see the
+    // diagnostic log further up this file for why) - which means the
+    // combined z/weave tweens' real total length can come out as,
+    // say, 103.57 instead of a clean 100. GSAP automatically stretches
+    // this WHOLE timeline so that scrolling 0-100% of the real page
+    // maps onto its own true total length, whatever that is - so if
+    // this one tween were left hardcoded to a duration of exactly 100
+    // while the rest of the timeline actually runs to 103.57, this
+    // number would tick from 0 to 100 slightly FASTER than the
+    // z-position/weave tweens play out, silently drifting out of sync
+    // with where the camera actually is by the end of the journey.
+    // Testing caught this directly: Jupiter's held text and framing
+    // were measurably out of alignment with each other by the time the
+    // journey reached the later stops. Matching this tween's duration
+    // to the timeline's real total length keeps it locked to the exact
+    // same scale as everything else, however long that scale turns out
+    // to be.
     const progress = { percent: 0 }
-    timeline.to(progress, { percent: 100, duration: 100, ease: 'none' }, 0)
+    timeline.to(progress, { percent: 100, duration: timeline.duration(), ease: 'none' }, 0)
 
     // ---- The look-aim, as an ORIENTATION, not a point ------------------------
-    // This replaces the old approach (easing a world-space point, then
-    // calling camera.lookAt() on it), which was the source of the
-    // lurch described at the top of this file. Instead:
-    //
-    //   1. Every frame, work out two ORIENTATIONS (quaternions):
-    //      "neutral" (looking straight down the path, no turn at all)
-    //      and "looking at whichever body is currently being
-    //      approached" (recalculated fresh each frame, since the
-    //      camera's own position keeps moving from the weave above).
-    //   2. Blend smoothly between those two orientations using
-    //      THREE's quaternion slerp - which, unlike blending two
-    //      plain x/y/z points, changes at a constant ANGULAR speed.
-    //      That's what makes the turn look linear instead of snapping.
+    // Earlier versions of this file eased a plain WORLD-SPACE POINT
+    // from the body's position toward a "neutral" point far down the
+    // path, then called camera.lookAt() on wherever that eased point
+    // currently was. That looks like a smooth change in raw numbers,
+    // but is NOT a smooth change in ANGLE - a small step toward a very
+    // distant point can collapse the camera's aim to "straight ahead"
+    // almost immediately instead of gradually, causing a visible
+    // lurch. The fix, still used here: interpolate the camera's
+    // ORIENTATION directly (a quaternion slerp), which changes at a
+    // constant angular speed - no snap.
     //
     // "neutral" is just the identity rotation: a fresh camera with no
     // rotation applied always looks straight down -z, which is exactly
@@ -449,11 +573,8 @@ export function init(camera) {
     // - .lookAt() on a plain Object3D points its +Z axis at the
     // target, but Camera overrides that to point -Z at the target
     // instead (the standard "camera looks down -Z" convention). Using
-    // a plain Object3D here at first meant every computed orientation
-    // faced exactly backwards - the target still calculated as
-    // dead-center by coincidence of the projection math, but nothing
-    // actually rendered there, since the real render pipeline
-    // correctly does not draw what's behind the camera.
+    // a plain Object3D here would mean every computed orientation
+    // faces exactly backwards.
     const aimScratch = new THREE.PerspectiveCamera()
     const bodyOrientation = new THREE.Quaternion()
     const blendedOrientation = new THREE.Quaternion()
@@ -461,109 +582,63 @@ export function init(camera) {
     // Works out which body (if any) the camera should be aiming at
     // right now, and how far blended toward it we should be (0 =
     // fully neutral/straight ahead, 1 = fully locked onto the body),
-    // purely from the current scrub percent. For Saturn and Mars, the
-    // "hold" phase is a TRUE pin - blend simply stays at 1 for the
-    // entire measured hold range, exactly as long as the real DOM pin
-    // lasts, instead of a hand-picked percent width.
-    function getAim(percent, saturnPos, marsPos, constellationsPos, asteroidsPos, satellitesPos, jupiterPos, earthPos) {
-      if (percent < saturnHoldStart) return { target: saturnPos, blend: percent / saturnHoldStart } // easing toward Saturn
-      if (percent < saturnHoldEnd) return { target: saturnPos, blend: 1 } // PARKED on Saturn - the true pin
-      if (percent < saturnHoldEnd + EASE_MARGIN) {
-        return { target: saturnPos, blend: 1 - (percent - saturnHoldEnd) / EASE_MARGIN } // easing back out
+    // purely from the current scrub percent.
+    //
+    // This walks the 10 bodies IN ORDER (the same order they appear
+    // along the scroll). For each one it asks four questions, in
+    // order: are we not even close to this body yet (still straight
+    // ahead, or still departing the one before it)? Are we easing
+    // toward it? Are we PARKED on it (blend stuck at 1 - this is the
+    // true pin, and it stays exactly 1 for the body's WHOLE measured
+    // hold, however long or short that real pin turns out to be)? Or
+    // are we easing back out of it? The very first question returning
+    // true means we've found exactly where we are in the journey, so
+    // it can stop looking any further forward.
+    //
+    // Earth (the last body in the list) is a special case: every
+    // other body eases back out toward "straight ahead" once its hold
+    // ends, because there's a NEXT body to turn toward next. Earth has
+    // no next body - it's the destination the whole journey has been
+    // heading for - so once parked on it, the camera just stays locked
+    // there for the rest of the scroll instead of easing away from it.
+    // (Skipping this check found a real bug during testing: without
+    // it, the ease-out would run down to blend 0 by ~99.2%, and then
+    // immediately after that this function would fall off the end of
+    // the loop into the "past everything" fallback below, which snaps
+    // blend straight back to 1 - a hard, instant jump right near the
+    // very end of the journey.)
+    function getAim(percent) {
+      for (let i = 0; i < bodies.length; i++) {
+        const body = bodies[i]
+        const isFinalBody = i === bodies.length - 1
+
+        if (percent < body.holdStart - EASE_MARGIN) {
+          return { target: null, blend: 0 } // straight ahead - not yet approaching this body
+        }
+        if (percent < body.holdStart) {
+          return { target: body.position, blend: 1 - (body.holdStart - percent) / EASE_MARGIN } // easing toward it
+        }
+        if (percent < body.holdEnd) {
+          return { target: body.position, blend: 1 } // PARKED - the true pin
+        }
+        if (isFinalBody) {
+          return { target: body.position, blend: 1 } // the destination - stay locked on, never ease out
+        }
+        if (percent < body.holdEnd + EASE_MARGIN) {
+          return { target: body.position, blend: 1 - (percent - body.holdEnd) / EASE_MARGIN } // easing back out
+        }
+        // Past this body's entire window (including its ease-out) -
+        // check the next body in line instead.
       }
-      if (percent < marsHoldStart - EASE_MARGIN) return { target: null, blend: 0 } // straight ahead, traveling toward Mars
-      if (percent < marsHoldStart) {
-        return { target: marsPos, blend: 1 - (marsHoldStart - percent) / EASE_MARGIN } // easing toward Mars
-      }
-      if (percent < marsHoldEnd) return { target: marsPos, blend: 1 } // PARKED on Mars - the true pin
-      if (percent < marsHoldEnd + EASE_MARGIN) {
-        return { target: marsPos, blend: 1 - (percent - marsHoldEnd) / EASE_MARGIN } // easing back out
-      }
-      // 16-58%: Venus and the long empty stretch after it aren't built
-      // with a look-aim yet - straight ahead, same as before.
-      if (percent < 58) return { target: null, blend: 0 }
-      if (percent < 63) return { target: constellationsPos, blend: (percent - 58) / 5 } // easing toward the constellation field
-      if (percent < 67) return { target: constellationsPos, blend: 1 } // holding on the constellation field
-      // Ease-out finishes at 69% sharp, not a moment later - found by
-      // scrolling in fine steps (not just the usual 0.25% checkpoint
-      // resolution - this hid entirely between two of those sample
-      // points): right around 69.3%, the weave's arc-waypoint carries
-      // the camera almost directly OVERHEAD of the constellation
-      // field, which is the classic degenerate case for computing a
-      // look orientation (the "which way is right?" math breaks down
-      // looking nearly parallel to the world's up axis - confirmed
-      // directly, two consecutive very-close camera positions
-      // produced quaternions with a similarity of only -0.78 there,
-      // instead of the usual ~1.0). Finishing the release BEFORE that
-      // point, rather than holding through it, means nothing is even
-      // reading that unstable orientation when it happens - the
-      // camera has already fully let go and is aiming elsewhere.
-      if (percent < 69) return { target: constellationsPos, blend: 1 - (percent - 67) / 2 } // easing back out
-      // 69-71%: straight ahead again - this is exactly the stretch
-      // that includes the unstable near-overhead crossing described
-      // above, and nothing is aiming at anything here, so it doesn't
-      // matter at all.
-      if (percent < 71) return { target: null, blend: 0 }
-      if (percent < 73) return { target: asteroidsPos, blend: (percent - 71) / 2 } // easing toward the asteroids
-      // The hold below runs to 77%, not 76% - a fair way past the
-      // asteroids' own 74% stop. Here's why: as the camera's weave
-      // retracts after passing them, there's a moment (around 76.7-
-      // 76.8%) where the bearing TO the asteroids swings through
-      // almost exactly 180 degrees from "straight ahead" - the camera
-      // has flown far enough past them that looking at them means
-      // looking almost directly backward. Slerping is mathematically
-      // rock-solid at blend exactly 1 (it just returns the target
-      // orientation outright, no interpolation math involved) but
-      // becomes unstable interpolating PARTWAY toward an orientation
-      // that's nearly the exact opposite of "forward" - confirmed
-      // directly: with the hold ending at 76% (partway through easing
-      // back out right as this 180-degree crossing happened), the
-      // camera's quaternion similarity to the previous frame measured
-      // -0.35 at that exact point instead of the usual ~1.0. Keeping
-      // the hold running through that crossing point - so it happens
-      // at a clean blend of 1, not some partial blend mid-release -
-      // is what makes it safe.
-      if (percent < 77) return { target: asteroidsPos, blend: 1 } // holding on the asteroids
-      if (percent < 79) return { target: asteroidsPos, blend: 1 - (percent - 77) / 2 } // easing back out
-      // 79%: a brief straight-ahead gap before satellites - the weave
-      // above actually arrives at the satellite-opposite swing at 78%
-      // (a full percent before this look-aim even starts), so the
-      // risky crossover between the asteroid swing and the satellite
-      // swing is already finished and settled by the time anything
-      // starts looking at the satellites. That's on purpose: the
-      // crossover briefly measured as close as ~14 units to the
-      // satellite ring, but nothing is aiming at them yet when that
-      // happens, so it's never actually seen.
-      if (percent < 80) return { target: satellitesPos, blend: percent - 79 } // easing toward the satellites
-      if (percent < 81) return { target: satellitesPos, blend: 1 } // holding on the satellites
-      // Ease-out finishes at 82% sharp - matching exactly where
-      // Jupiter's OWN existing approach (unchanged from V4a) starts
-      // easing in. Neither window overlaps the other even for an
-      // instant, which is what keeps this a clean handoff rather than
-      // two look-aims fighting over the same frame.
-      if (percent < 82) return { target: satellitesPos, blend: 1 - (percent - 81) } // easing back out
-      if (percent < 84) return { target: jupiterPos, blend: (percent - 82) / 2 } // easing toward Jupiter
-      if (percent < 88) return { target: jupiterPos, blend: 1 } // holding on Jupiter
-      if (percent < 90) return { target: jupiterPos, blend: 1 - (percent - 88) / 2 } // easing back out
-      if (percent < 94) return { target: null, blend: 0 } // straight ahead again before Earth
-      if (percent < 96) return { target: earthPos, blend: (percent - 94) / 2 } // easing toward Earth
-      // 96-100%: holds on Earth all the way to the end of the journey
-      // instead of easing back out - there's no "next stop" to release
-      // toward, so it stays locked on the destination.
-      return { target: earthPos, blend: 1 }
+      // This point in the function is actually unreachable now that
+      // the final body is handled above, but is kept as a safe
+      // fallback in case bodies is ever empty or reordered.
+      const last = bodies[bodies.length - 1]
+      return { target: last.position, blend: 1 }
     }
 
     sceneApi.addUpdate(() => {
-      const aim = getAim(
-        progress.percent,
-        SATURN_POSITION,
-        MARS_POSITION,
-        CONSTELLATIONS_POSITION,
-        ASTEROIDS_POSITION,
-        SATELLITES_POSITION,
-        JUPITER_POSITION,
-        EARTH_POSITION,
-      )
+      const aim = getAim(progress.percent)
 
       if (aim.target) {
         // "If the camera were sitting exactly where it is right now,
@@ -572,10 +647,10 @@ export function init(camera) {
         // weave above) is different every frame too. During a park,
         // camera.position isn't changing at all (see the flat weave
         // hold above), so this naturally recomputes the EXACT SAME
-        // orientation every single frame too - a still position looking
-        // at a still target is, itself, a still orientation. That's
-        // what makes the hold genuinely frozen rather than just
-        // "close enough."
+        // orientation every single frame too - a still position
+        // looking at a still target is, itself, a still orientation.
+        // That's what makes the hold genuinely frozen rather than
+        // just "close enough."
         aimScratch.position.copy(camera.position)
         aimScratch.lookAt(aim.target)
 
@@ -583,19 +658,18 @@ export function init(camera) {
         // represent the EXACT SAME orientation. The blend below always
         // starts from "neutralOrientation," which is fixed at
         // identity - and the dot product of identity with any
-        // quaternion is just that quaternion's own w value. So as this
-        // body-facing orientation smoothly rotates past 180 degrees
-        // from straight-ahead (a real thing that happens here - the
-        // camera looks almost backward at one point during the
-        // asteroids' release), its w value smoothly crosses zero.
-        // That's a real, continuous rotation - but THREE's slerp
-        // picks its "shortest path" using that same dot product, so
-        // the exact moment w crosses zero, slerp flips which side it
-        // blends from, and the BLENDED result snaps hard even though
-        // neither the raw orientation nor the blend amount actually
-        // jumped. (Confirmed directly: the quaternion similarity
-        // between one frame and the next measured -0.35 at that exact
-        // point, instead of the ~1.0 every other frame showed.)
+        // quaternion is just that quaternion's own w value. If a
+        // body-facing orientation ever rotates past 180 degrees from
+        // straight-ahead (which can happen for a body the camera has
+        // traveled well past), its w value crosses zero. That's a
+        // real, continuous rotation - but THREE's slerp picks its
+        // "shortest path" using that same dot product, so the exact
+        // moment w crosses zero, slerp flips which side it blends
+        // from, and the BLENDED result snaps hard even though neither
+        // the raw orientation nor the blend amount actually jumped.
+        // This was confirmed directly in earlier testing (a
+        // frame-to-frame quaternion similarity of -0.35 at exactly
+        // this kind of crossing, instead of the usual ~1.0).
         //
         // The fix: always keep this orientation's w component
         // positive (flipping to its exact-equivalent negative when
@@ -627,5 +701,5 @@ export function init(camera) {
   }
 
   // Note: only the camera moves/looks here, other than the temporary
-  // placeholder markers built above.
+  // placeholder marker built above.
 }
