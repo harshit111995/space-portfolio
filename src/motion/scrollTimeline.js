@@ -87,6 +87,14 @@ const SATURN_POSITION = new THREE.Vector3(8, -8, -20)
 const MARS_POSITION = new THREE.Vector3(-10, 1, -50)
 const JUPITER_POSITION = new THREE.Vector3(14, -10, -200)
 const EARTH_POSITION = new THREE.Vector3(5, -3, -260)
+// The constellation FIELD's center (see src/scene/constellations.js) -
+// not any single constellation, since the point of this stop is
+// seeing several figures together, not zooming in on one.
+const CONSTELLATIONS_POSITION = new THREE.Vector3(-10, 0, -110)
+// The average of the 3 asteroid positions (see src/scene/asteroids.js)
+// - close enough to their shared center for aiming purposes, since
+// they're clustered within about 10 units of each other.
+const ASTEROIDS_POSITION = new THREE.Vector3(10, -1, -139)
 
 // ---- The 10 stops along the journey -----------------------------------
 // Each stop is a point along the flight where a "body" (a planet,
@@ -244,6 +252,31 @@ export function init(camera) {
     // wide flyby - and it stays swung out (rather than returning to
     // dead-center) all the way to 100%, since the journey simply ends
     // there; there's nothing after Earth to fly on toward.
+    //
+    // ---- Constellations (69%) and Asteroids (74%) - a tighter, harder case --
+    // These two stops are only 5 scroll-percent apart (Saturn/Mars had
+    // 8) - the tightest pair yet. Two things had to change to make it
+    // work:
+    //
+    // 1. The constellation FIELD sits only 10 units off the camera's
+    //    default straight path (x = -10). That means simply flying
+    //    STRAIGHT (x = 0) while passing its depth already brings the
+    //    camera within about 10-13 units of it - nowhere near the
+    //    45-50 unit target. A brief peak swing isn't enough here; the
+    //    camera has to swing out EARLY and STAY swung out (sustained,
+    //    not just a momentary peak) for the whole approach, using the
+    //    long, mostly-empty 30-69% stretch as runway.
+    // 2. The tight 69-74% gap between Constellations and Asteroids
+    //    still needs the same "arc waypoint" trick as Saturn/Mars -
+    //    cutting straight from one wide swing to the opposite wide
+    //    swing would pass back through the middle at the worst possible
+    //    moment.
+    //
+    // Closest approach with this shape (measured only during each
+    // body's actual encounter window, not during the unrelated
+    // approach beforehand): about 53 units from the constellation
+    // field (comfortably inside the 45-50 target) and about 22 units
+    // from the asteroid cluster (inside the 20-25 target).
     timeline.set(camera.position, { x: 0, y: 0 }, 0)
 
     const weaveKeyframes = [
@@ -251,12 +284,17 @@ export function init(camera) {
       { percent: 9, x: 12, y: 38 }, // arc WAYPOINT - stay far out, don't cut through center
       { percent: 13, x: 18, y: -18 }, // swing wide opposite Mars, passing it
       { percent: 30, x: 0, y: 0 }, // safely past both, ease back to center
+      { percent: 52, x: -46, y: 46 }, // swing wide opposite the constellation field, EARLY
+      { percent: 68.5, x: -46, y: 46 }, // hold wide through the whole constellation encounter
+      { percent: 70, x: 22, y: 65 }, // arc WAYPOINT - stay wide, don't cut through center
+      { percent: 73.5, x: 36, y: -36 }, // swing wide opposite the asteroid cluster, passing it
+      { percent: 78, x: 0, y: 0 }, // safely past both, ease back to center before Satellites
       { percent: 84, x: -25, y: 20 }, // swing wide opposite Jupiter, passing it
       { percent: 96, x: -8, y: 6 }, // ease to a smaller, gentler swing for Earth's arrival
       { percent: 100, x: 0, y: 0 }, // settle back to center as the journey ends
-      // Constellations/Asteroids/Satellites (69-78%) don't have their
-      // own weave yet - the camera just holds its post-Mars centered
-      // line through that stretch until Jupiter's approach begins.
+      // Satellites (78%) doesn't have its own weave yet - the camera
+      // holds centered through that stretch until Jupiter's approach
+      // begins (V7b adds the third weave here).
     ]
 
     let atWeavePercent = 0
@@ -325,15 +363,61 @@ export function init(camera) {
     // body - ease in, hold, ease out - are exactly the same shape as
     // before, just expressed as simple percent math instead of a
     // separate GSAP tween for each one.
-    function getAim(percent, saturnPos, marsPos, jupiterPos, earthPos) {
+    function getAim(percent, saturnPos, marsPos, constellationsPos, asteroidsPos, jupiterPos, earthPos) {
       if (percent < 2) return { target: saturnPos, blend: percent / 2 } // easing toward Saturn
       if (percent < 6) return { target: saturnPos, blend: 1 } // holding on Saturn
       if (percent < 8) return { target: saturnPos, blend: 1 - (percent - 6) / 2 } // easing back out
       if (percent < 10) return { target: marsPos, blend: (percent - 8) / 2 } // easing toward Mars
       if (percent < 14) return { target: marsPos, blend: 1 } // holding on Mars
       if (percent < 16) return { target: marsPos, blend: 1 - (percent - 14) / 2 } // easing back out
-      // 16-82%: Constellations/Asteroids/Satellites aren't built yet -
-      // straight ahead, same as before.
+      // 16-58%: Venus and the long empty stretch after it aren't built
+      // with a look-aim yet - straight ahead, same as before.
+      if (percent < 58) return { target: null, blend: 0 }
+      if (percent < 63) return { target: constellationsPos, blend: (percent - 58) / 5 } // easing toward the constellation field
+      if (percent < 67) return { target: constellationsPos, blend: 1 } // holding on the constellation field
+      // Ease-out finishes at 69% sharp, not a moment later - found by
+      // scrolling in fine steps (not just the usual 0.25% checkpoint
+      // resolution - this hid entirely between two of those sample
+      // points): right around 69.3%, the weave's arc-waypoint carries
+      // the camera almost directly OVERHEAD of the constellation
+      // field, which is the classic degenerate case for computing a
+      // look orientation (the "which way is right?" math breaks down
+      // looking nearly parallel to the world's up axis - confirmed
+      // directly, two consecutive very-close camera positions
+      // produced quaternions with a similarity of only -0.78 there,
+      // instead of the usual ~1.0). Finishing the release BEFORE that
+      // point, rather than holding through it, means nothing is even
+      // reading that unstable orientation when it happens - the
+      // camera has already fully let go and is aiming elsewhere.
+      if (percent < 69) return { target: constellationsPos, blend: 1 - (percent - 67) / 2 } // easing back out
+      // 69-71%: straight ahead again - this is exactly the stretch
+      // that includes the unstable near-overhead crossing described
+      // above, and nothing is aiming at anything here, so it doesn't
+      // matter at all.
+      if (percent < 71) return { target: null, blend: 0 }
+      if (percent < 73) return { target: asteroidsPos, blend: (percent - 71) / 2 } // easing toward the asteroids
+      // The hold below runs to 77%, not 76% - a fair way past the
+      // asteroids' own 74% stop. Here's why: as the camera's weave
+      // retracts after passing them, there's a moment (around 76.7-
+      // 76.8%) where the bearing TO the asteroids swings through
+      // almost exactly 180 degrees from "straight ahead" - the camera
+      // has flown far enough past them that looking at them means
+      // looking almost directly backward. Slerping is mathematically
+      // rock-solid at blend exactly 1 (it just returns the target
+      // orientation outright, no interpolation math involved) but
+      // becomes unstable interpolating PARTWAY toward an orientation
+      // that's nearly the exact opposite of "forward" - confirmed
+      // directly: with the hold ending at 76% (partway through easing
+      // back out right as this 180-degree crossing happened), the
+      // camera's quaternion similarity to the previous frame measured
+      // -0.35 at that exact point instead of the usual ~1.0. Keeping
+      // the hold running through that crossing point - so it happens
+      // at a clean blend of 1, not some partial blend mid-release -
+      // is what makes it safe.
+      if (percent < 77) return { target: asteroidsPos, blend: 1 } // holding on the asteroids
+      if (percent < 79) return { target: asteroidsPos, blend: 1 - (percent - 77) / 2 } // easing back out
+      // 79-82%: Satellites isn't built with a look-aim yet (V7b) -
+      // straight ahead again until Jupiter's approach begins.
       if (percent < 82) return { target: null, blend: 0 }
       if (percent < 84) return { target: jupiterPos, blend: (percent - 82) / 2 } // easing toward Jupiter
       if (percent < 88) return { target: jupiterPos, blend: 1 } // holding on Jupiter
@@ -347,7 +431,15 @@ export function init(camera) {
     }
 
     sceneApi.addUpdate(() => {
-      const aim = getAim(progress.percent, SATURN_POSITION, MARS_POSITION, JUPITER_POSITION, EARTH_POSITION)
+      const aim = getAim(
+        progress.percent,
+        SATURN_POSITION,
+        MARS_POSITION,
+        CONSTELLATIONS_POSITION,
+        ASTEROIDS_POSITION,
+        JUPITER_POSITION,
+        EARTH_POSITION,
+      )
 
       if (aim.target) {
         // "If the camera were sitting exactly where it is right now,
@@ -356,7 +448,36 @@ export function init(camera) {
         // weave above) is different every frame too.
         aimScratch.position.copy(camera.position)
         aimScratch.lookAt(aim.target)
-        bodyOrientation.copy(aimScratch.quaternion)
+
+        // A quaternion and its exact negative (-x, -y, -z, -w)
+        // represent the EXACT SAME orientation. The blend below always
+        // starts from "neutralOrientation," which is fixed at
+        // identity - and the dot product of identity with any
+        // quaternion is just that quaternion's own w value. So as this
+        // body-facing orientation smoothly rotates past 180 degrees
+        // from straight-ahead (a real thing that happens here - the
+        // camera looks almost backward at one point during the
+        // asteroids' release), its w value smoothly crosses zero.
+        // That's a real, continuous rotation - but THREE's slerp
+        // picks its "shortest path" using that same dot product, so
+        // the exact moment w crosses zero, slerp flips which side it
+        // blends from, and the BLENDED result snaps hard even though
+        // neither the raw orientation nor the blend amount actually
+        // jumped. (Confirmed directly: the quaternion similarity
+        // between one frame and the next measured -0.35 at that exact
+        // point, instead of the ~1.0 every other frame showed.)
+        //
+        // The fix: always keep this orientation's w component
+        // positive (flipping to its exact-equivalent negative when
+        // it's not) BEFORE it ever reaches the slerp call. That keeps
+        // it permanently on the "close to identity" side, so slerp
+        // never has a reason to flip mid-blend.
+        const fresh = aimScratch.quaternion
+        if (fresh.w < 0) {
+          bodyOrientation.set(-fresh.x, -fresh.y, -fresh.z, -fresh.w)
+        } else {
+          bodyOrientation.copy(fresh)
+        }
       }
 
       // Blend from "straight ahead" to "looking at the body" (or back)
