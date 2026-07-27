@@ -30,7 +30,11 @@ export function createPlanets(sceneApi, manager) {
   // v2 spine: repositioned onto the new 12%-stop marker (z=-50) from
   // src/motion/scrollTimeline.js, replacing that wireframe placeholder
   // with this real, already-textured planet.
-  mars.position.set(10, 1, -50)
+  //
+  // Moved from +x to -x (mirrored) for the S-curve weave test: Saturn
+  // sits at +x, so Mars needs to sit on the opposite side to prove the
+  // camera's weave works swinging BOTH directions, not just one.
+  mars.position.set(-10, 1, -50)
   sceneApi.scene.add(mars)
 
   // ---- Venus -------------------------------------------------------------

@@ -38,6 +38,16 @@ export function createSaturn(sceneApi, manager) {
   // sideways than this to gain even more clearance would push it
   // outside the camera's view entirely for the whole approach, rather
   // than just briefly - this was checked directly, not guessed.
+  //
+  // A near-axis position was tested as an alternative (pulling Saturn
+  // in to roughly (4, -3, -22)) to see if the camera's own banking
+  // could keep it framed longer. It did not work: pulling the body
+  // that close to the camera's straight path means the camera flies
+  // almost THROUGH it as their z-depths cross, so instead of a brief
+  // off-frame flash we got a giant, clipping close-up for several
+  // percent of scroll before Saturn vanished behind the camera
+  // entirely. This wider, further-out position is the confirmed
+  // better tradeoff of the two.
   saturn.position.set(8, -8, -20)
   sceneApi.scene.add(saturn)
 

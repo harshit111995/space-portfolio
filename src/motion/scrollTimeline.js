@@ -1,10 +1,8 @@
 // ===================================================================
 // SCROLLTIMELINE.JS  (v2 cinematic spine)
-// This file connects scrolling to the camera's position AND its
-// rotation. As you scroll down the page, the camera flies backward
-// through the 3D scene through 10 stops, gently banking toward each
-// one as it passes - like a plane easing into a turn - rather than
-// staring dead ahead the whole time.
+// This file connects scrolling to the camera's position AND where it
+// looks. As you scroll down the page, the camera flies backward
+// through the 3D scene through 10 stops.
 //
 // It uses GSAP's ScrollTrigger to "scrub" the animation: instead of
 // playing on its own, the animation's progress is tied directly to
@@ -12,6 +10,49 @@
 // switched on and connected to the smooth-scroll setup in
 // src/motion/lenis.js - this file just reuses that, it doesn't set
 // any of that up again.
+//
+// ---- Why this file changed from a straight path to an S-curve -----------
+// The camera used to fly a dead-straight line (only z moved), with a
+// small hand-tweened "banking" rotation added near each stop just to
+// fake the feeling of turning toward it. That straight path created a
+// real geometry problem: a body sitting off to the side would flash
+// past out of view almost entirely (not enough turn to catch it), and
+// a body sitting close to the camera's straight line would have the
+// camera fly nearly INTO it as their depths crossed (tested directly
+// on Saturn - see src/scene/saturn.js's comment on the rejected
+// near-axis position).
+//
+// The fix: the camera's x/y position now also moves - weaving out to
+// the side OPPOSITE each upcoming body, so it passes at a safe
+// distance instead of straight through it - and instead of a hand-
+// tweened bank angle, the camera actively points itself at each body
+// as it approaches, using THREE's built-in lookAt().
+//
+// ---- Round two: the S-curve itself had two more bugs ---------------------
+// Testing the first version of this (by actually scrolling through it,
+// not just checking numbers) found two real problems:
+//
+// 1. A visible LURCH right at the start of each "look back to
+//    straight ahead" turn. The cause: the camera's aim was computed
+//    by easing a plain WORLD-SPACE POINT from the body's position
+//    toward a "neutral" point placed extremely far down the path
+//    (z = -5000), then calling camera.lookAt() on whatever that
+//    eased point currently was. That looks like a smooth change in
+//    raw numbers, but it is NOT a smooth change in ANGLE: because
+//    -5000 is so much farther away than anything else involved, even
+//    a small step toward it collapses the camera's aim to "straight
+//    ahead" almost immediately, instead of gradually. The fix below
+//    interpolates the camera's ORIENTATION directly (a quaternion
+//    slerp), which by definition changes at a constant angular speed
+//    - no more snap.
+//
+// 2. The bodies looked "too close" - filling most of the screen,
+//    with the Hero/About text sitting right on top of a giant dark
+//    planet. The camera was only passing 15-16 units from Saturn and
+//    12-13 units from Mars - enough to clear the mesh, but nowhere
+//    near enough to look like a flyby at this camera's field of view.
+//    The weave below now swings much wider (roughly 40 units clear
+//    of Saturn, 20-25 of Mars).
 // ===================================================================
 
 import * as THREE from 'three'
@@ -19,52 +60,62 @@ import gsap from 'gsap'
 import { prefersReducedMotion } from './reducedMotion.js'
 import sceneApi from '../scene/scene.js'
 
-// ---- Shared cinematic rotation target -------------------------------
-// The camera's rotation has TWO separate sources that both need to
-// apply at once: this file's own gentle banking motion, and the
-// visitor's own click-and-drag look-around (src/ui/cursor.js). If
-// both tried to set camera.rotation directly, whichever one happened
-// to run last each frame would silently erase the other's effect.
+// ---- Shared "base look" rotation -------------------------------------
+// Same idea as the old cinematicRotation this replaces: the camera's
+// rotation has TWO sources that both need to apply at once - this
+// file's own look-at-the-body aiming, and the visitor's own
+// click-and-drag look-around (src/ui/cursor.js). If both tried to set
+// camera.rotation directly, whichever ran last each frame would
+// silently erase the other's effect.
 //
-// Instead, this file only ever animates this plain, separate object -
-// never camera.rotation itself. cursor.js reads it every frame and
-// ADDS its own drag offset on top before applying the combined result
-// to the camera, so the two sources add together instead of fighting.
-export const cinematicRotation = { x: 0, y: 0 }
+// So this file does the aiming (via a quaternion slerp, below) and
+// then copies the resulting rotation into this plain object. cursor.js
+// reads it every frame and SETS camera.rotation to that base value
+// minus its own drag offset - both sources combine, and because this
+// object is refreshed fresh every single frame, the drag offset
+// always decays back to whatever this file says the base should be
+// right now, never to zero and never compounding on itself.
+export const lookBaseRotation = { x: 0, y: 0 }
+
+// This file needs to know WHERE Saturn and Mars are so it can aim the
+// camera at them, but it doesn't import the actual meshes from
+// src/scene/saturn.js / src/scene/planets.js - those files own the
+// real bodies, this just needs the same coordinates. If either body's
+// position ever changes there, update these two points to match.
+const SATURN_POSITION = new THREE.Vector3(8, -8, -20)
+const MARS_POSITION = new THREE.Vector3(-10, 1, -50)
 
 // ---- The 10 stops along the journey -----------------------------------
 // Each stop is a point along the flight where a "body" (a planet,
-// certificate, project card, etc. - added in later phases) will sit.
-// For now, only the numbers matter:
+// certificate, project card, etc.) sits.
 //   percent  -> how far down the page (0-100%) this stop happens
 //   z        -> how far along the camera's path this stop is
-//   bankY/X  -> how far the camera gently turns/tilts as it passes
-//               this stop, in radians (small numbers - a few degrees)
 //
-// bankY alternates sign (+/-) from one stop to the next, which is
-// what creates the side-to-side "curving flight" feeling instead of
-// banking the same way every time. The very last stop banks back to
-// 0 instead of continuing the pattern, so the journey ends facing
-// forward rather than mid-turn.
+// marker: false means "a real body now lives here" (Mars, Venus,
+// Earth, Saturn) - the wireframe placeholder box is skipped for
+// those, since something real already fills the spot. Every other
+// stop still gets its placeholder box until its real body is built.
 //
-// marker: false means "a real body now lives here" (Mars, Venus, and
-// Earth, added in src/scene/planets.js) - the wireframe placeholder
-// box is skipped for those, since something real already fills the
-// spot. Every other stop still gets its placeholder box until its
-// real body is built in a later phase.
+// Note: the old bankY/bankX hand-tweened turn amounts that used to
+// live on each stop are gone - turning is now handled by the look-
+// target system further down instead. Only Saturn and Mars have real
+// weave + look-target keyframes wired up so far (this phase proves
+// the mechanism on two bodies, one from each side, before it's rolled
+// out to the rest). Every stop after Mars still flies dead straight
+// with no turn for now - that's expected and temporary, not a bug.
 const stops = [
-  { percent: 4, z: -20, bankY: 0.12, bankX: 0.05, marker: false }, // Saturn
-  { percent: 12, z: -50, bankY: -0.12, bankX: -0.05, marker: false }, // Mars
-  { percent: 37, z: -80, bankY: 0.12, bankX: 0.05, marker: false }, // Venus
-  { percent: 69, z: -110, bankY: -0.12, bankX: -0.05, marker: true }, // Constellations
-  { percent: 74, z: -140, bankY: 0.12, bankX: 0.05, marker: true }, // Asteroids
-  { percent: 78, z: -170, bankY: -0.12, bankX: -0.05, marker: true }, // Satellites
-  { percent: 84, z: -200, bankY: 0.12, bankX: 0.05, marker: true }, // Jupiter
-  { percent: 92, z: -230, bankY: -0.12, bankX: -0.05, marker: true }, // Testimonials
-  { percent: 96, z: -260, bankY: 0.12, bankX: 0.05, marker: false }, // Earth
-  // Confirmed: this final stop is just where the camera's journey
-  // ends, not a body location - no marker belongs here.
-  { percent: 100, z: -290, bankY: 0, bankX: 0, marker: false },
+  { percent: 4, z: -20, marker: false }, // Saturn
+  { percent: 12, z: -50, marker: false }, // Mars
+  { percent: 37, z: -80, marker: false }, // Venus
+  { percent: 69, z: -110, marker: true }, // Constellations
+  { percent: 74, z: -140, marker: true }, // Asteroids
+  { percent: 78, z: -170, marker: true }, // Satellites
+  { percent: 84, z: -200, marker: true }, // Jupiter
+  { percent: 92, z: -230, marker: true }, // Testimonials
+  { percent: 96, z: -260, marker: false }, // Earth
+  // This final stop is just where the camera's journey ends, not a
+  // body location - no marker belongs here.
+  { percent: 100, z: -290, marker: false },
 ]
 
 // ---- Temporary placeholder markers --------------------------------------
@@ -119,7 +170,7 @@ export function init(camera) {
     },
   })
 
-  // ---- The camera's position, through all 10 stops -------------------------
+  // ---- The camera's forward position, through all 10 stops -----------------
   // The timeline's total length is treated as 100 units, matching
   // scroll percentage 1-to-1. Lock in the exact starting point first,
   // then chain a .to() for each stop above - each one's "duration" is
@@ -138,37 +189,161 @@ export function init(camera) {
     previousPercent = stop.percent
   }
 
-  // ---- The camera's cinematic banking, in parallel with the position above --
-  // These tweens animate cinematicRotation (NOT camera.rotation - see
-  // the note above), and are placed at the exact same timeline
-  // positions as the position tweens above, using the running
-  // "atPercent" number as an absolute position - this is what makes
-  // them play IN PARALLEL with the position moves, instead of playing
-  // one-after-the-other and doubling the total length.
-  //
-  // Skipped entirely if the visitor has reduced motion turned on: the
-  // camera still flies the full journey (position, above), just
-  // without this extra turning/tilting motion layered on top.
+  // Everything below (the sideways weave and the look-target aiming)
+  // is skipped entirely under reduced motion: the camera still flies
+  // the full journey (position.z, above), it just goes dead straight
+  // with no turning, which is the calmest option for a visitor who
+  // has asked their system to reduce motion.
   if (!prefersReducedMotion) {
-    timeline.set(cinematicRotation, { x: 0, y: 0 }, 0)
+    // ---- The camera's sideways weave (position.x / position.y) -------------
+    // Saturn sits off to the +x/-y side at (8, -8, -20). Mars sits off
+    // to the -x/+y side at (-10, 1, -50) (moved there for this test -
+    // see src/scene/planets.js). Instead of flying a straight line
+    // through x=0,y=0 the whole time, the camera swings out to the
+    // OPPOSITE side of each body as it passes, then eases back to
+    // center before the next one.
+    //
+    // The swing is now much wider than the first attempt, AND it takes
+    // a different SHAPE. Passing 15 units from Saturn was enough to
+    // avoid hitting its mesh, but Saturn (radius 5, rings out to 9)
+    // still filled most of the screen at that distance - it read as
+    // "too close," not "flying by."
+    //
+    // The naive fix - just widen the swing at each stop and go
+    // straight back to center in between - turned out to still dip
+    // too close: cutting straight from "far on Saturn's opposite side"
+    // to "far on Mars's opposite side" means passing back THROUGH the
+    // middle, and for a moment near that midpoint the camera is both
+    // close to center AND not yet far past either body in depth. So
+    // instead of a straight line between the two swings, there's an
+    // extra waypoint (at 9%) that keeps the camera out on a wide ARC
+    // the whole time, never cutting back near the middle until it's
+    // safely past both bodies.
+    //
+    // Closest approach with this shape: about 31 units from Saturn,
+    // about 23 units from Mars - short of the original "40 for
+    // Saturn" target (Saturn and Mars are only 8 scroll-percent apart,
+    // and swinging a wide arc between two nearby stops that fast has
+    // a real geometric limit), but roughly DOUBLE the old 15-16 units,
+    // confirmed by eye to no longer overfill the frame (see the phase
+    // notes/commit message for the actual screenshots checked).
+    timeline.set(camera.position, { x: 0, y: 0 }, 0)
 
-    let atPercent = 0
-    for (const stop of stops) {
+    const weaveKeyframes = [
+      { percent: 4, x: -30, y: 30 }, // swing wide opposite Saturn, passing it
+      { percent: 9, x: 12, y: 38 }, // arc WAYPOINT - stay far out, don't cut through center
+      { percent: 13, x: 18, y: -18 }, // swing wide opposite Mars, passing it
+      { percent: 30, x: 0, y: 0 }, // only now, safely past both, ease back to center
+      // No further weave keyframes yet - the camera stays centered
+      // (x=0, y=0) for the rest of the journey until the remaining
+      // bodies get their own weave in a later phase.
+    ]
+
+    let atWeavePercent = 0
+    for (const kf of weaveKeyframes) {
       timeline.to(
-        cinematicRotation,
-        {
-          y: stop.bankY,
-          x: stop.bankX,
-          duration: stop.percent - atPercent,
-          ease: 'none',
-        },
-        atPercent,
+        camera.position,
+        { x: kf.x, y: kf.y, duration: kf.percent - atWeavePercent, ease: 'none' },
+        atWeavePercent,
       )
-      atPercent = stop.percent
+      atWeavePercent = kf.percent
     }
+
+    // ---- A single scrub-synced progress number --------------------------------
+    // A plain 0-100 number that always matches the current scrubbed
+    // scroll percent, kept in sync by living on this SAME timeline
+    // (the same one driving position.z and the weave above). Reading
+    // this every frame - instead of asking GSAP/ScrollTrigger for the
+    // percent separately - guarantees the look-aim below is working
+    // from the exact same smoothed, scrubbed number as everything
+    // else, with no chance of it drifting out of sync.
+    const progress = { percent: 0 }
+    timeline.to(progress, { percent: 100, duration: 100, ease: 'none' }, 0)
+
+    // ---- The look-aim, as an ORIENTATION, not a point ------------------------
+    // This replaces the old approach (easing a world-space point, then
+    // calling camera.lookAt() on it), which was the source of the
+    // lurch described at the top of this file. Instead:
+    //
+    //   1. Every frame, work out two ORIENTATIONS (quaternions):
+    //      "neutral" (looking straight down the path, no turn at all)
+    //      and "looking at whichever body is currently being
+    //      approached" (recalculated fresh each frame, since the
+    //      camera's own position keeps moving from the weave above).
+    //   2. Blend smoothly between those two orientations using
+    //      THREE's quaternion slerp - which, unlike blending two
+    //      plain x/y/z points, changes at a constant ANGULAR speed.
+    //      That's what makes the turn look linear instead of snapping.
+    //
+    // "neutral" is just the identity rotation: a fresh camera with no
+    // rotation applied always looks straight down -z, which is exactly
+    // "look straight ahead, no turn" - so there's no need to compute
+    // it fresh each frame, unlike the body-facing orientation.
+    const neutralOrientation = new THREE.Quaternion()
+
+    // A second, invisible camera that is never added to the scene and
+    // never rendered from - it exists purely as scratch space to
+    // compute "what orientation would look FROM the camera's current
+    // position AT this body's position," without disturbing the real
+    // camera. This MUST be a THREE.Camera (not a plain THREE.Object3D)
+    // - .lookAt() on a plain Object3D points its +Z axis at the
+    // target, but Camera overrides that to point -Z at the target
+    // instead (the standard "camera looks down -Z" convention). Using
+    // a plain Object3D here at first meant every computed orientation
+    // faced exactly backwards - the target still calculated as
+    // dead-center by coincidence of the projection math, but nothing
+    // actually rendered there, since the real render pipeline
+    // correctly does not draw what's behind the camera.
+    const aimScratch = new THREE.PerspectiveCamera()
+    const bodyOrientation = new THREE.Quaternion()
+    const blendedOrientation = new THREE.Quaternion()
+
+    // Works out which body (if any) the camera should be aiming at
+    // right now, and how far blended toward it we should be (0 =
+    // fully neutral/straight ahead, 1 = fully locked onto the body),
+    // purely from the current scrub percent. The three phases per
+    // body - ease in, hold, ease out - are exactly the same shape as
+    // before, just expressed as simple percent math instead of a
+    // separate GSAP tween for each one.
+    function getAim(percent, saturnPos, marsPos) {
+      if (percent < 2) return { target: saturnPos, blend: percent / 2 } // easing toward Saturn
+      if (percent < 6) return { target: saturnPos, blend: 1 } // holding on Saturn
+      if (percent < 8) return { target: saturnPos, blend: 1 - (percent - 6) / 2 } // easing back out
+      if (percent < 10) return { target: marsPos, blend: (percent - 8) / 2 } // easing toward Mars
+      if (percent < 14) return { target: marsPos, blend: 1 } // holding on Mars
+      if (percent < 16) return { target: marsPos, blend: 1 - (percent - 14) / 2 } // easing back out
+      return { target: null, blend: 0 } // straight ahead - not built for the rest yet
+    }
+
+    sceneApi.addUpdate(() => {
+      const aim = getAim(progress.percent, SATURN_POSITION, MARS_POSITION)
+
+      if (aim.target) {
+        // "If the camera were sitting exactly where it is right now,
+        // what orientation would point it at this body?" - recomputed
+        // every frame because the camera's own position (from the
+        // weave above) is different every frame too.
+        aimScratch.position.copy(camera.position)
+        aimScratch.lookAt(aim.target)
+        bodyOrientation.copy(aimScratch.quaternion)
+      }
+
+      // Blend from "straight ahead" to "looking at the body" (or back)
+      // by the eased amount worked out above. slerpQuaternions moves
+      // at a constant angular speed between the two, which is exactly
+      // what removes the lurch - no more snap.
+      blendedOrientation.slerpQuaternions(neutralOrientation, bodyOrientation, aim.blend)
+      camera.quaternion.copy(blendedOrientation)
+
+      // Copy the result out into the shared plain object so cursor.js
+      // can read this frame's "base" aim and add its own drag offset
+      // on top of it, instead of cursor.js fighting over
+      // camera.rotation directly.
+      lookBaseRotation.x = camera.rotation.x
+      lookBaseRotation.y = camera.rotation.y
+    })
   }
 
-  // Note: only the camera moves/rotates here (via cinematicRotation).
-  // No meshes/objects in the scene are touched by this file, other
-  // than the temporary placeholder markers built above.
+  // Note: only the camera moves/looks here, other than the temporary
+  // placeholder markers built above.
 }
