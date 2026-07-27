@@ -216,15 +216,32 @@
 
       <div class="pin-runway" aria-hidden="true"></div>
 
-      <!-- 6. ASTEROIDS - Education. -->
+      <!-- 6. ASTEROIDS - Education. The panel below starts invisible and
+           shifted down slightly (see the ".education-panel" rule in
+           src/styles/content.css) - src/motion/educationReveal.js
+           fades and lifts it into place the moment this stop actually
+           becomes active, the same pattern used for the Moon's stats
+           and the testimonials cards. -->
       <div id="pin-asteroids" class="pin-marker">
         <div class="pin-content">
           <h2>Education</h2>
-          <p>
-            Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut
-            odit aut fugit, sed quia consequuntur magni dolores eos qui
-            ratione voluptatem sequi nesciunt.
-          </p>
+          <div class="education-panel">
+            <div class="education-entry">
+              <span class="education-institution">Mumbai University</span>
+              <span class="education-qualification">BA, Sociology, Advertising &amp; Psychology</span>
+              <span class="education-dates">2018–2021</span>
+            </div>
+            <div class="education-entry">
+              <span class="education-institution">Mumbai University</span>
+              <span class="education-qualification">BE (Engineering)</span>
+              <span class="education-dates">2014–2018</span>
+            </div>
+            <div class="education-entry">
+              <span class="education-institution">Alison</span>
+              <span class="education-qualification">Diploma, Consumer Psychology</span>
+              <span class="education-dates">2021</span>
+            </div>
+          </div>
         </div>
       </div>
 

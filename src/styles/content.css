@@ -200,3 +200,69 @@
   font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.6);
 }
+
+/* ---- The Education panel (3 entries) -------------------------------------
+   Same frosted-glass card idea as the testimonials above, just 3 of
+   them instead of 2, each holding one school/course. flex-wrap again
+   is what stacks these into a single column on a narrow/mobile screen
+   once there isn't room to fit them side by side. */
+.education-panel {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.25rem;
+  max-width: 900px;
+}
+
+.education-entry {
+  display: flex;
+  flex-direction: column;
+
+  /* "grow, shrink, start-at-220px" - three of these side by side add
+     up to more than a phone screen is wide, so the browser wraps them
+     onto their own lines, one per row, once the screen gets too
+     narrow to fit them all. */
+  flex: 1 1 220px;
+  max-width: 260px;
+  padding: 1.25rem 1.5rem;
+  border-radius: 16px;
+  text-align: left;
+
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+
+  /* Starting, hidden state for the reveal animation - see
+     src/motion/educationReveal.js, same pattern as the testimonial
+     cards use. Under reduced motion, that file skips the animation
+     and jumps these two values straight to their finished state. */
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+/* The institution/qualification/dates lines are plain <span>s (see
+   index.html) rather than separate paragraphs, stacked here by
+   .education-entry's own flex-direction: column above - spans don't
+   normally stack like that on their own, but any element placed
+   inside a flex container automatically behaves like a block for
+   layout purposes, so this works without needing to change them to
+   <p> or <div> tags. */
+.education-institution {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.education-qualification {
+  margin-top: 0.35rem;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.education-dates {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.55);
+}
