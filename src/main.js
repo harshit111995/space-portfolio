@@ -25,6 +25,7 @@ import { initLoader } from './ui/loader.js'
 import { initAudio } from './ui/audio.js'
 import { initPortraitParallax } from './ui/portrait.js'
 import { initStatsCounter } from './motion/statsCounter.js'
+import { initTestimonialsReveal } from './motion/testimonialsReveal.js'
 
 // Importing scene.js above runs its setup code right away: it builds
 // the 3D scene, camera, lights, and starts the animation loop that
@@ -111,3 +112,7 @@ initPortraitParallax()
 // Make the 5 headline numbers on the About/Moon stop count up from 0
 // once the visitor actually arrives there.
 initStatsCounter()
+
+// Fade and lift the two testimonial quote cards into place once the
+// visitor actually arrives at the testimonials stop.
+initTestimonialsReveal()

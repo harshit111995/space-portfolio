@@ -262,15 +262,49 @@
       <!-- 9. TESTIMONIALS - no real 3D body built for this stop yet, so
            the camera parks on a wireframe placeholder box instead (see
            addPlaceholderMarkers() in src/motion/scrollTimeline.js) -
-           that box is expected to be there for now, not a bug. -->
+           that box is expected to be there for now, not a bug.
+
+           The two quote cards below start invisible and shifted down
+           slightly (see the ".testimonial-card" rule in
+           src/styles/content.css) - src/motion/testimonialsReveal.js
+           fades and lifts them into place the moment this stop
+           actually becomes active, instead of them just being visible
+           from the very start of the page. -->
       <div id="pin-testimonials" class="pin-marker">
         <div class="pin-content">
           <h2>Testimonials</h2>
-          <p>
-            Quis autem vel eum iure reprehenderit qui in ea voluptate
-            velit esse quam nihil molestiae consequatur, vel illum qui
-            dolorem eum fugiat quo voluptas nulla pariatur.
-          </p>
+          <div class="testimonials-row">
+            <blockquote class="testimonial-card">
+              <p class="testimonial-quote">
+                "One of the strongest adtech and programmatic specialists
+                I've come across. His technical knowledge is exceptional,
+                but what really stands out is his ability to simplify
+                complex concepts. Diligent, knowledgeable, commercially
+                aware and constantly looking to improve."
+              </p>
+              <footer class="testimonial-attribution">
+                <span class="testimonial-name">Kurtis Spencer</span>
+                <span class="testimonial-title"
+                  >Ex-Revolut · Experiential Marketing &amp; Business
+                  Growth, GCC &amp; EU</span
+                >
+              </footer>
+            </blockquote>
+
+            <blockquote class="testimonial-card">
+              <p class="testimonial-quote">
+                "Harshit brings a strong and practical understanding of
+                pDOOH, combined with an impressive ability to move fast
+                and execute with precision. His approach is consistently
+                client-centric, thoughtful, and results-driven — a real
+                pleasure to work with."
+              </p>
+              <footer class="testimonial-attribution">
+                <span class="testimonial-name">Mélissa Cecilie-Desfontaines</span>
+                <span class="testimonial-title">International Sales Manager, Displayce</span>
+              </footer>
+            </blockquote>
+          </div>
         </div>
       </div>
 

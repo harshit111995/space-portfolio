@@ -126,3 +126,77 @@
   color: rgba(255, 255, 255, 0.6);
   text-align: center;
 }
+
+/* ---- The two testimonial quote cards -------------------------------------
+   Same frosted-glass look as .stats-row above (faint tint + blur +
+   thin border), just applied to two separate cards side by side
+   instead of one shared strip. flex-wrap is what stacks them one
+   above the other on a narrow/mobile screen instead of squeezing them
+   too narrow to read - see ".testimonial-card" below for the exact
+   width rule that controls when that stacking kicks in. */
+.testimonials-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+  max-width: 900px;
+}
+
+.testimonial-card {
+  /* "grow, shrink, start-at-340px" - two of these side by side add up
+     to more than most phone screens are wide, so the browser has no
+     choice but to wrap the second one onto its own line below the
+     first once the screen gets too narrow to fit both. */
+  flex: 1 1 340px;
+  max-width: 400px;
+  padding: 1.5rem 1.75rem;
+  border-radius: 18px;
+
+  /* Quotes read better left-aligned than centered - this overrides
+     the centered text that every stop's ".pin-content" sets by
+     default (see base.css). */
+  text-align: left;
+
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+
+  /* Starting, hidden state for the reveal animation - see
+     src/motion/testimonialsReveal.js. Plain opacity/transform here,
+     with no CSS transition - the JS animation smoothly changes these
+     same two properties itself, frame by frame, so a CSS transition
+     running at the same time would just fight with it. Under reduced
+     motion, that same file skips the animation and jumps these two
+     values straight to their finished state instead. */
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+/* blockquote has its own default browser margin, already zeroed out
+   by the global reset at the top of base.css - nothing extra needed
+   here for that. */
+.testimonial-quote {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 1rem;
+}
+
+.testimonial-attribution {
+  display: flex;
+  flex-direction: column;
+}
+
+.testimonial-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.testimonial-title {
+  margin-top: 0.15rem;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+}
