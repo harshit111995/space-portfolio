@@ -54,11 +54,12 @@ createNebula(scene, manager)
 // Build Mars, Venus, and Earth (with its clouds) along the camera's path.
 const { mars, venus, earth } = createPlanets(scene, manager)
 
-// Make each planet hoverable: moving the mouse over one shows its
-// matching HTML panel and switches the cursor to a pointer.
-registerTarget(mars, 'panel-experience')
-registerTarget(venus, 'panel-casestudies')
-registerTarget(earth, 'panel-contact')
+// v2: the old v1 single hover-panel-per-planet behavior is retired -
+// a scroll-card system replaces it in a later phase. Commented out
+// (rather than deleted) so it's easy to see what used to be here.
+// registerTarget(mars, 'panel-experience')
+// registerTarget(venus, 'panel-casestudies')
+// registerTarget(earth, 'panel-contact')
 initRaycaster(scene.camera)
 
 // Hook up scrolling so it drives the camera's journey through space.

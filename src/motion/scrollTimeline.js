@@ -46,26 +46,31 @@ export const cinematicRotation = { x: 0, y: 0 }
 // banking the same way every time. The very last stop banks back to
 // 0 instead of continuing the pattern, so the journey ends facing
 // forward rather than mid-turn.
+//
+// marker: false means "a real body now lives here" (Mars, Venus, and
+// Earth, added in src/scene/planets.js) - the wireframe placeholder
+// box is skipped for those, since something real already fills the
+// spot. Every other stop still gets its placeholder box until its
+// real body is built in a later phase.
 const stops = [
-  { percent: 4, z: -20, bankY: 0.12, bankX: 0.05 },
-  { percent: 12, z: -50, bankY: -0.12, bankX: -0.05 },
-  { percent: 37, z: -80, bankY: 0.12, bankX: 0.05 },
-  { percent: 69, z: -110, bankY: -0.12, bankX: -0.05 },
-  { percent: 74, z: -140, bankY: 0.12, bankX: 0.05 },
-  { percent: 78, z: -170, bankY: -0.12, bankX: -0.05 },
-  { percent: 84, z: -200, bankY: 0.12, bankX: 0.05 },
-  { percent: 92, z: -230, bankY: -0.12, bankX: -0.05 },
-  { percent: 96, z: -260, bankY: 0.12, bankX: 0.05 },
-  { percent: 100, z: -290, bankY: 0, bankX: 0 },
+  { percent: 4, z: -20, bankY: 0.12, bankX: 0.05, marker: true }, // Saturn (not yet built)
+  { percent: 12, z: -50, bankY: -0.12, bankX: -0.05, marker: false }, // Mars
+  { percent: 37, z: -80, bankY: 0.12, bankX: 0.05, marker: false }, // Venus
+  { percent: 69, z: -110, bankY: -0.12, bankX: -0.05, marker: true }, // Constellations
+  { percent: 74, z: -140, bankY: 0.12, bankX: 0.05, marker: true }, // Asteroids
+  { percent: 78, z: -170, bankY: -0.12, bankX: -0.05, marker: true }, // Satellites
+  { percent: 84, z: -200, bankY: 0.12, bankX: 0.05, marker: true }, // Jupiter
+  { percent: 92, z: -230, bankY: -0.12, bankX: -0.05, marker: true }, // Testimonials
+  { percent: 96, z: -260, bankY: 0.12, bankX: 0.05, marker: false }, // Earth
+  { percent: 100, z: -290, bankY: 0, bankX: 0, marker: true }, // unassigned - see note to Harshit
 ]
 
 // ---- Temporary placeholder markers --------------------------------------
-// A small wireframe box at each stop, so the spine's spacing can
-// actually be SEEN before real content exists. These are throwaway -
-// later phases replace them with the real planets/cards one by one.
-// One shared geometry and material is reused for all 10 boxes, since
-// they all look identical - that's lighter on the GPU than making 10
-// separate copies.
+// A small wireframe box at each stop that doesn't have a real body
+// yet, so the spine's spacing can still be SEEN for the not-yet-built
+// ones. One shared geometry and material is reused for all of them,
+// since they all look identical - that's lighter on the GPU than
+// making a separate copy for each.
 function addPlaceholderMarkers() {
   const markerGeometry = new THREE.BoxGeometry(6, 6, 6)
   const markerMaterial = new THREE.MeshBasicMaterial({
@@ -74,9 +79,11 @@ function addPlaceholderMarkers() {
   })
 
   stops.forEach((stop, index) => {
+    if (!stop.marker) return // a real body already occupies this stop
+
     const marker = new THREE.Mesh(markerGeometry, markerMaterial)
     // Alternate left/right of the camera's straight path (x = 0), so
-    // the 10 markers read as a curving trail rather than a single
+    // the markers read as a curving trail rather than a single
     // straight line the camera flies directly through.
     const side = index % 2 === 0 ? 1 : -1
     marker.position.set(side * 10, 0, stop.z)
