@@ -1,0 +1,128 @@
+/* ===================================================================
+   CONTENT.CSS
+   Styles for real, always-visible stop content that needs more than
+   the plain heading + paragraph every other stop uses (see the
+   ".pin-content h2/p" rules in src/styles/base.css) - right now
+   that's just the Moon/About stop's intro + 5 stat counters, but
+   anything else built the same way later can reuse these same
+   ".intro"/".stats-row" pieces.
+
+   The "glassmorphism" look here (a faint see-through tint + a blur of
+   whatever's behind it + a thin bright edge) is the same frosted-glass
+   idea this project used earlier for its old hover-triggered info
+   panels (since removed - that whole hover system was retired). It's
+   redefined fresh here rather than reviving that old file, since this
+   is a different, simpler use: a panel that's just always part of a
+   stop's content, not something that fades in on hover.
+   =================================================================== */
+
+/* ---- Keeping this content off of the Moon's actual surface --------------
+   Every stop's content normally sits dead-center on screen (see
+   ".pin-content" in base.css) - fine for a single short heading, but
+   the Moon's own content here is much taller (an intro AND a whole
+   row of stats), and the Moon itself sits low in the frame with its
+   lit face cropped off by the bottom of the screen rather than fitting
+   neatly inside it. Centering this much content would push a good
+   chunk of it down onto the Moon's actual surface. Pinning it to the
+   TOP of the screen instead (with a bit of breathing room above it)
+   keeps it clear of the Moon entirely, in the open space above where
+   the Moon rises into frame. */
+#pin-moon .pin-content {
+  justify-content: flex-start;
+  padding-top: 3.5vh;
+}
+
+/* ---- The Moon stop's intro text -----------------------------------------
+   "Harshit Dabhi" gets its OWN, slightly smaller heading size here
+   (overriding the bigger shared default in base.css) specifically to
+   help this whole block fit into the limited safe space above the
+   Moon - see the comment above this rule for why that space is
+   limited, and the comment on .stats-row below for the same reasoning
+   applied to ITS spacing. */
+.intro h2 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.intro {
+  max-width: 640px;
+  margin-bottom: 1rem;
+}
+
+.intro-subtitle {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.75);
+  margin-bottom: 0.6rem;
+}
+
+.intro-summary {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* ---- The row of 5 stat counters -----------------------------------------
+   One shared frosted-glass "card" holding all 5 numbers side by side.
+   flex-wrap is what lets them drop onto a second (or third) line
+   gracefully on a narrow/mobile screen instead of squeezing into an
+   unreadable single row or overflowing off the edge of the screen. */
+.stats-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem 2.5rem;
+  max-width: 900px;
+  padding: 1rem 2rem;
+  border-radius: 18px;
+
+  /* A faint, semi-see-through white tint, combined with the blur
+     below, is what creates the "frosted glass" look. */
+  background: rgba(255, 255, 255, 0.04);
+
+  /* This is the actual "frosted glass" blur effect - it blurs
+     whatever is BEHIND the card (the Moon, stars, etc). saturate(140%)
+     makes the blurred colors a bit richer so it doesn't look washed
+     out. The -webkit- version is required for Safari to show the
+     blur at all - without it, Safari would just show a plain flat
+     card. */
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+
+  /* A subtle, barely-there border to help the glass edge read against
+     a busy starfield background. */
+  border: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+/* One number + its label, stacked and centered. min-width keeps each
+   stat from squashing too narrow before flex-wrap kicks in and moves
+   it to its own line. */
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 110px;
+}
+
+/* The big count-up number itself (see src/motion/statsCounter.js for
+   the counting animation - this file only controls how it LOOKS, not
+   how it animates). */
+.stat-number {
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: #ffffff;
+  font-variant-numeric: tabular-nums;
+}
+
+/* tabular-nums above is worth calling out: normal fonts often make
+   different digits slightly different widths, which makes a counting
+   animation visibly "wobble" side to side as the digits change every
+   frame. Tabular figures make every digit the same width instead, so
+   the number holds still in place while only its digits change. */
+
+.stat-label {
+  margin-top: 0.35rem;
+  max-width: 140px;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.6);
+  text-align: center;
+}

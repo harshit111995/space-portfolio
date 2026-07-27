@@ -5,6 +5,7 @@
 // and connects scrolling to the camera's movement through the scene.
 import './styles/base.css'
 import './styles/portrait.css'
+import './styles/content.css'
 import * as THREE from 'three'
 import scene from './scene/scene.js'
 import { createMoon } from './scene/moon.js'
@@ -23,6 +24,7 @@ import { initDragLook } from './ui/cursor.js'
 import { initLoader } from './ui/loader.js'
 import { initAudio } from './ui/audio.js'
 import { initPortraitParallax } from './ui/portrait.js'
+import { initStatsCounter } from './motion/statsCounter.js'
 
 // Importing scene.js above runs its setup code right away: it builds
 // the 3D scene, camera, lights, and starts the animation loop that
@@ -105,3 +107,7 @@ initTextReveals()
 
 // Give the contact-section portrait its subtle mouse-follow drift.
 initPortraitParallax()
+
+// Make the 5 headline numbers on the About/Moon stop count up from 0
+// once the visitor actually arrives there.
+initStatsCounter()

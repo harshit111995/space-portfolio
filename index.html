@@ -96,17 +96,59 @@
            not from anything here. -->
       <div class="pin-runway" aria-hidden="true"></div>
 
-      <!-- 1. MOON - the opening stop. Stands in for the old Hero/About
-           text combined into one simple introduction. -->
+      <!-- 1. MOON - the opening stop: who this site is about, plus 5
+           headline numbers. This stop's content is taller than the
+           other stops' simple heading+paragraph, and the Moon itself
+           sits low in the frame (its lit face crops off the bottom of
+           the screen rather than fitting neatly inside it) - so this
+           one stop's content is pinned toward the TOP of the screen
+           instead of dead-center (see the "#pin-moon .pin-content"
+           rule in src/styles/content.css), keeping it clear of the
+           Moon's actual surface instead of sitting on top of it. -->
       <div id="pin-moon" class="pin-marker">
         <div class="pin-content">
-          <h2>About</h2>
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-            enim ad minim veniam, quis nostrud exercitation ullamco
-            laboris nisi ut aliquip ex ea commodo consequat.
-          </p>
+          <div class="intro">
+            <h2>Harshit Dabhi</h2>
+            <p class="intro-subtitle">Programmatic Media Manager · Dubai</p>
+            <p class="intro-summary">
+              Real-time bidding, campaign optimization, and ad-tech across
+              EMEA, Americas, APAC &amp; CIS. Managing budgets up to
+              $250K/month at 200%+ ROI.
+            </p>
+          </div>
+
+          <!-- The 5 stat numbers below all start at 0 and count up to
+               their real value once, right as this stop becomes
+               active - see src/motion/statsCounter.js for how. Each
+               one's actual target number, plus whatever short text sits
+               right before/after it (like the "$" before 250, or the
+               "K" after it), is stored in data-prefix/data-target/
+               data-suffix - statsCounter.js reads those three plain
+               attributes to know what to count up to and how to
+               re-assemble the text, WITHOUT needing to know or care
+               what any individual stat actually means. -->
+          <div class="stats-row">
+            <div class="stat">
+              <span class="stat-number" data-prefix="$" data-target="250" data-suffix="K">$0K</span>
+              <span class="stat-label">Monthly budget managed</span>
+            </div>
+            <div class="stat">
+              <span class="stat-number" data-prefix="" data-target="6" data-suffix=":1">0:1</span>
+              <span class="stat-label">Average ROI</span>
+            </div>
+            <div class="stat">
+              <span class="stat-number" data-prefix="" data-target="74" data-suffix="%">0%</span>
+              <span class="stat-label">Dead-lead reduction MoM</span>
+            </div>
+            <div class="stat">
+              <span class="stat-number" data-prefix="" data-target="20" data-suffix="+">0+</span>
+              <span class="stat-label">Global brands</span>
+            </div>
+            <div class="stat">
+              <span class="stat-number" data-prefix="" data-target="5" data-suffix="">0</span>
+              <span class="stat-label">Years in programmatic</span>
+            </div>
+          </div>
         </div>
       </div>
 
