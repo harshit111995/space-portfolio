@@ -137,21 +137,30 @@ const BODIES = [
     id: 'saturn', // src/scene/saturn.js
     position: new THREE.Vector3(8, -8, -20),
     park: { x: -18, y: 18 }, // ~36.8 units out - reused from the Saturn/Mars proof phase
-    holdLengthVh: 1.16,
+    // 1.5vh = 3 entrepreneur cards (see src/motion/scrollCards.js) x
+    // ~0.5 screen-heights of scroll each - was 1.16vh, which testing
+    // found flipped through the 3 cards too fast to comfortably read.
+    holdLengthVh: 1.5,
     marker: false,
   },
   {
     id: 'mars', // src/scene/planets.js
     position: new THREE.Vector3(-10, 1, -50),
     park: { x: 12, y: -11 }, // ~25.1 units out - reused from the Saturn/Mars proof phase
-    holdLengthVh: 3.538,
+    // 4.5vh = 9 experience cards (not built yet - this stop will reuse
+    // the same scroll-card pattern proven on Saturn) x ~0.5
+    // screen-heights each, matching Saturn's own per-card pacing.
+    holdLengthVh: 4.5,
     marker: false,
   },
   {
     id: 'venus', // src/scene/planets.js
     position: new THREE.Vector3(-10, -2, -80),
     park: { x: -34, y: 12 }, // ~27.8 units out
-    holdLengthVh: 4.727, // the longest hold - this is where case-study cards will live later
+    // 6.0vh = 12 case-study cards (not built yet, same reasoning as
+    // Mars above) x ~0.5 screen-heights each - the longest hold, since
+    // it's also the stop with the most cards to get through.
+    holdLengthVh: 6.0,
     marker: false,
   },
   {
@@ -179,7 +188,10 @@ const BODIES = [
     id: 'jupiter', // src/scene/jupiter.js
     position: new THREE.Vector3(14, -10, -200),
     park: { x: -11, y: 18 }, // ~37.5 units out
-    holdLengthVh: 1.189,
+    // 1.5vh = 3 volunteering cards (not built yet, same reasoning as
+    // Mars/Venus above) x ~0.5 screen-heights each, same as Saturn's
+    // own 3-card pacing.
+    holdLengthVh: 1.5,
     marker: false,
   },
   {
