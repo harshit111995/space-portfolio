@@ -201,16 +201,95 @@
 
       <div class="pin-runway" aria-hidden="true"></div>
 
-      <!-- 5. CONSTELLATIONS - Certificates. -->
+      <!-- 5. CONSTELLATIONS - Certificates. Unlike every other stop, the
+           camera here doesn't just hold still while content reveals
+           itself automatically - the 8 star-figures are genuinely
+           CLICKABLE (see src/ui/certificatePanels.js), each one
+           opening its own certificate panel below. The panels
+           themselves start invisible (see ".certificate-panel" in
+           src/styles/content.css) and are shown/hidden entirely by
+           that file, not by any scroll-triggered reveal like the
+           other stops use. -->
       <div id="pin-constellations" class="pin-marker">
         <div class="pin-content">
           <h2>Certificates</h2>
-          <p>
-            Neque porro quisquam est, qui dolorem ipsum quia dolor sit
-            amet, consectetur, adipisci velit, sed quia non numquam
-            eiusmodi tempora incidunt ut labore et dolore magnam aliquam
-            quaerat voluptatem.
-          </p>
+          <p class="certificates-hint">Click a constellation to explore</p>
+
+          <div class="certificate-panel" data-issuer="Google">
+            <h3>Google</h3>
+            <ul>
+              <li>Campaign Manager 360</li>
+              <li>Display &amp; Video 360</li>
+              <li>Search Ads 360</li>
+              <li>Ads Display</li>
+              <li>Tag Manager</li>
+              <li>Analytics</li>
+            </ul>
+          </div>
+
+          <div class="certificate-panel" data-issuer="Cannes Lions">
+            <h3>Cannes Lions Academy</h3>
+            <ul>
+              <li>Marketing Growth Agenda</li>
+              <li>Creative Effectiveness</li>
+              <li>Copywriting</li>
+              <li>Digital Marketing</li>
+            </ul>
+          </div>
+
+          <div class="certificate-panel" data-issuer="StackAdapt">
+            <h3>StackAdapt</h3>
+            <ul>
+              <li>In-game Channel</li>
+              <li>DOOH</li>
+              <li>CTV</li>
+            </ul>
+          </div>
+
+          <div class="certificate-panel" data-issuer="CIM">
+            <h3>CIM (Chartered Institute of Marketing)</h3>
+            <ul>
+              <li>Planning &amp; Optimising Marketing Campaigns</li>
+              <li>Marketing &amp; Brand Strategy</li>
+              <li>Associate Member (ACIM)</li>
+            </ul>
+          </div>
+
+          <div class="certificate-panel" data-issuer="Microsoft">
+            <h3>Microsoft</h3>
+            <ul>
+              <li>Generative AI Foundation</li>
+            </ul>
+          </div>
+
+          <div class="certificate-panel" data-issuer="Adelaide">
+            <h3>Adelaide</h3>
+            <ul>
+              <li>Fundamentals &amp; Applications of Attention</li>
+              <li>Attention Metrics in a Privacy-First World</li>
+            </ul>
+          </div>
+
+          <div class="certificate-panel" data-issuer="Agentic/AdCP">
+            <h3>Agentic Advertising</h3>
+            <ul>
+              <li>AdCP Specialist (AI agent for programmatic media buying)</li>
+              <li>Member</li>
+            </ul>
+          </div>
+
+          <div class="certificate-panel" data-issuer="Other">
+            <h3>Other</h3>
+            <ul>
+              <li>Magnite — Advanced TV</li>
+              <li>Seedtag — Contextual 101</li>
+              <li>LinkedIn — Data Strategy</li>
+              <li>TikTok Academy Pro</li>
+              <li>Ogilvy — Applied Behavioral Science</li>
+              <li>WARC — Marketing Strategy</li>
+              <li>Thinkbox — TV Masters</li>
+            </ul>
+          </div>
         </div>
       </div>
 

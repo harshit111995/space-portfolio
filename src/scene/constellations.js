@@ -203,6 +203,12 @@ export function createConstellations(scene) {
       fieldCenter.y + rowOffsets[row],
       fieldCenter.z + depthJitter,
     )
+    // Stamped directly onto the group so src/ui/certificatePanels.js
+    // can ask "whose constellation did the visitor just click?" after
+    // raycasting hits ANY part of it (the hit-area, a star, or a
+    // line) and walking back up to this group - without needing a
+    // separate lookup table anywhere else.
+    group.userData.name = issuer.name
     scene.scene.add(group)
 
     return {

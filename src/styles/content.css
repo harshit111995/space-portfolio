@@ -404,3 +404,73 @@
 .contact-link:focus-visible {
   border-bottom-color: rgba(255, 255, 255, 0.9);
 }
+
+/* ---- The Certificates stop's clickable constellations --------------------
+   Unlike every other stop, nothing here reveals itself automatically
+   on arrival - see src/ui/certificatePanels.js for the actual
+   click/hover behavior on the 3D constellations themselves. This file
+   only covers how the hint text and the panels look. */
+.certificates-hint {
+  margin-top: -0.5rem;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.55);
+  font-style: italic;
+}
+
+/* Every one of the 8 panels sits in this exact same spot, one on top
+   of the other - position: absolute + inset: 0 + margin: auto is a
+   way to perfectly center a box of a KNOWN size inside its parent
+   WITHOUT using "transform" to do it (a common centering trick uses
+   transform: translate(-50%, -50%) instead, but that would fight with
+   the transform src/ui/certificatePanels.js separately uses for the
+   open/close pop animation - two different things both trying to
+   control transform at once is exactly the kind of bug that bit the
+   portrait photo earlier in this project, see src/styles/portrait.css
+   for that story). Only one panel is ever actually visible at a time
+   - that's entirely controlled by certificatePanels.js toggling
+   opacity/visibility/pointer-events, not by anything in this file. */
+.certificate-panel {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: min(90vw, 420px);
+  max-height: 60vh;
+  height: fit-content;
+  overflow-y: auto;
+  padding: 1.5rem 1.75rem;
+  border-radius: 18px;
+  text-align: left;
+
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(20px) saturate(150%);
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  /* Hidden by default - src/ui/certificatePanels.js is what reveals
+     the ONE panel matching whichever constellation was just clicked,
+     and hides it again on the next click (either on a different
+     constellation, or on empty space). */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.certificate-panel h3 {
+  margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.certificate-panel ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.certificate-panel li {
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.85);
+}

@@ -16,7 +16,6 @@ import { createJupiter } from './scene/jupiter.js'
 import { createAsteroids } from './scene/asteroids.js'
 import { createSatellites } from './scene/satellites.js'
 import { createConstellations } from './scene/constellations.js'
-import { registerTarget, initRaycaster } from './scene/raycaster.js'
 import './motion/lenis.js'
 import { init as initScrollTimeline } from './motion/scrollTimeline.js'
 import { initTextReveals } from './motion/textReveal.js'
@@ -29,6 +28,7 @@ import { initTestimonialsReveal } from './motion/testimonialsReveal.js'
 import { initEducationReveal } from './motion/educationReveal.js'
 import { initSkillsReveal } from './motion/skillsReveal.js'
 import { initContactReveal } from './motion/contactReveal.js'
+import { initCertificatePanels } from './ui/certificatePanels.js'
 
 // Importing scene.js above runs its setup code right away: it builds
 // the 3D scene, camera, lights, and starts the animation loop that
@@ -86,13 +86,19 @@ const satellites = createSatellites(scene)
 // canvas-drawn sprite, not a downloaded texture.
 const constellations = createConstellations(scene)
 
-// v2: the old v1 single hover-panel-per-planet behavior is retired -
-// a scroll-card system replaces it in a later phase. Commented out
-// (rather than deleted) so it's easy to see what used to be here.
-// registerTarget(mars, 'panel-experience')
-// registerTarget(venus, 'panel-casestudies')
-// registerTarget(earth, 'panel-contact')
-initRaycaster(scene.camera)
+// v2: the old v1 single hover-panel-per-planet behavior (built in
+// src/scene/raycaster.js) is retired - nothing has called
+// registerTarget() on it in a long time, and it's no longer switched
+// on here either. It's left in place, unused, rather than deleted, in
+// case a similar planet-hover system is wanted again later - but
+// actually calling initRaycaster() here was doing real, active harm:
+// with zero targets registered, its own per-frame check ALWAYS "hits
+// nothing," which made it forcibly reset the cursor back to "default"
+// on every single frame - fighting with and overriding the NEW
+// constellation hover cursor set up below in
+// src/ui/certificatePanels.js. Found and confirmed directly while
+// building that feature (the cursor kept flickering back to normal
+// instead of staying as a pointer over a clickable constellation).
 
 // Hook up scrolling so it drives the camera's journey through space.
 initScrollTimeline(scene.camera)
@@ -131,3 +137,7 @@ initSkillsReveal()
 // Fade and lift the contact details card into place once the visitor
 // actually arrives at the Earth/contact stop.
 initContactReveal()
+
+// Let the visitor click any of the 8 certificate constellations to
+// open that issuer's certificate panel, at the certificates stop.
+initCertificatePanels(scene.camera, constellations)
