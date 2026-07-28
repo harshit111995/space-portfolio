@@ -154,16 +154,63 @@
 
       <div class="pin-runway" aria-hidden="true"></div>
 
-      <!-- 2. SATURN - Entrepreneur. -->
+      <!-- 2. SATURN - Entrepreneur. This is the first "scroll-card" stop -
+           instead of one fixed block of text, there are 3 separate
+           cards stacked exactly on top of each other (see
+           ".scroll-card" in src/styles/content.css), and scrolling
+           THROUGH Saturn's hold - not just arriving at it - crosses
+           fades between them one at a time (see
+           src/motion/scrollCards.js, written generically so this same
+           pattern can be reused for other stops later, not just
+           Saturn). -->
       <div id="pin-saturn" class="pin-marker">
         <div class="pin-content">
           <h2>Entrepreneur</h2>
-          <p>
-            Duis aute irure dolor in reprehenderit in voluptate velit esse
-            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-            cupidatat non proident, sunt in culpa qui officia deserunt
-            mollit anim id est laborum.
-          </p>
+
+          <div class="scroll-cards">
+            <div class="scroll-card">
+              <h3>The DigitalWit</h3>
+              <p class="scroll-card-meta">Founder · 2016–2021 · Mumbai</p>
+              <p class="scroll-card-body">
+                Founded and led a full-service digital agency —
+                advertising, branding, web development, content. Built a
+                cross-functional team; drove growth to 64% of gross
+                revenue through client acquisition across B2B, B2C, D2C.
+              </p>
+            </div>
+
+            <div class="scroll-card">
+              <h3>Encube Enterprise</h3>
+              <p class="scroll-card-meta">Managing Partner · 2020–2021 · Mumbai</p>
+              <p class="scroll-card-body">
+                Led a medical 3D-printing company producing custom
+                prosthetics, implants, and surgical guides under
+                regulatory compliance. Built hospital relationships and
+                drove R&amp;D in biocompatible materials.
+              </p>
+            </div>
+
+            <div class="scroll-card">
+              <h3>Startup Jalsa</h3>
+              <p class="scroll-card-meta">Startup Ambassador · 2017–2018</p>
+              <p class="scroll-card-body">
+                Facilitated 50+ startup-investor matches driving $3M+ in
+                seed funding. Built a 2,000+ entrepreneur community, ran
+                25+ events, mentored 30+ startups, 80% accelerator
+                placement rate.
+              </p>
+            </div>
+          </div>
+
+          <!-- 3 small dots showing which of the 3 cards is currently
+               shown - purely visual feedback, entirely controlled by
+               src/motion/scrollCards.js (which one has the
+               "is-active" class). -->
+          <div class="scroll-cards-dots">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
         </div>
       </div>
 

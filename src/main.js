@@ -29,6 +29,7 @@ import { initEducationReveal } from './motion/educationReveal.js'
 import { initSkillsReveal } from './motion/skillsReveal.js'
 import { initContactReveal } from './motion/contactReveal.js'
 import { initCertificatePanels } from './ui/certificatePanels.js'
+import { initScrollCards } from './motion/scrollCards.js'
 
 // Importing scene.js above runs its setup code right away: it builds
 // the 3D scene, camera, lights, and starts the animation loop that
@@ -141,3 +142,7 @@ initContactReveal()
 // Let the visitor click any of the 8 certificate constellations to
 // open that issuer's certificate panel, at the certificates stop.
 initCertificatePanels(scene.camera, constellations)
+
+// Cross-fade between the 3 entrepreneur cards as the visitor scrolls
+// through Saturn's held pin.
+initScrollCards('pin-saturn', 3)
