@@ -72,3 +72,29 @@
 
   display: block;
 }
+
+/* ---- Narrow/mid-width screens: move the portrait out of the way ---------
+   "Off to the left, vertically centered" (above) works because on a
+   wide screen there's plenty of room beside the centered contact
+   details card for a 220px circle. On a narrower screen, that same
+   card sits closer to the middle/left of the page, so a 220px circle
+   at the left edge starts landing right underneath it instead of
+   beside it - found and confirmed directly with real screenshots:
+   still overlapping as wide as ~780px, only clearing by ~800px.
+   The fix: below 860px (a safe amount past that measured 800px, with
+   some extra room for the small side-to-side drift the mouse-parallax
+   effect in src/ui/portrait.js adds), shrink the portrait and move it
+   to sit ABOVE the centered content instead of to its side - stacking
+   vertically instead of sitting side by side avoids the overlap
+   entirely, regardless of exactly how wide the details card ends up
+   being at any given screen size in between. */
+@media (max-width: 860px) {
+  .portrait {
+    left: 50%;
+    top: 8vh;
+    margin-top: 0;
+    margin-left: -75px; /* half of this smaller 150px width, to center it */
+    width: 150px;
+    height: 150px;
+  }
+}

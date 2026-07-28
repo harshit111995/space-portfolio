@@ -408,23 +408,65 @@
 
       <div class="pin-runway" aria-hidden="true"></div>
 
-      <!-- 10. EARTH - Contact, the final stop. Text moved over from the
-           old "panel-contact" hover card, same reasoning as Mars/Venus
-           above. The portrait photo moves here too, for the same
-           reason - it always belonged to this stop, it just used to
-           reveal itself by watching for the old #contact section
-           instead (see src/ui/portrait.js). -->
+      <!-- 10. EARTH - Contact, the final stop.
+
+           The frosted details card below starts invisible and shifted
+           down slightly (see the ".contact-details" rule in
+           src/styles/content.css) - src/motion/contactReveal.js fades
+           and lifts it into place the moment this stop actually
+           becomes active, the same pattern used for every other
+           stop's reveal.
+
+           The portrait photo already had its OWN separate reveal (a
+           plain fade, see src/ui/portrait.js) from back when this
+           stop's pin was first built, since it always belonged here -
+           it just used to watch for the old #contact section instead
+           of this pin. That reveal is left exactly as it is; this
+           file only adds a matching reveal for the contact details
+           sitting next to it. The portrait is positioned off to the
+           left of the screen (see src/styles/portrait.css) so it
+           never sits underneath the details card, which sits
+           centered/right of it instead. -->
       <div id="pin-earth" class="pin-marker">
         <div class="pin-content">
-          <h2>Contact</h2>
-          <p>
-            Duis aute irure dolor in reprehenderit in voluptate velit
-            esse cillum dolore eu fugiat nulla pariatur.
-          </p>
+          <div class="contact-block">
+            <h2>Get in touch</h2>
+            <ul class="contact-details">
+              <li>
+                <span class="contact-label">Email</span>
+                <a class="contact-link" href="mailto:dabhiharshit11@gmail.com"
+                  >dabhiharshit11@gmail.com</a
+                >
+              </li>
+              <li>
+                <span class="contact-label">Phone</span>
+                <span class="contact-value">+971 55 645 3208</span>
+              </li>
+              <li>
+                <span class="contact-label">LinkedIn</span>
+                <a
+                  class="contact-link"
+                  href="https://linkedin.com/in/harshitdabhi"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >linkedin.com/in/harshitdabhi</a
+                >
+              </li>
+              <li>
+                <span class="contact-label">Web</span>
+                <a
+                  class="contact-link"
+                  href="https://harshitdabhi.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >harshitdabhi.com</a
+                >
+              </li>
+            </ul>
+          </div>
 
-          <!-- A circular "porthole" photo, positioned off to the side
-               so it doesn't sit on top of the heading/paragraph text
-               above. Styled in src/styles/portrait.css. -->
+          <!-- The circular "porthole" photo - see the big comment above
+               this stop for how it's positioned/revealed. -->
           <div class="portrait">
             <img src="/portrait.webp" alt="Harshit" />
           </div>

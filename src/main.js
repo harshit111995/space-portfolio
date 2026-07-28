@@ -28,6 +28,7 @@ import { initStatsCounter } from './motion/statsCounter.js'
 import { initTestimonialsReveal } from './motion/testimonialsReveal.js'
 import { initEducationReveal } from './motion/educationReveal.js'
 import { initSkillsReveal } from './motion/skillsReveal.js'
+import { initContactReveal } from './motion/contactReveal.js'
 
 // Importing scene.js above runs its setup code right away: it builds
 // the 3D scene, camera, lights, and starts the animation loop that
@@ -126,3 +127,7 @@ initEducationReveal()
 // Fade and lift the 6 skill category cards into place once the
 // visitor actually arrives at the skills/satellites stop.
 initSkillsReveal()
+
+// Fade and lift the contact details card into place once the visitor
+// actually arrives at the Earth/contact stop.
+initContactReveal()
