@@ -18,15 +18,26 @@ import { animate } from 'animejs'
 // moon, nebula, and planets to load their images - we just attach a
 // couple of callbacks to it here so we hear about their progress too.
 export function initLoader(manager) {
-  // ---- Building the overlay, piece by piece ------------------------------
-  // Everything below is created directly in JavaScript (rather than
-  // written in index.html) so this whole feature lives in one file.
+  // ---- Taking over the existing loading cover -----------------------------
+  // "#loading-cover" already exists on the page - it's written
+  // directly in index.html (with its own critical, inline <style> in
+  // <head>) specifically so it's already there, solid and covering
+  // the whole screen, before this script has even started running -
+  // see the big comment above it in index.html for why that matters.
+  // Rather than creating a second, separate overlay from scratch, this
+  // file just takes that SAME element over: everything below (the
+  // shuttle, the progress plume, the Enter button) gets built and
+  // dropped straight into it.
+  const overlay = document.getElementById('loading-cover')
 
-  const overlay = document.createElement('div')
-  overlay.id = 'loader'
   // position: fixed + covering the full screen + a very high z-index
   // means this sits on top of absolutely everything else (the 3D
-  // canvas, the page content, the panels) until we hide it.
+  // canvas, the page content, the panels) until we hide it. (The
+  // inline <style> in index.html already set these same three
+  // properties once, earlier - setting them again here doesn't change
+  // anything, it just keeps this file fully self-explanatory on its
+  // own, without needing to also go read index.html to know what this
+  // overlay looks like.)
   Object.assign(overlay.style, {
     position: 'fixed',
     inset: '0', // shorthand for top/right/bottom/left: 0
@@ -212,9 +223,10 @@ export function initLoader(manager) {
     transition: 'opacity 0.3s ease',
   })
 
-  // Put all the pieces together and add the whole overlay to the page.
+  // Put all the pieces together inside the overlay - no need to add it
+  // to the page ourselves, it's already there (see the top of this
+  // function).
   overlay.append(shuttleWrapper, plume, percentText, enterButton)
-  document.body.appendChild(overlay)
 
   // ---- Tracking real loading progress --------------------------------------
   // onProgress is called by the LoadingManager every time ONE more
@@ -241,6 +253,24 @@ export function initLoader(manager) {
     // Prevent accidentally triggering this more than once (e.g. a
     // very fast double-click) while the fade-out is already playing.
     enterButton.disabled = true
+
+    // #app (the real CV/portfolio content) starts hidden by default -
+    // see the "#app" rule in src/styles/base.css - as a second,
+    // backup layer of protection against ever flashing that content
+    // too early, on top of this whole loading-cover overlay. Revealing
+    // it right NOW, the instant "Enter" is clicked - rather than only
+    // after the fade-out below finishes - matters: this overlay is
+    // opaque and still fully covering the screen at this exact moment,
+    // so the visitor can't actually see #app becoming visible yet
+    // anyway. By the time the fade-out below finishes playing and this
+    // overlay is gone, #app needs to ALREADY be sitting there fully
+    // visible underneath it - otherwise the visitor would watch this
+    // overlay fade away to reveal nothing at all for a moment.
+    const app = document.getElementById('app')
+    if (app) {
+      app.style.opacity = '1'
+      app.style.visibility = 'visible'
+    }
 
     // Fade the whole overlay out smoothly using anime.js.
     animate(overlay, {

@@ -56,10 +56,23 @@ body {
 
 /* ---- Layer 2: the page content wrapper -------------------------------
    position: relative + z-index: 2 -> this places all real content
-   ABOVE the canvas, so it's always visible and readable. */
+   ABOVE the canvas, so it's always visible and readable.
+
+   opacity: 0 + visibility: hidden -> starts completely hidden. This is
+   a second, backup layer of protection (on top of "#loading-cover" in
+   index.html) against ever flashing the real CV content before the
+   loading screen has appeared - src/ui/loader.js is what reveals this
+   again, the instant the visitor actually clicks "Enter". visibility
+   (unlike, say, display: none) still lets this take up its normal
+   space and be measured normally - so nothing that relies on knowing
+   this content's real size/position (like the camera's scroll setup in
+   src/motion/scrollTimeline.js, which runs before "Enter" is ever
+   clicked) breaks or has to wait for it to actually be visible. */
 #app {
   position: relative;
   z-index: 2;
+  opacity: 0;
+  visibility: hidden;
 }
 
 /* ---- Pin markers - each one IS a stop, holding that stop's content ----

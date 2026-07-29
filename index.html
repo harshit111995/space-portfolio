@@ -28,8 +28,46 @@
     <meta property="og:image" content="/portrait.webp" />
 
     <title>Harshit Dabhi — Programmatic Media Manager</title>
+
+    <!-- This tiny bit of CSS is written directly here, in the page's
+         <head>, instead of living in one of the site's own .css files
+         - on purpose. Every other style on this site is loaded through
+         main.js (see the <script> at the very bottom of this file),
+         which only starts running AFTER the browser has already read
+         through the whole page - which means there's a brief moment,
+         before that script has had a chance to run, where the browser
+         could otherwise start drawing the real, unstyled CV content
+         underneath. A <style> tag sitting right here in <head> is read
+         and applied by the browser BEFORE it draws anything in <body>
+         at all, so "#loading-cover" below is guaranteed to be there,
+         solid and covering the whole screen, from the very first
+         frame - no flash of raw content underneath it, ever. -->
+    <style>
+      #loading-cover {
+        position: fixed;
+        inset: 0;
+        /* Higher than the loader's own z-index (9999, set later by
+           src/ui/loader.js once it takes this same element over) just
+           for extra safety, so this can never end up peeking out from
+           behind anything else on the page. */
+        z-index: 999999;
+        /* Same dark tone the loader itself uses. */
+        background: #050505;
+      }
+    </style>
   </head>
   <body>
+    <!-- A solid, empty cover - nothing inside it yet. It exists here,
+         as plain static HTML, purely so it's already on the page (and
+         already styled solid, via the <style> tag above) before any
+         JavaScript has run. src/ui/loader.js takes this exact element
+         over moments later - filling it with the shuttle/progress/
+         Enter button and fading it away once the visitor actually
+         starts the experience - rather than creating its own separate
+         cover from scratch. This needs to be the very first thing in
+         <body> so nothing else can ever end up drawn before it. -->
+    <div id="loading-cover"></div>
+
     <!-- This canvas is empty for now. Later, JavaScript will draw an
          animated WebGL/3D background onto it. It's the very first
          thing in the page so it can sit BEHIND all the real content
