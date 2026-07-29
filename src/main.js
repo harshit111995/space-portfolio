@@ -7,7 +7,6 @@ import './styles/base.css'
 import './styles/portrait.css'
 import './styles/content.css'
 import './styles/card.css'
-import './styles/stopNav.css'
 import * as THREE from 'three'
 import scene from './scene/scene.js'
 import { createMoon } from './scene/moon.js'
@@ -33,7 +32,6 @@ import { initSkillsReveal } from './motion/skillsReveal.js'
 import { initContactReveal } from './motion/contactReveal.js'
 import { initScrollCards } from './motion/scrollCards.js'
 import { initCardReadMore } from './ui/cardReadMore.js'
-import { initStopNav } from './ui/stopNav.js'
 
 // Importing scene.js above runs its setup code right away: it builds
 // the 3D scene, camera, lights, and starts the animation loop that
@@ -189,10 +187,3 @@ initCardReadMore('pin-satellites')
 // Same toggle for the Testimonials stop's 2 static cards - only shows
 // a "Read more" button on a quote actually long enough to overflow.
 initCardReadMore('pin-testimonials')
-
-// Build the fixed right-side navigation bar (10 stops, one dot+label
-// per stop) - see src/ui/stopNav.js. Called last, after every stop's
-// pin already exists (all 10 were set up inside initScrollTimeline()
-// above), since this file needs to read each pin's real scroll
-// position to know where clicking an item should jump to.
-initStopNav()
