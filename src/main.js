@@ -180,3 +180,7 @@ initCardReadMore('pin-jupiter')
 // is dense enough to actually need it; Soft Skills just automatically
 // gets no button, since its own text already fits without truncating.
 initCardReadMore('pin-satellites')
+
+// Same toggle for the Testimonials stop's 2 static cards - only shows
+// a "Read more" button on a quote actually long enough to overflow.
+initCardReadMore('pin-testimonials')

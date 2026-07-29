@@ -945,46 +945,58 @@
            addPlaceholderMarkers() in src/motion/scrollTimeline.js) -
            that box is expected to be there for now, not a bug.
 
-           The two quote cards below start invisible and shifted down
+           The two cards below start invisible and shifted down
            slightly (see the ".testimonial-card" rule in
            src/styles/content.css) - src/motion/testimonialsReveal.js
            fades and lifts them into place the moment this stop
            actually becomes active, instead of them just being visible
-           from the very start of the page. -->
+           from the very start of the page.
+
+           Both cards now use the same uniform ".card" design as every
+           other stop on the page (see src/styles/card.css - reused
+           exactly as-is, nothing in that file changed). Testimonials
+           have no photo, so neither card has a ".card-image" slot.
+           Same read-more toggle too, via src/ui/cardReadMore.js,
+           pointed at "pin-testimonials" (see src/main.js) - it only
+           actually shows a button if a quote is long enough to need
+           one. -->
       <div id="pin-testimonials" class="pin-marker">
         <div class="pin-content">
           <h2>Testimonials</h2>
           <div class="testimonials-row">
-            <blockquote class="testimonial-card">
-              <p class="testimonial-quote">
-                "One of the strongest adtech and programmatic specialists
-                I've come across. His technical knowledge is exceptional,
-                but what really stands out is his ability to simplify
-                complex concepts. Diligent, knowledgeable, commercially
-                aware and constantly looking to improve."
-              </p>
-              <footer class="testimonial-attribution">
-                <span class="testimonial-name">Kurtis Spencer</span>
-                <span class="testimonial-title"
-                  >Ex-Revolut · Experiential Marketing &amp; Business
-                  Growth, GCC &amp; EU</span
-                >
-              </footer>
-            </blockquote>
+            <div class="testimonial-card">
+              <div class="card">
+                <h3 class="card-heading">Kurtis Spencer</h3>
+                <p class="card-meta">Ex-Revolut · Experiential Marketing &amp; Business Growth, GCC &amp; EU</p>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    "One of the strongest adtech and programmatic specialists
+                    I've come across. His technical knowledge is exceptional,
+                    but what really stands out is his ability to simplify
+                    complex concepts. Diligent, knowledgeable, commercially
+                    aware and constantly looking to improve."
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
+            </div>
 
-            <blockquote class="testimonial-card">
-              <p class="testimonial-quote">
-                "Harshit brings a strong and practical understanding of
-                pDOOH, combined with an impressive ability to move fast
-                and execute with precision. His approach is consistently
-                client-centric, thoughtful, and results-driven — a real
-                pleasure to work with."
-              </p>
-              <footer class="testimonial-attribution">
-                <span class="testimonial-name">Mélissa Cecilie-Desfontaines</span>
-                <span class="testimonial-title">International Sales Manager, Displayce</span>
-              </footer>
-            </blockquote>
+            <div class="testimonial-card">
+              <div class="card">
+                <h3 class="card-heading">Mélissa Cecilie-Desfontaines</h3>
+                <p class="card-meta">International Sales Manager, Displayce</p>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    "Harshit brings a strong and practical understanding of
+                    pDOOH, combined with an impressive ability to move fast
+                    and execute with precision. His approach is consistently
+                    client-centric, thoughtful, and results-driven — a real
+                    pleasure to work with."
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
