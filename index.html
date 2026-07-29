@@ -341,134 +341,230 @@
            mechanic, unchanged, just called with pin-venus and 12 (see
            src/main.js).
 
-           Each card also has an image placeholder above its text (see
-           ".scroll-card-image" in src/styles/content.css) - a plain,
-           fixed-shape box standing in for a real campaign photo that
-           will be dropped in later. It's sized with a fixed
-           "aspect-ratio" specifically so that later swap is a
-           zero-layout-shift change: whoever adds the real photo just
-           needs to put an <img> where the placeholder text sits now,
-           inside this same sized box - nothing about the box itself,
-           or anything around it, needs to change. -->
+           These 12 cards are the first to use the new, reusable
+           ".card" design (see src/styles/card.css) instead of the
+           older per-stop styling in this file - the plan is for
+           Saturn/Mars/Jupiter to eventually switch over to it too,
+           but for now they're untouched and keep using their old
+           look. Each ".scroll-card" below still does exactly what it
+           always did (that's what the crossfade mechanic actually
+           moves/fades) - it just now WRAPS a ".card" instead of being
+           styled directly itself, via the "scroll-card--uniform"
+           modifier (see content.css) that hands all of the visual
+           styling over to card.css.
+
+           Each card also has an image placeholder above its text - a
+           plain, fixed-shape box standing in for a real campaign
+           photo that will be dropped in later (see the big comment on
+           ".card-image" in src/styles/card.css for why it's built the
+           way it is). Some cards below also have noticeably longer
+           text than the rest, on purpose - long enough to trigger the
+           built-in "Read more" truncation (see
+           src/ui/cardReadMore.js), so that behavior has something
+           real to demonstrate rather than only ever showing short
+           text that never needs it. -->
       <div id="pin-venus" class="pin-marker">
         <div class="pin-content">
           <h2>Case Studies</h2>
 
           <div class="scroll-cards scroll-cards--with-image">
-            <div class="scroll-card scroll-card--with-image">
-              <div class="scroll-card-image"><span class="scroll-card-image-label">Campaign image</span></div>
-              <h3>Binance</h3>
-              <p class="scroll-card-meta">Programmatic campaign</p>
-              <p class="scroll-card-body">
-                Global crypto-audience targeting across CTV and display.
-              </p>
+            <div class="scroll-card scroll-card--with-image scroll-card--uniform">
+              <div class="card">
+                <div class="card-image"><span class="card-image-label">Campaign image</span></div>
+                <h3 class="card-heading">Binance</h3>
+                <p class="card-meta">Programmatic campaign</p>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    Global crypto-audience targeting across CTV, display, and
+                    native inventory, spanning EMEA, APAC, and the Americas.
+                    Campaign structure balanced upper-funnel brand awareness
+                    against lower-funnel conversion placements, with creative
+                    refreshed on a rolling basis to avoid fatigue across a
+                    fast-moving, highly competitive vertical. Ongoing
+                    optimization focused on viewability and brand-safety
+                    signals given the sensitivity of crypto-adjacent
+                    inventory.
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
             </div>
 
-            <div class="scroll-card scroll-card--with-image">
-              <div class="scroll-card-image"><span class="scroll-card-image-label">Campaign image</span></div>
-              <h3>Informa</h3>
-              <p class="scroll-card-meta">Programmatic campaign</p>
-              <p class="scroll-card-body">
-                B2B events and publishing audiences reached across EMEA.
-              </p>
+            <div class="scroll-card scroll-card--with-image scroll-card--uniform">
+              <div class="card">
+                <div class="card-image"><span class="card-image-label">Campaign image</span></div>
+                <h3 class="card-heading">Informa</h3>
+                <p class="card-meta">Programmatic campaign</p>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    B2B events and publishing audiences reached across EMEA.
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
             </div>
 
-            <div class="scroll-card scroll-card--with-image">
-              <div class="scroll-card-image"><span class="scroll-card-image-label">Campaign image</span></div>
-              <h3>DWF Labs</h3>
-              <p class="scroll-card-meta">Programmatic campaign</p>
-              <p class="scroll-card-body">
-                Web3 and crypto-investor targeting across finance
-                placements.
-              </p>
+            <div class="scroll-card scroll-card--with-image scroll-card--uniform">
+              <div class="card">
+                <div class="card-image"><span class="card-image-label">Campaign image</span></div>
+                <h3 class="card-heading">DWF Labs</h3>
+                <p class="card-meta">Programmatic campaign</p>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    Web3 and crypto-investor targeting across finance
+                    placements.
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
             </div>
 
-            <div class="scroll-card scroll-card--with-image">
-              <div class="scroll-card-image"><span class="scroll-card-image-label">Campaign image</span></div>
-              <h3>Solarwinds</h3>
-              <p class="scroll-card-meta">Programmatic campaign</p>
-              <p class="scroll-card-body">
-                IT and enterprise decision-maker targeting across B2B
-                inventory.
-              </p>
+            <div class="scroll-card scroll-card--with-image scroll-card--uniform">
+              <div class="card">
+                <div class="card-image"><span class="card-image-label">Campaign image</span></div>
+                <h3 class="card-heading">Solarwinds</h3>
+                <p class="card-meta">Programmatic campaign</p>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    IT and enterprise decision-maker targeting across B2B
+                    inventory.
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
             </div>
 
-            <div class="scroll-card scroll-card--with-image">
-              <div class="scroll-card-image"><span class="scroll-card-image-label">Campaign image</span></div>
-              <h3>Komatsu &amp; F1 Abu Dhabi</h3>
-              <p class="scroll-card-meta">Programmatic campaign</p>
-              <p class="scroll-card-body">
-                Motorsport-tied brand visibility around the Abu Dhabi
-                Grand Prix.
-              </p>
+            <div class="scroll-card scroll-card--with-image scroll-card--uniform">
+              <div class="card">
+                <div class="card-image"><span class="card-image-label">Campaign image</span></div>
+                <h3 class="card-heading">Komatsu &amp; F1 Abu Dhabi</h3>
+                <p class="card-meta">Programmatic campaign</p>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    Motorsport-tied brand visibility around the Abu Dhabi
+                    Grand Prix.
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
             </div>
 
-            <div class="scroll-card scroll-card--with-image">
-              <div class="scroll-card-image"><span class="scroll-card-image-label">Campaign image</span></div>
-              <h3>Lexis Nexis</h3>
-              <p class="scroll-card-meta">Programmatic campaign</p>
-              <p class="scroll-card-body">
-                Legal and professional audience targeting across search
-                and display.
-              </p>
+            <div class="scroll-card scroll-card--with-image scroll-card--uniform">
+              <div class="card">
+                <div class="card-image"><span class="card-image-label">Campaign image</span></div>
+                <h3 class="card-heading">Lexis Nexis</h3>
+                <p class="card-meta">Programmatic campaign</p>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    Legal and professional audience targeting across search
+                    and display.
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
             </div>
 
-            <div class="scroll-card scroll-card--with-image">
-              <div class="scroll-card-image"><span class="scroll-card-image-label">Campaign image</span></div>
-              <h3>Ariana Grande Perfumes</h3>
-              <p class="scroll-card-meta">Programmatic campaign</p>
-              <p class="scroll-card-body">
-                Fragrance launch amplification across social and video.
-              </p>
+            <div class="scroll-card scroll-card--with-image scroll-card--uniform">
+              <div class="card">
+                <div class="card-image"><span class="card-image-label">Campaign image</span></div>
+                <h3 class="card-heading">Ariana Grande Perfumes</h3>
+                <p class="card-meta">Programmatic campaign</p>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    Fragrance launch amplification across social and video
+                    platforms, timed to align with retail availability
+                    windows across key markets. Creative leaned heavily on
+                    short-form video formats to maximize reach among a
+                    younger, mobile-first audience, with influencer-adjacent
+                    placements layered on top of core programmatic buys.
+                    Frequency capping was tuned carefully to avoid
+                    oversaturation during the always-sensitive launch week.
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
             </div>
 
-            <div class="scroll-card scroll-card--with-image">
-              <div class="scroll-card-image"><span class="scroll-card-image-label">Campaign image</span></div>
-              <h3>Digibet</h3>
-              <p class="scroll-card-meta">Programmatic campaign</p>
-              <p class="scroll-card-body">
-                Sports-betting audience acquisition across CTV and
-                native.
-              </p>
+            <div class="scroll-card scroll-card--with-image scroll-card--uniform">
+              <div class="card">
+                <div class="card-image"><span class="card-image-label">Campaign image</span></div>
+                <h3 class="card-heading">Digibet</h3>
+                <p class="card-meta">Programmatic campaign</p>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    Sports-betting audience acquisition across CTV and
+                    native.
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
             </div>
 
-            <div class="scroll-card scroll-card--with-image">
-              <div class="scroll-card-image"><span class="scroll-card-image-label">Campaign image</span></div>
-              <h3>NHS</h3>
-              <p class="scroll-card-meta">Programmatic campaign</p>
-              <p class="scroll-card-body">
-                Public-health awareness reach across the UK, display
-                and social.
-              </p>
+            <div class="scroll-card scroll-card--with-image scroll-card--uniform">
+              <div class="card">
+                <div class="card-image"><span class="card-image-label">Campaign image</span></div>
+                <h3 class="card-heading">NHS</h3>
+                <p class="card-meta">Programmatic campaign</p>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    Public-health awareness reach across the UK, display
+                    and social.
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
             </div>
 
-            <div class="scroll-card scroll-card--with-image">
-              <div class="scroll-card-image"><span class="scroll-card-image-label">Campaign image</span></div>
-              <h3>HP — GITEX 2025</h3>
-              <p class="scroll-card-meta">Programmatic campaign</p>
-              <p class="scroll-card-body">
-                Enterprise tech visibility around GITEX Dubai, DOOH and
-                display.
-              </p>
+            <div class="scroll-card scroll-card--with-image scroll-card--uniform">
+              <div class="card">
+                <div class="card-image"><span class="card-image-label">Campaign image</span></div>
+                <h3 class="card-heading">HP — GITEX 2025</h3>
+                <p class="card-meta">Programmatic campaign</p>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    Enterprise tech visibility around GITEX Dubai, DOOH and
+                    display.
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
             </div>
 
-            <div class="scroll-card scroll-card--with-image">
-              <div class="scroll-card-image"><span class="scroll-card-image-label">Campaign image</span></div>
-              <h3>Interactive Brokers</h3>
-              <p class="scroll-card-meta">Programmatic campaign</p>
-              <p class="scroll-card-body">
-                Global trading-audience acquisition across finance
-                vertical placements.
-              </p>
+            <div class="scroll-card scroll-card--with-image scroll-card--uniform">
+              <div class="card">
+                <div class="card-image"><span class="card-image-label">Campaign image</span></div>
+                <h3 class="card-heading">Interactive Brokers</h3>
+                <p class="card-meta">Programmatic campaign</p>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    Global trading-audience acquisition across finance
+                    vertical placements, targeting self-directed investors
+                    and active traders across multiple regions
+                    simultaneously. Campaign structure segmented by trading
+                    experience level and product interest, with distinct
+                    creative tracks for options traders, long-term
+                    investors, and international account holders.
+                    Compliance review was a constant consideration given the
+                    regulated nature of financial services advertising
+                    across different jurisdictions.
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
             </div>
 
-            <div class="scroll-card scroll-card--with-image">
-              <div class="scroll-card-image"><span class="scroll-card-image-label">Campaign image</span></div>
-              <h3>Clear Blue</h3>
-              <p class="scroll-card-meta">Programmatic campaign</p>
-              <p class="scroll-card-body">
-                Consumer health brand reach across programmatic display.
-              </p>
+            <div class="scroll-card scroll-card--with-image scroll-card--uniform">
+              <div class="card">
+                <div class="card-image"><span class="card-image-label">Campaign image</span></div>
+                <h3 class="card-heading">Clear Blue</h3>
+                <p class="card-meta">Programmatic campaign</p>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    Consumer health brand reach across programmatic display.
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
             </div>
           </div>
 

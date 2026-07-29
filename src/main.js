@@ -6,6 +6,7 @@
 import './styles/base.css'
 import './styles/portrait.css'
 import './styles/content.css'
+import './styles/card.css'
 import * as THREE from 'three'
 import scene from './scene/scene.js'
 import { createMoon } from './scene/moon.js'
@@ -30,6 +31,7 @@ import { initSkillsReveal } from './motion/skillsReveal.js'
 import { initContactReveal } from './motion/contactReveal.js'
 import { initCertificatePanels } from './ui/certificatePanels.js'
 import { initScrollCards } from './motion/scrollCards.js'
+import { initCardReadMore } from './ui/cardReadMore.js'
 
 // Importing scene.js above runs its setup code right away: it builds
 // the 3D scene, camera, lights, and starts the animation loop that
@@ -161,3 +163,10 @@ initScrollCards('pin-venus', 12)
 // Cross-fade between the 3 volunteering cards as the visitor scrolls
 // through Jupiter's held pin.
 initScrollCards('pin-jupiter', 3)
+
+// Turn on the "Read more"/"Read less" toggle for Venus's 12 case-study
+// cards - the only stop using the new uniform card design so far (see
+// src/styles/card.css). This only ever changes text/CSS locally on a
+// card; it has no effect on, and isn't affected by, the crossfade
+// mechanic set up by initScrollCards above.
+initCardReadMore('pin-venus')

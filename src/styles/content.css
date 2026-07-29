@@ -512,6 +512,27 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* ---- Opt-out for stops using the NEW uniform card design -----------------
+   Venus's cards (see src/styles/card.css) carry both ".scroll-card"
+   (for the positioning above - the crossfade mechanic in
+   src/motion/scrollCards.js needs that to keep working exactly as-is)
+   AND this modifier, which strips back out every VISUAL property
+   ".scroll-card" set above - the padding, the background, the blur,
+   the border. That's on purpose: card.css's own ".card" (nested
+   inside) provides ALL of the visual look now, so leaving
+   ".scroll-card"'s own visual styling in place too would mean two
+   separate frosted boxes stacked on top of each other. Saturn, Mars,
+   and Jupiter don't use this modifier, so their cards are completely
+   unaffected and keep looking exactly as they already do. */
+.scroll-card--uniform {
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: none;
+}
+
 .scroll-card h3 {
   margin-bottom: 0.35rem;
   font-size: 1.1rem;
@@ -538,7 +559,14 @@
    at the top of each card," on top of everything ".scroll-cards"/
    ".scroll-card" already do above. */
 .scroll-cards--with-image {
-  height: 480px; /* taller than the plain 300px above, to fit an image plus the same text block underneath it */
+  /* Tall enough for the worst case: an image, a heading, a meta line,
+     a full 4-line clamped body, AND a "Read more" button underneath -
+     all at once. Venus's uniform cards (src/styles/card.css) can hit
+     every one of those at the same time; the old, shorter 480px here
+     was sized back when this card only ever held a single short line
+     of placeholder text, and left the "Read more" button clipped
+     below the fold with no visible way to scroll down to it. */
+  height: 580px;
 }
 
 /* The image placeholder itself. aspect-ratio is the important part
