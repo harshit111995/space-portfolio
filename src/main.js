@@ -63,7 +63,7 @@ createMoon(scene, manager)
 createStars(scene)
 createNebula(scene, manager)
 
-// Build Mars, Venus, and Earth (with its clouds) along the camera's path.
+// Build Mars, Venus, and Earth along the camera's path.
 const { mars, venus, earth } = createPlanets(scene, manager)
 
 // Build Saturn (the entrepreneur-journey planet) at the 4% stop - the

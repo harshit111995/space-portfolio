@@ -1,8 +1,8 @@
 // ===================================================================
 // PLANETS.JS
 // This file builds the three planets the camera flies past on its
-// way through the scene: Mars, Venus, and Earth (with its own layer
-// of clouds on top). Each one slowly spins in place.
+// way through the scene: Mars, Venus, and Earth. Each one slowly
+// spins in place.
 // ===================================================================
 
 import * as THREE from 'three'
@@ -51,6 +51,16 @@ export function createPlanets(sceneApi, manager) {
   sceneApi.scene.add(venus)
 
   // ---- Earth ---------------------------------------------------------------
+  // Just one sphere, textured with the daymap (continents/oceans) -
+  // there used to be a second, very slightly bigger sphere sitting on
+  // top of this one for clouds, but that cloud texture turned out to
+  // have no real transparency in it at all (checked directly: every
+  // single pixel came back fully opaque, alpha 255) - so instead of
+  // letting the surface show through wispy gaps like a real cloud
+  // layer, it was just a solid, opaque, mostly-white shell completely
+  // hiding the daymap underneath. Removed entirely rather than kept,
+  // since patching that would mean reprocessing the texture itself
+  // (baking real transparency into it), not just a code change here.
   const earthGeometry = new THREE.SphereGeometry(6, 64, 64)
   const earthMaterial = new THREE.MeshStandardMaterial({
     map: textureLoader.load('/textures/2k_earth_daymap.webp'),
@@ -70,35 +80,14 @@ export function createPlanets(sceneApi, manager) {
   earth.position.set(5, -3, -260)
   sceneApi.scene.add(earth)
 
-  // Earth's clouds: a second sphere, very slightly bigger (6.1 vs 6)
-  // than Earth itself, so it sits just above the surface like a real
-  // atmosphere layer instead of clipping into the ground.
-  //   transparent + depthWrite: false -> lets the clouds look soft and
-  //   let the surface underneath show through the gaps, rather than
-  //   the cloud layer being a solid opaque shell.
-  const cloudsGeometry = new THREE.SphereGeometry(6.1, 64, 64)
-  const cloudsMaterial = new THREE.MeshStandardMaterial({
-    map: textureLoader.load('/textures/2k_earth_clouds.webp'),
-    transparent: true,
-    depthWrite: false,
-  })
-  const clouds = new THREE.Mesh(cloudsGeometry, cloudsMaterial)
-  // Adding the clouds as a CHILD of the earth mesh (instead of adding
-  // it to the scene directly) means it automatically moves and
-  // rotates together with Earth - we only have to position/rotate
-  // Earth itself, and the clouds tag along.
-  earth.add(clouds)
-
   // ---- Slow rotation for each planet --------------------------------------
   // A tiny rotation added every single frame for each planet. Larger
   // numbers spin faster - Mars turns quickest, Venus slowest, Earth in
-  // between. The clouds get a slightly bigger number than Earth so
-  // they visibly drift over the surface instead of looking painted on.
+  // between.
   sceneApi.addUpdate(() => {
     mars.rotation.y += 0.0008
     venus.rotation.y += 0.0005
     earth.rotation.y += 0.0006
-    clouds.rotation.y += 0.0009
   })
 
   return { mars, venus, earth }
