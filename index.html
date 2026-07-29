@@ -117,7 +117,7 @@
             </p>
           </div>
 
-          <!-- The 5 stat numbers below all start at 0 and count up to
+          <!-- The 6 stat numbers below all start at 0 and count up to
                their real value once, right as this stop becomes
                active - see src/motion/statsCounter.js for how. Each
                one's actual target number, plus whatever short text sits
@@ -126,7 +126,10 @@
                data-suffix - statsCounter.js reads those three plain
                attributes to know what to count up to and how to
                re-assemble the text, WITHOUT needing to know or care
-               what any individual stat actually means. -->
+               what any individual stat actually means. Adding this 6th
+               one required no changes to that file at all - it already
+               finds and animates however many ".stat-number" elements
+               actually exist. -->
           <div class="stats-row">
             <div class="stat">
               <span class="stat-number" data-prefix="$" data-target="250" data-suffix="K">$0K</span>
@@ -147,6 +150,10 @@
             <div class="stat">
               <span class="stat-number" data-prefix="" data-target="5" data-suffix="">0</span>
               <span class="stat-label">Years in programmatic</span>
+            </div>
+            <div class="stat">
+              <span class="stat-number" data-prefix="" data-target="12" data-suffix="+">0+</span>
+              <span class="stat-label">Years in Digital Marketing</span>
             </div>
           </div>
         </div>
@@ -1084,10 +1091,6 @@
                 <a class="contact-link" href="mailto:dabhiharshit11@gmail.com"
                   >dabhiharshit11@gmail.com</a
                 >
-              </li>
-              <li>
-                <span class="contact-label">Phone</span>
-                <span class="contact-value">+971 55 645 3208</span>
               </li>
               <li>
                 <span class="contact-label">LinkedIn</span>

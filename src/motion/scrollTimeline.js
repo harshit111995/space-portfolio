@@ -199,11 +199,11 @@ const BODIES = [
     marker: false,
   },
   {
-    id: 'testimonials', // no real body yet - gets a placeholder wireframe box, see below
+    id: 'testimonials', // src/scene/mercury.js
     position: new THREE.Vector3(-10, 0, -230),
     park: { x: 8, y: -16 }, // ~24.1 units out
     holdLengthVh: 0.986,
-    marker: true,
+    marker: false,
   },
   {
     id: 'earth', // src/scene/planets.js
@@ -216,8 +216,11 @@ const BODIES = [
 
 // ---- Temporary placeholder marker --------------------------------------
 // A small wireframe box for any stop that doesn't have a real body
-// built yet - right now that's only "testimonials" - so the spine's
-// spacing can still be SEEN there before its real content exists.
+// built yet, so the spine's spacing can still be SEEN there before its
+// real content exists. Every stop now has a real body (testimonials'
+// own placeholder was replaced by Mercury - see src/scene/mercury.js),
+// so this currently draws nothing at all - left in place for whenever
+// a future stop is added without its real body ready yet.
 function addPlaceholderMarkers(bodies) {
   const markerGeometry = new THREE.BoxGeometry(6, 6, 6)
   const markerMaterial = new THREE.MeshBasicMaterial({

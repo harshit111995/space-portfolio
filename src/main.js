@@ -14,6 +14,7 @@ import { createStars, createNebula } from './scene/stars.js'
 import { createPlanets } from './scene/planets.js'
 import { createSaturn } from './scene/saturn.js'
 import { createJupiter } from './scene/jupiter.js'
+import { createMercury } from './scene/mercury.js'
 import { createAsteroids } from './scene/asteroids.js'
 import { createSatellites } from './scene/satellites.js'
 import { createConstellations } from './scene/constellations.js'
@@ -72,6 +73,11 @@ const saturn = createSaturn(scene, manager)
 
 // Build Jupiter (the volunteering-stop planet) at the 84% stop.
 const jupiter = createJupiter(scene, manager)
+
+// Build Mercury (the testimonials-stop planet) - replaces the
+// wireframe placeholder box that used to mark this stop before it had
+// a real body.
+createMercury(scene, manager)
 
 // Build the 3 procedural asteroids at the education stop (74%). No
 // LoadingManager needed here - unlike every other body so far, these

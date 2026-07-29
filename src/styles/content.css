@@ -60,18 +60,23 @@
   color: rgba(255, 255, 255, 0.85);
 }
 
-/* ---- The row of 5 stat counters -----------------------------------------
-   One shared frosted-glass "card" holding all 5 numbers side by side.
-   flex-wrap is what lets them drop onto a second (or third) line
-   gracefully on a narrow/mobile screen instead of squeezing into an
-   unreadable single row or overflowing off the edge of the screen. */
+/* ---- The grid of 6 stat counters -----------------------------------------
+   One shared frosted-glass "card" holding all 6 numbers. This is a
+   real CSS grid with an EXPLICIT column count, not a flex row that
+   happens to wrap - deliberately, so the row-breaks are always clean
+   and predictable (3 across, 2 down) instead of being left up to
+   however a flex row's wrapping happens to fall at any given screen
+   width, which for 6 items could easily leave an odd, lonely single
+   item stranded by itself on its own row ("orphan"). Below the
+   media query further down, it switches to 2 columns x 3 rows instead
+   - still a clean, even grid, just taller instead of wider, so a
+   narrow phone never has to squeeze 3 columns into too little room. */
 .stats-row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1rem 2.5rem;
-  max-width: 900px;
-  padding: 1rem 2rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem 2rem;
+  max-width: 640px;
+  padding: 1.5rem 2rem;
   border-radius: 18px;
 
   /* A faint, semi-see-through white tint, combined with the blur
@@ -92,14 +97,22 @@
   border: 1px solid rgba(255, 255, 255, 0.09);
 }
 
-/* One number + its label, stacked and centered. min-width keeps each
-   stat from squashing too narrow before flex-wrap kicks in and moves
-   it to its own line. */
+/* Below this width, 3 columns would squeeze each stat's number/label
+   too narrow to stay comfortably readable - 2 columns x 3 rows keeps
+   every cell a sensible width, just taller instead of wider. */
+@media (max-width: 560px) {
+  .stats-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* One number + its label, stacked and centered within its own grid
+   cell - the grid above handles sizing/wrapping now, so this no
+   longer needs its own min-width like the old flex layout did. */
 .stat {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 110px;
 }
 
 /* The big count-up number itself (see src/motion/statsCounter.js for
@@ -323,8 +336,7 @@
   color: rgba(255, 255, 255, 0.5);
 }
 
-.contact-link,
-.contact-value {
+.contact-link {
   font-size: 0.95rem;
   color: #ffffff;
 }

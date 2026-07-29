@@ -1,8 +1,10 @@
 // ===================================================================
 // STATSCOUNTER.JS
-// This file makes the 5 big stat numbers on the About/Moon stop count
-// UP from 0 to their real value, once, right as the visitor arrives
-// at the Moon.
+// This file makes the big stat numbers on the About/Moon stop count UP
+// from 0 to their real value, once, right as the visitor arrives at
+// the Moon. It doesn't hardcode how many there are - see the comment
+// on "numbers" just below - so adding or removing one in index.html
+// never needs a matching change here.
 //
 // Two different tools split the work here, on purpose (matching how
 // this project keeps text/number motion and scroll-triggering
@@ -20,7 +22,7 @@ import ScrollTrigger from 'gsap/ScrollTrigger'
 import { prefersReducedMotion } from './reducedMotion.js'
 
 export function initStatsCounter() {
-  // Each of the 5 numbers lives in a <span class="stat-number"> inside
+  // Each number lives in a <span class="stat-number"> inside
   // #pin-moon (see index.html), carrying its own real target value
   // (and whatever short bit of text sits right before/after it, like
   // the "$" before 250 or the "K" after it) as plain HTML attributes -

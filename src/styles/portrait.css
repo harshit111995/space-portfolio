@@ -98,3 +98,32 @@
     height: 150px;
   }
 }
+
+/* ---- Narrow AND short viewports: still not enough room ------------------
+   The fix above (stack the portrait above the content instead of
+   beside it) assumes there's enough VERTICAL room above the
+   contact-details card for the portrait to sit in. The contact block
+   is vertically centered on the screen (see ".pin-content" in
+   base.css) - so on a short enough screen, that centered block starts
+   further up than the portrait's fixed "top: 8vh" expects, and the
+   two collide. Found and confirmed directly with real device heights
+   (as short as 375x667, a completely ordinary phone size) - this
+   isn't a rare edge case.
+   The wide, side-by-side layout above (861px and wider) never has
+   this problem - its gap between the portrait and the card is purely
+   HORIZONTAL, which doesn't shrink no matter how short the screen
+   gets, so it's untouched here. This second query only ever narrows
+   the FIRST one further (860px and under), it can't accidentally
+   affect the wide layout.
+   750px is a safe amount past the shortest height that was directly
+   confirmed clear during testing (680px) - same kind of safety margin
+   as the 860px breakpoint above (chosen past its own measured 800px).
+   Below it, the portrait is purely decorative next to the actual
+   contact details, so it's simplest and safest to just hide it
+   outright rather than keep shrinking it further and further with no
+   guarantee an even shorter screen won't still collide. */
+@media (max-width: 860px) and (max-height: 750px) {
+  .portrait {
+    display: none;
+  }
+}
