@@ -1,12 +1,11 @@
 /* ===================================================================
    CARD.CSS
    The ONE reusable card design for the whole site - every card at
-   every "scroll-card" stop (see src/motion/scrollCards.js) is meant
-   to eventually use this exact same look and structure, instead of
-   each stop inventing its own. Right now it's applied to Venus's 12
-   Case Study cards only; other stops (Saturn, Mars, Jupiter) still use
-   their own older card styling in src/styles/content.css for the time
-   being, untouched, and can be switched over to this one later.
+   every card-based stop (Entrepreneur, Experience, Case Studies,
+   Certificates, Volunteering, Skills, Testimonials) shares this exact
+   same look and structure instead of each stop inventing its own.
+   Anything changed in this file - like the hover glow further below -
+   automatically applies everywhere at once, for free.
 
    A card built with this file always has, in order:
      1. .card-image      - OPTIONAL. A framed image slot. Present when
@@ -48,6 +47,36 @@
      set up on ".scroll-card" in content.css for a card whose content
      (including an expanded "Read more") runs long. */
   min-height: 0;
+}
+
+/* ---- Hover glow -----------------------------------------------------
+   A soft highlight while the cursor rests on a card: the border
+   brightens a little, a gentle blue-white glow appears just outside
+   the card's edge (matching the site's space/starlight palette rather
+   than a generic white), and the background lightens a touch. All
+   three change together smoothly over 0.3s instead of snapping on
+   abruptly the moment the cursor arrives.
+
+   "@media (hover: hover) and (pointer: fine)" - deliberately used
+   INSTEAD OF putting this straight on ".card:hover" - is what keeps
+   this a mouse/trackpad-only effect. Touch screens don't have a real
+   hover state, but tapping a card can still briefly count as ":hover"
+   on plenty of mobile browsers, and the glow can then stay stuck
+   "on" until the visitor happens to tap something else - easy to miss
+   without actually testing on a touch device. This media query only
+   matches devices that can genuinely hover with a precise pointer, so
+   the glow simply never triggers at all on touch, rather than
+   triggering and then getting stuck. */
+@media (hover: hover) and (pointer: fine) {
+  .card {
+    transition: border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .card:hover {
+    border-color: rgba(150, 200, 255, 0.35);
+    background: rgba(255, 255, 255, 0.07);
+    box-shadow: 0 0 24px rgba(120, 180, 255, 0.25);
+  }
 }
 
 /* ---- 1. The image slot (optional) ----------------------------------------
