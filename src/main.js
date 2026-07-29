@@ -165,8 +165,9 @@ initScrollCards('pin-venus', 12)
 initScrollCards('pin-jupiter', 3)
 
 // Turn on the "Read more"/"Read less" toggle for Venus's 12 case-study
-// cards - the only stop using the new uniform card design so far (see
-// src/styles/card.css). This only ever changes text/CSS locally on a
-// card; it has no effect on, and isn't affected by, the crossfade
-// mechanic set up by initScrollCards above.
+// cards and Mars's 9 experience cards - both now use the same uniform
+// card design (see src/styles/card.css). This only ever changes
+// text/CSS locally on a card; it has no effect on, and isn't affected
+// by, the crossfade mechanic set up by initScrollCards above.
 initCardReadMore('pin-venus')
+initCardReadMore('pin-mars')

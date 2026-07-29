@@ -37,6 +37,12 @@ export function initCardReadMore(pinId) {
     if (!isOverflowing) {
       // Short text: nothing to expand, so hide the button entirely
       // (the "hidden" attribute removes it from layout, not just view).
+      // Also take the clamp class back OFF - it did nothing to the
+      // text itself here (there was nothing to cut), but it also
+      // draws the "more text follows" fade (see ".card-body--clamped"
+      // in card.css), which would otherwise sit over this card's very
+      // real, complete last line for no reason.
+      body.classList.remove('card-body--clamped')
       button.hidden = true
       return
     }

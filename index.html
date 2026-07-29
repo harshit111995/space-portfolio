@@ -220,103 +220,159 @@
            big comment on Saturn's own cards further up for how this
            mechanic works) - reuses src/motion/scrollCards.js completely
            unchanged, just called with a different pin id and a
-           different card count (9, in src/main.js). -->
+           different card count (9, in src/main.js).
+
+           These 9 cards now use the same uniform ".card" design as
+           Case Studies (see src/styles/card.css - untouched here, just
+           reused) instead of Mars's own older styling. The difference
+           from Case Studies: these cards have NO photo, so there's
+           simply no ".card-image" element inside - card.css was built
+           from the start to leave a complete-looking card even with
+           that piece missing entirely, nothing needs to be added to
+           "fill the gap." Same read-more behavior as Case Studies too,
+           via the same src/ui/cardReadMore.js, just pointed at
+           "pin-mars" instead (see src/main.js). -->
       <div id="pin-mars" class="pin-marker">
         <div class="pin-content">
           <h2>Experience</h2>
 
           <div class="scroll-cards">
-            <div class="scroll-card">
-              <h3>Performance &amp; Programmatic Media Manager</h3>
-              <p class="scroll-card-meta">Media Agency Group · Feb 2024–Present · Dubai</p>
-              <p class="scroll-card-body">
-                Global programmatic across Europe, Americas, Asia, CIS.
-                6:1 avg ROI, best performer consecutive quarters. Cut
-                dead leads 74% MoM, lifted MQL/SQL 11%→38%. Clients:
-                NHS, Binance, DWF Labs, Komatsu &amp; F1 Abu Dhabi, HP,
-                Interactive Brokers.
-              </p>
+            <div class="scroll-card scroll-card--uniform">
+              <div class="card">
+                <h3 class="card-heading">Performance &amp; Programmatic Media Manager</h3>
+                <p class="card-meta">Media Agency Group · Feb 2024–Present · Dubai</p>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    Global programmatic across Europe, Americas, Asia, CIS.
+                    6:1 avg ROI, best performer consecutive quarters. Cut
+                    dead leads 74% MoM, lifted MQL/SQL 11%→38%. Clients:
+                    NHS, Binance, DWF Labs, Komatsu &amp; F1 Abu Dhabi, HP,
+                    Interactive Brokers.
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
             </div>
 
-            <div class="scroll-card">
-              <h3>Performance Marketing Manager</h3>
-              <p class="scroll-card-meta">Vazir Group · Feb 2023–Feb 2024 · Dubai</p>
-              <p class="scroll-card-body">
-                Paid media for investment &amp; migration across North
-                America, EMEA, GCC, APAC, Caribbean. +126% traffic,
-                +1,173% social engagement, +86% CTR, +62.7% conversions,
-                −88% bounce rate.
-              </p>
+            <div class="scroll-card scroll-card--uniform">
+              <div class="card">
+                <h3 class="card-heading">Performance Marketing Manager</h3>
+                <p class="card-meta">Vazir Group · Feb 2023–Feb 2024 · Dubai</p>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    Paid media for investment &amp; migration across North
+                    America, EMEA, GCC, APAC, Caribbean. +126% traffic,
+                    +1,173% social engagement, +86% CTR, +62.7% conversions,
+                    −88% bounce rate.
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
             </div>
 
-            <div class="scroll-card">
-              <h3>Digital &amp; Marketing Manager</h3>
-              <p class="scroll-card-meta">UNO Capital · Jan 2022–Feb 2023 · Dubai</p>
-              <p class="scroll-card-body">
-                HNWI/UHNWI targeting, industry-leading 1.68% conversion.
-                +77.8% YoY leads, +34.8% lead quality. Expanded into
-                Nigeria, EMEA, North Africa. Led a team of digital
-                marketers.
-              </p>
+            <div class="scroll-card scroll-card--uniform">
+              <div class="card">
+                <h3 class="card-heading">Digital &amp; Marketing Manager</h3>
+                <p class="card-meta">UNO Capital · Jan 2022–Feb 2023 · Dubai</p>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    HNWI/UHNWI targeting, industry-leading 1.68% conversion.
+                    +77.8% YoY leads, +34.8% lead quality. Expanded into
+                    Nigeria, EMEA, North Africa. Led a team of digital
+                    marketers.
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
             </div>
 
-            <div class="scroll-card">
-              <h3>Digital Marketing Specialist</h3>
-              <p class="scroll-card-meta">Samana Group · Sep–Dec 2021 · Dubai</p>
-              <p class="scroll-card-body">
-                Real estate &amp; immigration lead gen, 483.2% avg
-                ROAS. ~$100K budget. Arabic social/search, GCC
-                geo-targeting.
-              </p>
+            <div class="scroll-card scroll-card--uniform">
+              <div class="card">
+                <h3 class="card-heading">Digital Marketing Specialist</h3>
+                <p class="card-meta">Samana Group · Sep–Dec 2021 · Dubai</p>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    Real estate &amp; immigration lead gen, 483.2% avg
+                    ROAS. ~$100K budget. Arabic social/search, GCC
+                    geo-targeting.
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
             </div>
 
-            <div class="scroll-card">
-              <h3>Digital Marketing Strategist</h3>
-              <p class="scroll-card-meta">Espada Group · Feb–Sep 2021 · Dubai</p>
-              <p class="scroll-card-body">
-                Strategy for three group entities. 8.4% CTR, 6.3%
-                conversion, +200% organic reach in 6 months. Local SEO,
-                web dev, creative.
-              </p>
+            <div class="scroll-card scroll-card--uniform">
+              <div class="card">
+                <h3 class="card-heading">Digital Marketing Strategist</h3>
+                <p class="card-meta">Espada Group · Feb–Sep 2021 · Dubai</p>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    Strategy for three group entities. 8.4% CTR, 6.3%
+                    conversion, +200% organic reach in 6 months. Local SEO,
+                    web dev, creative.
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
             </div>
 
-            <div class="scroll-card">
-              <h3>Creative Marketing Manager</h3>
-              <p class="scroll-card-meta">Vile Parle Premier Sports · Dec 2014–Dec 2018 · Mumbai</p>
-              <p class="scroll-card-body">
-                Led creative direction for a 14-day, 9-team community
-                football league — advertising, branding, event
-                campaigns.
-              </p>
+            <div class="scroll-card scroll-card--uniform">
+              <div class="card">
+                <h3 class="card-heading">Creative Marketing Manager</h3>
+                <p class="card-meta">Vile Parle Premier Sports · Dec 2014–Dec 2018 · Mumbai</p>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    Led creative direction for a 14-day, 9-team community
+                    football league — advertising, branding, event
+                    campaigns.
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
             </div>
 
-            <div class="scroll-card">
-              <h3>Startup Ambassador</h3>
-              <p class="scroll-card-meta">Startup Jalsa · Sep 2017–Sep 2018 · Mumbai</p>
-              <p class="scroll-card-body">
-                50+ investor matches, $3M+ seed funding. 2,000+
-                entrepreneur community, 25+ events, 80% accelerator
-                placement.
-              </p>
+            <div class="scroll-card scroll-card--uniform">
+              <div class="card">
+                <h3 class="card-heading">Startup Ambassador</h3>
+                <p class="card-meta">Startup Jalsa · Sep 2017–Sep 2018 · Mumbai</p>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    50+ investor matches, $3M+ seed funding. 2,000+
+                    entrepreneur community, 25+ events, 80% accelerator
+                    placement.
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
             </div>
 
-            <div class="scroll-card">
-              <h3>Digital Marketing Intern</h3>
-              <p class="scroll-card-meta">The Marketing Nerdz · Apr–May 2016 · Mumbai</p>
-              <p class="scroll-card-body">
-                Social content across IG/LinkedIn/FB (+25% engagement),
-                email to 10K+ subscribers, SEO blog writing.
-              </p>
+            <div class="scroll-card scroll-card--uniform">
+              <div class="card">
+                <h3 class="card-heading">Digital Marketing Intern</h3>
+                <p class="card-meta">The Marketing Nerdz · Apr–May 2016 · Mumbai</p>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    Social content across IG/LinkedIn/FB (+25% engagement),
+                    email to 10K+ subscribers, SEO blog writing.
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
             </div>
 
-            <div class="scroll-card">
-              <h3>Marketing Coordinator</h3>
-              <p class="scroll-card-meta">Massive Advertising · Sep 2015–Mar 2016 · Mumbai</p>
-              <p class="scroll-card-body">
-                12+ integrated campaigns (+40% engagement), +65% social
-                following, email open 18%→28%, managed $50K quarterly
-                budget.
-              </p>
+            <div class="scroll-card scroll-card--uniform">
+              <div class="card">
+                <h3 class="card-heading">Marketing Coordinator</h3>
+                <p class="card-meta">Massive Advertising · Sep 2015–Mar 2016 · Mumbai</p>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    12+ integrated campaigns (+40% engagement), +65% social
+                    following, email open 18%→28%, managed $50K quarterly
+                    budget.
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
             </div>
           </div>
 
