@@ -175,3 +175,8 @@ initCardReadMore('pin-venus')
 initCardReadMore('pin-mars')
 initCardReadMore('pin-saturn')
 initCardReadMore('pin-jupiter')
+
+// Same toggle for the Skills stop's 2 static cards - Technical Skills
+// is dense enough to actually need it; Soft Skills just automatically
+// gets no button, since its own text already fits without truncating.
+initCardReadMore('pin-satellites')

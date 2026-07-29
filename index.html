@@ -792,94 +792,69 @@
 
       <div class="pin-runway" aria-hidden="true"></div>
 
-      <!-- 7. SATELLITES - Skills. -->
-      <!-- 7. SATELLITES - Skills. The 6 category cards below start
-           invisible and shifted down slightly (see the
-           ".skill-category" rule in src/styles/content.css) -
-           src/motion/skillsReveal.js fades and lifts them into place,
-           one after another, the moment this stop actually becomes
-           active - the same pattern already used for the Moon's
-           stats, the testimonials cards, and the education panel. -->
+      <!-- 7. SATELLITES - Skills. Static content, NOT a scroll-card
+           stop - both cards below are visible together the whole time
+           this stop is held (side by side on a wide screen, stacked
+           on a narrow one - see ".skills-cards" in content.css). They
+           start invisible and shifted down slightly, and
+           src/motion/skillsReveal.js fades and lifts them into place
+           the moment this stop actually becomes active - the same
+           reveal pattern already used for the Moon's stats, the
+           testimonials cards, and the education panel.
+
+           Both cards use the same uniform ".card" design as the four
+           scroll-card stops (see src/styles/card.css - reused exactly
+           as-is, nothing in that file changed). Skills have no photo,
+           so neither card has a ".card-image" slot. The Technical
+           Skills card is intentionally dense - all 5 tool categories
+           are written as ONE flowing paragraph, with each category
+           name simply bolded in-line rather than given its own
+           heading/list. That's on purpose: the 4-line-clamp + "Read
+           more" toggle (src/ui/cardReadMore.js) works by counting
+           lines of plain running text, and nested headings/lists
+           would make that count unreliable. The shorter Soft Skills
+           card uses that exact same structure for consistency - it
+           just never has enough text to actually need its own "Read
+           more" button. -->
       <div id="pin-satellites" class="pin-marker">
         <div class="pin-content">
           <h2>Skills</h2>
-          <div class="skills-grid">
-            <div class="skill-category">
-              <h3 class="skill-category-title">Programmatic Platforms</h3>
-              <ul class="skill-items">
-                <li>DV360</li>
-                <li>Trade Desk</li>
-                <li>Amazon DSP</li>
-                <li>StackAdapt</li>
-                <li>Quantcast</li>
-                <li>Outbrain</li>
-                <li>CM360</li>
-                <li>Displayce</li>
-                <li>Vistar</li>
-                <li>Adjust</li>
-                <li>Appsflyer</li>
-              </ul>
+          <div class="skills-cards">
+            <div class="skills-card">
+              <div class="card">
+                <h3 class="card-heading">Technical Skills</h3>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    <strong>Programmatic Platforms:</strong> DV360, Trade Desk,
+                    Amazon DSP, StackAdapt, Quantcast, Outbrain, CM360,
+                    Displayce, Vistar, Adjust, Appsflyer.
+                    <strong>Media Channels:</strong> CTV, DOOH, PDOOH, Display,
+                    Video, Social, Search, Native, Audio.
+                    <strong>Analytics:</strong> GA4, Tableau, Salesforce,
+                    Microsoft Clarity, Adobe Analytics, Nielsen Adintel.
+                    <strong>Ad Serving:</strong> Google, Meta, TikTok, Snapchat,
+                    LinkedIn, Twitter Ads.
+                    <strong>Marketing Automation:</strong> Braze, Mailchimp,
+                    HubSpot, Zoho, ActiveCampaign.
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
             </div>
 
-            <div class="skill-category">
-              <h3 class="skill-category-title">Media Channels</h3>
-              <ul class="skill-items">
-                <li>CTV</li>
-                <li>DOOH</li>
-                <li>PDOOH</li>
-                <li>Display</li>
-                <li>Video</li>
-                <li>Social</li>
-                <li>Search</li>
-                <li>Native</li>
-                <li>Audio</li>
-              </ul>
-            </div>
-
-            <div class="skill-category">
-              <h3 class="skill-category-title">Analytics</h3>
-              <ul class="skill-items">
-                <li>GA4</li>
-                <li>Tableau</li>
-                <li>Salesforce</li>
-                <li>Microsoft Clarity</li>
-                <li>Adobe Analytics</li>
-                <li>Nielsen Adintel</li>
-              </ul>
-            </div>
-
-            <div class="skill-category">
-              <h3 class="skill-category-title">Ad Serving</h3>
-              <ul class="skill-items">
-                <li>Google</li>
-                <li>Meta</li>
-                <li>TikTok</li>
-                <li>Snapchat</li>
-                <li>LinkedIn</li>
-                <li>Twitter Ads</li>
-              </ul>
-            </div>
-
-            <div class="skill-category">
-              <h3 class="skill-category-title">Marketing Automation</h3>
-              <ul class="skill-items">
-                <li>Braze</li>
-                <li>Mailchimp</li>
-                <li>HubSpot</li>
-                <li>Zoho</li>
-                <li>ActiveCampaign</li>
-              </ul>
-            </div>
-
-            <div class="skill-category">
-              <h3 class="skill-category-title">Core Competencies</h3>
-              <ul class="skill-items">
-                <li>Omnichannel buying</li>
-                <li>Yield optimization</li>
-                <li>CAC/LTV</li>
-                <li>Audience segmentation</li>
-                <li>Budget management</li>
-              </ul>
+            <div class="skills-card">
+              <div class="card">
+                <h3 class="card-heading">Soft Skills</h3>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    Leadership, communication, negotiation, and strategic
+                    thinking, with strong stakeholder management and
+                    cross-functional collaboration. Mentoring experience and
+                    cultural awareness across MENA, EMEA, and APAC.
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
