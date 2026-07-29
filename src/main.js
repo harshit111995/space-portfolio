@@ -164,12 +164,14 @@ initScrollCards('pin-venus', 12)
 // through Jupiter's held pin.
 initScrollCards('pin-jupiter', 3)
 
-// Turn on the "Read more"/"Read less" toggle for Venus's 12 case-study
-// cards, Mars's 9 experience cards, and Saturn's 3 entrepreneur cards -
-// all three now use the same uniform card design (see
-// src/styles/card.css). This only ever changes text/CSS locally on a
-// card; it has no effect on, and isn't affected by, the crossfade
-// mechanic set up by initScrollCards above.
+// Turn on the "Read more"/"Read less" toggle for all four scroll-card
+// stops - Venus's 12 case-study cards, Mars's 9 experience cards,
+// Saturn's 3 entrepreneur cards, and Jupiter's 3 volunteering cards -
+// all now use the same uniform card design (see src/styles/card.css).
+// This only ever changes text/CSS locally on a card; it has no effect
+// on, and isn't affected by, the crossfade mechanic set up by
+// initScrollCards above.
 initCardReadMore('pin-venus')
 initCardReadMore('pin-mars')
 initCardReadMore('pin-saturn')
+initCardReadMore('pin-jupiter')

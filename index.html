@@ -890,43 +890,68 @@
       <!-- 8. JUPITER - Volunteering. The fourth and last "scroll-card"
            stop for now - same src/motion/scrollCards.js mechanic,
            unchanged, called with pin-jupiter and 3 (see src/main.js).
-           Same image-placeholder idea as Venus's cards above (see the
-           big comment there for why it's sized the way it is). -->
+
+           These 3 cards now use the same uniform ".card" design as
+           the other three converted stops (see src/styles/card.css -
+           reused exactly as-is, nothing in that file changed). Unlike
+           Experience/Entrepreneur, these DO have a photo, so like
+           Case Studies each one also gets a ".card-image" slot at the
+           top (see the big comment on ".card-image" in card.css for
+           why it's sized the way it is - a placeholder standing in
+           for a real photo later, without anything else needing to
+           move when that photo is added). Same read-more toggle too,
+           via src/ui/cardReadMore.js, pointed at "pin-jupiter" (see
+           src/main.js). -->
       <div id="pin-jupiter" class="pin-marker">
         <div class="pin-content">
           <h2>Volunteering</h2>
 
           <div class="scroll-cards scroll-cards--with-image">
-            <div class="scroll-card scroll-card--with-image">
-              <div class="scroll-card-image"><span class="scroll-card-image-label">Volunteering photo</span></div>
-              <h3>FIFA</h3>
-              <p class="scroll-card-meta">Competition Management Volunteer · Dec 2023–Present</p>
-              <p class="scroll-card-body">
-                FIFA Beach Soccer World Cup — logistics, match-day
-                operations, player/official liaison, fan engagement.
-              </p>
+            <div class="scroll-card scroll-card--with-image scroll-card--uniform">
+              <div class="card">
+                <div class="card-image"><span class="card-image-label">Volunteering photo</span></div>
+                <h3 class="card-heading">FIFA</h3>
+                <p class="card-meta">Competition Management Volunteer · Dec 2023–Present</p>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    FIFA Beach Soccer World Cup — logistics, match-day
+                    operations, player/official liaison, fan engagement.
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
             </div>
 
-            <div class="scroll-card scroll-card--with-image">
-              <div class="scroll-card-image"><span class="scroll-card-image-label">Volunteering photo</span></div>
-              <h3>Robin Hood Army</h3>
-              <p class="scroll-card-meta">Strategist · 2014–Present</p>
-              <p class="scroll-card-body">
-                CSR across 28 Mumbai academies, 16,000 volunteers.
-                Fighting hunger, promoting education access for
-                underprivileged children.
-              </p>
+            <div class="scroll-card scroll-card--with-image scroll-card--uniform">
+              <div class="card">
+                <div class="card-image"><span class="card-image-label">Volunteering photo</span></div>
+                <h3 class="card-heading">Robin Hood Army</h3>
+                <p class="card-meta">Strategist · 2014–Present</p>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    CSR across 28 Mumbai academies, 16,000 volunteers.
+                    Fighting hunger, promoting education access for
+                    underprivileged children.
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
             </div>
 
-            <div class="scroll-card scroll-card--with-image">
-              <div class="scroll-card-image"><span class="scroll-card-image-label">Volunteering photo</span></div>
-              <h3>United Nations Volunteers</h3>
-              <p class="scroll-card-meta">Volunteer · Oct–Dec 2019</p>
-              <p class="scroll-card-body">
-                Digital literacy workshops for underserved communities —
-                internet navigation, software, online safety; bridging
-                the digital divide.
-              </p>
+            <div class="scroll-card scroll-card--with-image scroll-card--uniform">
+              <div class="card">
+                <div class="card-image"><span class="card-image-label">Volunteering photo</span></div>
+                <h3 class="card-heading">United Nations Volunteers</h3>
+                <p class="card-meta">Volunteer · Oct–Dec 2019</p>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    Digital literacy workshops for underserved communities —
+                    internet navigation, software, online safety; bridging
+                    the digital divide.
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
             </div>
           </div>
 
