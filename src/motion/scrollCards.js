@@ -17,12 +17,25 @@
 import ScrollTrigger from 'gsap/ScrollTrigger'
 import { prefersReducedMotion } from './reducedMotion.js'
 
-// How much of the space between two cards is spent smoothly
-// cross-fading between them, as a fraction of the WHOLE hold (not per
-// card). A bigger number means a longer, more gradual fade but less
-// time where a card sits still, fully readable, before the next
-// starts creeping in.
-const HALF_OVERLAP = 0.06
+// How much of EACH CARD'S OWN STRETCH is spent smoothly cross-fading
+// into/out of its neighbors, as a fraction of that card's own stretch
+// - NOT a fraction of the whole hold. This distinction matters a lot
+// once more than a handful of cards are involved: with only 3 cards,
+// each one's own stretch is a big chunk of the whole hold (a third of
+// it), so a small fixed slice of the WHOLE hold spent fading barely
+// eats into that. But with 9 or 12 cards, each one's own stretch
+// shrinks a lot (an eighth, a twelfth...) while a fixed slice of the
+// WHOLE hold stays exactly the same size - eventually the fade zones
+// on either side of a card become BIGGER than the card's own stretch,
+// and it can never fade all the way up to fully visible at all.
+// Tested directly on the 9-card Experience stop: the middle card
+// topped out at 96% opacity with both neighbors still faintly showing
+// through at all times, instead of ever being the one clean, fully-
+// visible card. Sizing the fade as a fraction of EACH card's own
+// stretch instead means that problem can't happen no matter how many
+// cards there are - a fixed proportion of "fade" and "settled, fully
+// visible" time always fits inside every card's own stretch.
+const HALF_OVERLAP_FRACTION_OF_SEGMENT = 0.18
 
 // Works out how visible ONE card should be, purely from the current
 // scroll progress through the hold (0 at the very start, 1 at the
@@ -30,14 +43,16 @@ const HALF_OVERLAP = 0.06
 // that 0-1 range (with 3 cards, card 0 owns roughly the first third,
 // card 1 the middle third, and so on) - it's fully visible (opacity 1)
 // for most of its own stretch, then fades out right as the next
-// card's stretch begins fading in, overlapping by HALF_OVERLAP on
-// each side of that shared boundary. The very first card never needs
-// to fade IN (it's already the one showing at the very start), and
-// the very last card never needs to fade OUT (nothing follows it).
+// card's stretch begins fading in, overlapping by a portion of that
+// stretch (see HALF_OVERLAP_FRACTION_OF_SEGMENT above) on each side of
+// that shared boundary. The very first card never needs to fade IN
+// (it's already the one showing at the very start), and the very last
+// card never needs to fade OUT (nothing follows it).
 function getCardOpacity(cardIndex, progress, cardCount) {
   const segmentWidth = 1 / cardCount
   const segmentStart = cardIndex * segmentWidth
   const segmentEnd = segmentStart + segmentWidth
+  const halfOverlap = segmentWidth * HALF_OVERLAP_FRACTION_OF_SEGMENT
 
   let opacity = 1
 
@@ -45,8 +60,8 @@ function getCardOpacity(cardIndex, progress, cardCount) {
   const isLastCard = cardIndex === cardCount - 1
 
   if (!isFirstCard) {
-    const fadeInStart = segmentStart - HALF_OVERLAP
-    const fadeInEnd = segmentStart + HALF_OVERLAP
+    const fadeInStart = segmentStart - halfOverlap
+    const fadeInEnd = segmentStart + halfOverlap
     if (progress < fadeInStart) {
       opacity = 0
     } else if (progress < fadeInEnd) {
@@ -55,8 +70,8 @@ function getCardOpacity(cardIndex, progress, cardCount) {
   }
 
   if (!isLastCard) {
-    const fadeOutStart = segmentEnd - HALF_OVERLAP
-    const fadeOutEnd = segmentEnd + HALF_OVERLAP
+    const fadeOutStart = segmentEnd - halfOverlap
+    const fadeOutEnd = segmentEnd + halfOverlap
     if (progress > fadeOutEnd) {
       opacity = 0
     } else if (progress > fadeOutStart) {

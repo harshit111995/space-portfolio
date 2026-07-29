@@ -475,14 +475,19 @@
   color: rgba(255, 255, 255, 0.85);
 }
 
-/* ---- Scroll-cards (Saturn/Entrepreneur, and reusable for later stops) ----
-   The 3 cards all sit in this exact same spot, one on top of the
-   other - src/motion/scrollCards.js is what fades between them as the
-   visitor scrolls, this file just controls how the whole thing looks.
+/* ---- Scroll-cards (Saturn, Mars, Venus, Jupiter all reuse this) ----------
+   Every card at every one of these 4 stops sits in this exact same
+   spot, one on top of the other - src/motion/scrollCards.js is what
+   fades between them as the visitor scrolls, this file just controls
+   how the whole thing looks. It's the SAME styling and the SAME
+   mechanic reused 4 times over, not 4 separate systems.
    ".scroll-cards" needs a real, fixed height for that stacking to
    work (an absolutely positioned child needs to know what box it's
-   centering inside) - sized generously enough for the longest of the
-   3 cards' text to fit comfortably. */
+   centering inside) - sized generously enough for Saturn's and Mars's
+   text-only cards to fit comfortably. Venus's and Jupiter's cards are
+   taller (they also show an image placeholder - see
+   ".scroll-cards--with-image" further below), so they use their own,
+   taller version of this same height. */
 .scroll-cards {
   position: relative;
   width: min(90vw, 480px);
@@ -524,6 +529,57 @@
   font-size: 0.9rem;
   line-height: 1.6;
   color: rgba(255, 255, 255, 0.85);
+}
+
+/* ---- Cards that also carry an image (Venus, Jupiter) ---------------------
+   ".scroll-cards--with-image" is added to both the outer ".scroll-cards"
+   box AND each individual ".scroll-card" inside it, wherever a stop's
+   cards include a photo slot - it just means "make room for an image
+   at the top of each card," on top of everything ".scroll-cards"/
+   ".scroll-card" already do above. */
+.scroll-cards--with-image {
+  height: 480px; /* taller than the plain 300px above, to fit an image plus the same text block underneath it */
+}
+
+/* The image placeholder itself. aspect-ratio is the important part
+   here: it reserves the box's shape (3 wide for every 2 tall, roughly
+   matching a normal landscape photo) BEFORE any real image exists -
+   whoever adds a real photo later just needs to put an <img> where
+   the <span> label currently sits, right inside this same box. Because
+   the box's shape is already fixed by aspect-ratio (not by whatever
+   image happens to load), swapping in a real photo won't shift or
+   resize anything else on the card even slightly. */
+.scroll-card-image {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  margin-bottom: 1rem;
+  border-radius: 12px;
+  overflow: hidden;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+}
+
+/* Once a real photo is added (as an <img> inside ".scroll-card-image"),
+   this makes it fill the box completely without stretching - any part
+   of the photo that doesn't match the 3:2 shape just gets cropped
+   instead of squashed. */
+.scroll-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.scroll-card-image-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
 }
 
 /* The 3 small dots below the cards - purely a "you are here" hint,

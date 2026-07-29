@@ -144,5 +144,20 @@ initContactReveal()
 initCertificatePanels(scene.camera, constellations)
 
 // Cross-fade between the 3 entrepreneur cards as the visitor scrolls
-// through Saturn's held pin.
+// through Saturn's held pin. The same reusable function is called 3
+// more times below for Mars, Venus, and Jupiter - same mechanic,
+// completely unchanged, just a different stop id and card count each
+// time.
 initScrollCards('pin-saturn', 3)
+
+// Cross-fade between the 9 experience cards as the visitor scrolls
+// through Mars's held pin.
+initScrollCards('pin-mars', 9)
+
+// Cross-fade between the 12 case-study cards as the visitor scrolls
+// through Venus's held pin.
+initScrollCards('pin-venus', 12)
+
+// Cross-fade between the 3 volunteering cards as the visitor scrolls
+// through Jupiter's held pin.
+initScrollCards('pin-jupiter', 3)

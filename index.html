@@ -216,33 +216,276 @@
 
       <div class="pin-runway" aria-hidden="true"></div>
 
-      <!-- 3. MARS - Experience. Text below is moved over from the old
-           hover-triggered "panel-experience" card (see
-           src/scene/raycaster.js's comment on why that hover system is
-           retired) - same words, now just always-on content for this
-           stop instead of something that only appeared on hover. -->
+      <!-- 3. MARS - Experience. The second "scroll-card" stop (see the
+           big comment on Saturn's own cards further up for how this
+           mechanic works) - reuses src/motion/scrollCards.js completely
+           unchanged, just called with a different pin id and a
+           different card count (9, in src/main.js). -->
       <div id="pin-mars" class="pin-marker">
         <div class="pin-content">
           <h2>Experience</h2>
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-            do eiusmod tempor incididunt ut labore et dolore magna
-            aliqua.
-          </p>
+
+          <div class="scroll-cards">
+            <div class="scroll-card">
+              <h3>Performance &amp; Programmatic Media Manager</h3>
+              <p class="scroll-card-meta">Media Agency Group · Feb 2024–Present · Dubai</p>
+              <p class="scroll-card-body">
+                Global programmatic across Europe, Americas, Asia, CIS.
+                6:1 avg ROI, best performer consecutive quarters. Cut
+                dead leads 74% MoM, lifted MQL/SQL 11%→38%. Clients:
+                NHS, Binance, DWF Labs, Komatsu &amp; F1 Abu Dhabi, HP,
+                Interactive Brokers.
+              </p>
+            </div>
+
+            <div class="scroll-card">
+              <h3>Performance Marketing Manager</h3>
+              <p class="scroll-card-meta">Vazir Group · Feb 2023–Feb 2024 · Dubai</p>
+              <p class="scroll-card-body">
+                Paid media for investment &amp; migration across North
+                America, EMEA, GCC, APAC, Caribbean. +126% traffic,
+                +1,173% social engagement, +86% CTR, +62.7% conversions,
+                −88% bounce rate.
+              </p>
+            </div>
+
+            <div class="scroll-card">
+              <h3>Digital &amp; Marketing Manager</h3>
+              <p class="scroll-card-meta">UNO Capital · Jan 2022–Feb 2023 · Dubai</p>
+              <p class="scroll-card-body">
+                HNWI/UHNWI targeting, industry-leading 1.68% conversion.
+                +77.8% YoY leads, +34.8% lead quality. Expanded into
+                Nigeria, EMEA, North Africa. Led a team of digital
+                marketers.
+              </p>
+            </div>
+
+            <div class="scroll-card">
+              <h3>Digital Marketing Specialist</h3>
+              <p class="scroll-card-meta">Samana Group · Sep–Dec 2021 · Dubai</p>
+              <p class="scroll-card-body">
+                Real estate &amp; immigration lead gen, 483.2% avg
+                ROAS. ~$100K budget. Arabic social/search, GCC
+                geo-targeting.
+              </p>
+            </div>
+
+            <div class="scroll-card">
+              <h3>Digital Marketing Strategist</h3>
+              <p class="scroll-card-meta">Espada Group · Feb–Sep 2021 · Dubai</p>
+              <p class="scroll-card-body">
+                Strategy for three group entities. 8.4% CTR, 6.3%
+                conversion, +200% organic reach in 6 months. Local SEO,
+                web dev, creative.
+              </p>
+            </div>
+
+            <div class="scroll-card">
+              <h3>Creative Marketing Manager</h3>
+              <p class="scroll-card-meta">Vile Parle Premier Sports · Dec 2014–Dec 2018 · Mumbai</p>
+              <p class="scroll-card-body">
+                Led creative direction for a 14-day, 9-team community
+                football league — advertising, branding, event
+                campaigns.
+              </p>
+            </div>
+
+            <div class="scroll-card">
+              <h3>Startup Ambassador</h3>
+              <p class="scroll-card-meta">Startup Jalsa · Sep 2017–Sep 2018 · Mumbai</p>
+              <p class="scroll-card-body">
+                50+ investor matches, $3M+ seed funding. 2,000+
+                entrepreneur community, 25+ events, 80% accelerator
+                placement.
+              </p>
+            </div>
+
+            <div class="scroll-card">
+              <h3>Digital Marketing Intern</h3>
+              <p class="scroll-card-meta">The Marketing Nerdz · Apr–May 2016 · Mumbai</p>
+              <p class="scroll-card-body">
+                Social content across IG/LinkedIn/FB (+25% engagement),
+                email to 10K+ subscribers, SEO blog writing.
+              </p>
+            </div>
+
+            <div class="scroll-card">
+              <h3>Marketing Coordinator</h3>
+              <p class="scroll-card-meta">Massive Advertising · Sep 2015–Mar 2016 · Mumbai</p>
+              <p class="scroll-card-body">
+                12+ integrated campaigns (+40% engagement), +65% social
+                following, email open 18%→28%, managed $50K quarterly
+                budget.
+              </p>
+            </div>
+          </div>
+
+          <div class="scroll-cards-dots">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
         </div>
       </div>
 
       <div class="pin-runway" aria-hidden="true"></div>
 
-      <!-- 4. VENUS - Case Studies. Text moved over from the old
-           "panel-casestudies" hover card, same reasoning as Mars above. -->
+      <!-- 4. VENUS - Case Studies. The third "scroll-card" stop, and the
+           biggest one (12 cards) - same src/motion/scrollCards.js
+           mechanic, unchanged, just called with pin-venus and 12 (see
+           src/main.js).
+
+           Each card also has an image placeholder above its text (see
+           ".scroll-card-image" in src/styles/content.css) - a plain,
+           fixed-shape box standing in for a real campaign photo that
+           will be dropped in later. It's sized with a fixed
+           "aspect-ratio" specifically so that later swap is a
+           zero-layout-shift change: whoever adds the real photo just
+           needs to put an <img> where the placeholder text sits now,
+           inside this same sized box - nothing about the box itself,
+           or anything around it, needs to change. -->
       <div id="pin-venus" class="pin-marker">
         <div class="pin-content">
           <h2>Case Studies</h2>
-          <p>
-            Ut enim ad minim veniam, quis nostrud exercitation ullamco
-            laboris nisi ut aliquip ex ea commodo consequat.
-          </p>
+
+          <div class="scroll-cards scroll-cards--with-image">
+            <div class="scroll-card scroll-card--with-image">
+              <div class="scroll-card-image"><span class="scroll-card-image-label">Campaign image</span></div>
+              <h3>Binance</h3>
+              <p class="scroll-card-meta">Programmatic campaign</p>
+              <p class="scroll-card-body">
+                Global crypto-audience targeting across CTV and display.
+              </p>
+            </div>
+
+            <div class="scroll-card scroll-card--with-image">
+              <div class="scroll-card-image"><span class="scroll-card-image-label">Campaign image</span></div>
+              <h3>Informa</h3>
+              <p class="scroll-card-meta">Programmatic campaign</p>
+              <p class="scroll-card-body">
+                B2B events and publishing audiences reached across EMEA.
+              </p>
+            </div>
+
+            <div class="scroll-card scroll-card--with-image">
+              <div class="scroll-card-image"><span class="scroll-card-image-label">Campaign image</span></div>
+              <h3>DWF Labs</h3>
+              <p class="scroll-card-meta">Programmatic campaign</p>
+              <p class="scroll-card-body">
+                Web3 and crypto-investor targeting across finance
+                placements.
+              </p>
+            </div>
+
+            <div class="scroll-card scroll-card--with-image">
+              <div class="scroll-card-image"><span class="scroll-card-image-label">Campaign image</span></div>
+              <h3>Solarwinds</h3>
+              <p class="scroll-card-meta">Programmatic campaign</p>
+              <p class="scroll-card-body">
+                IT and enterprise decision-maker targeting across B2B
+                inventory.
+              </p>
+            </div>
+
+            <div class="scroll-card scroll-card--with-image">
+              <div class="scroll-card-image"><span class="scroll-card-image-label">Campaign image</span></div>
+              <h3>Komatsu &amp; F1 Abu Dhabi</h3>
+              <p class="scroll-card-meta">Programmatic campaign</p>
+              <p class="scroll-card-body">
+                Motorsport-tied brand visibility around the Abu Dhabi
+                Grand Prix.
+              </p>
+            </div>
+
+            <div class="scroll-card scroll-card--with-image">
+              <div class="scroll-card-image"><span class="scroll-card-image-label">Campaign image</span></div>
+              <h3>Lexis Nexis</h3>
+              <p class="scroll-card-meta">Programmatic campaign</p>
+              <p class="scroll-card-body">
+                Legal and professional audience targeting across search
+                and display.
+              </p>
+            </div>
+
+            <div class="scroll-card scroll-card--with-image">
+              <div class="scroll-card-image"><span class="scroll-card-image-label">Campaign image</span></div>
+              <h3>Ariana Grande Perfumes</h3>
+              <p class="scroll-card-meta">Programmatic campaign</p>
+              <p class="scroll-card-body">
+                Fragrance launch amplification across social and video.
+              </p>
+            </div>
+
+            <div class="scroll-card scroll-card--with-image">
+              <div class="scroll-card-image"><span class="scroll-card-image-label">Campaign image</span></div>
+              <h3>Digibet</h3>
+              <p class="scroll-card-meta">Programmatic campaign</p>
+              <p class="scroll-card-body">
+                Sports-betting audience acquisition across CTV and
+                native.
+              </p>
+            </div>
+
+            <div class="scroll-card scroll-card--with-image">
+              <div class="scroll-card-image"><span class="scroll-card-image-label">Campaign image</span></div>
+              <h3>NHS</h3>
+              <p class="scroll-card-meta">Programmatic campaign</p>
+              <p class="scroll-card-body">
+                Public-health awareness reach across the UK, display
+                and social.
+              </p>
+            </div>
+
+            <div class="scroll-card scroll-card--with-image">
+              <div class="scroll-card-image"><span class="scroll-card-image-label">Campaign image</span></div>
+              <h3>HP — GITEX 2025</h3>
+              <p class="scroll-card-meta">Programmatic campaign</p>
+              <p class="scroll-card-body">
+                Enterprise tech visibility around GITEX Dubai, DOOH and
+                display.
+              </p>
+            </div>
+
+            <div class="scroll-card scroll-card--with-image">
+              <div class="scroll-card-image"><span class="scroll-card-image-label">Campaign image</span></div>
+              <h3>Interactive Brokers</h3>
+              <p class="scroll-card-meta">Programmatic campaign</p>
+              <p class="scroll-card-body">
+                Global trading-audience acquisition across finance
+                vertical placements.
+              </p>
+            </div>
+
+            <div class="scroll-card scroll-card--with-image">
+              <div class="scroll-card-image"><span class="scroll-card-image-label">Campaign image</span></div>
+              <h3>Clear Blue</h3>
+              <p class="scroll-card-meta">Programmatic campaign</p>
+              <p class="scroll-card-body">
+                Consumer health brand reach across programmatic display.
+              </p>
+            </div>
+          </div>
+
+          <div class="scroll-cards-dots">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
         </div>
       </div>
 
@@ -468,16 +711,54 @@
 
       <div class="pin-runway" aria-hidden="true"></div>
 
-      <!-- 8. JUPITER - Volunteering. -->
+      <!-- 8. JUPITER - Volunteering. The fourth and last "scroll-card"
+           stop for now - same src/motion/scrollCards.js mechanic,
+           unchanged, called with pin-jupiter and 3 (see src/main.js).
+           Same image-placeholder idea as Venus's cards above (see the
+           big comment there for why it's sized the way it is). -->
       <div id="pin-jupiter" class="pin-marker">
         <div class="pin-content">
           <h2>Volunteering</h2>
-          <p>
-            Sed ut perspiciatis unde omnis iste natus error sit voluptatem
-            accusantium doloremque laudantium, totam rem aperiam, eaque
-            ipsa quae ab illo inventore veritatis et quasi architecto
-            beatae vitae dicta sunt explicabo.
-          </p>
+
+          <div class="scroll-cards scroll-cards--with-image">
+            <div class="scroll-card scroll-card--with-image">
+              <div class="scroll-card-image"><span class="scroll-card-image-label">Volunteering photo</span></div>
+              <h3>FIFA</h3>
+              <p class="scroll-card-meta">Competition Management Volunteer · Dec 2023–Present</p>
+              <p class="scroll-card-body">
+                FIFA Beach Soccer World Cup — logistics, match-day
+                operations, player/official liaison, fan engagement.
+              </p>
+            </div>
+
+            <div class="scroll-card scroll-card--with-image">
+              <div class="scroll-card-image"><span class="scroll-card-image-label">Volunteering photo</span></div>
+              <h3>Robin Hood Army</h3>
+              <p class="scroll-card-meta">Strategist · 2014–Present</p>
+              <p class="scroll-card-body">
+                CSR across 28 Mumbai academies, 16,000 volunteers.
+                Fighting hunger, promoting education access for
+                underprivileged children.
+              </p>
+            </div>
+
+            <div class="scroll-card scroll-card--with-image">
+              <div class="scroll-card-image"><span class="scroll-card-image-label">Volunteering photo</span></div>
+              <h3>United Nations Volunteers</h3>
+              <p class="scroll-card-meta">Volunteer · Oct–Dec 2019</p>
+              <p class="scroll-card-body">
+                Digital literacy workshops for underserved communities —
+                internet navigation, software, online safety; bridging
+                the digital divide.
+              </p>
+            </div>
+          </div>
+
+          <div class="scroll-cards-dots">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
         </div>
       </div>
 
