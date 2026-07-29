@@ -162,43 +162,67 @@
            fades between them one at a time (see
            src/motion/scrollCards.js, written generically so this same
            pattern can be reused for other stops later, not just
-           Saturn). -->
+           Saturn).
+
+           These 3 cards now use the same uniform ".card" design as
+           Experience and Case Studies (see src/styles/card.css -
+           reused exactly as-is, nothing in that file changed). Like
+           Experience, these have no photo, so there's simply no
+           ".card-image" element - the uniform card was built to look
+           complete either way. Same read-more toggle too, via
+           src/ui/cardReadMore.js, just pointed at "pin-saturn" (see
+           src/main.js). -->
       <div id="pin-saturn" class="pin-marker">
         <div class="pin-content">
           <h2>Entrepreneur</h2>
 
           <div class="scroll-cards">
-            <div class="scroll-card">
-              <h3>The DigitalWit</h3>
-              <p class="scroll-card-meta">Founder · 2016–2021 · Mumbai</p>
-              <p class="scroll-card-body">
-                Founded and led a full-service digital agency —
-                advertising, branding, web development, content. Built a
-                cross-functional team; drove growth to 64% of gross
-                revenue through client acquisition across B2B, B2C, D2C.
-              </p>
+            <div class="scroll-card scroll-card--uniform">
+              <div class="card">
+                <h3 class="card-heading">The DigitalWit</h3>
+                <p class="card-meta">Founder · 2016–2021 · Mumbai</p>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    Founded and led a full-service digital agency —
+                    advertising, branding, web development, content. Built a
+                    cross-functional team; drove growth to 64% of gross
+                    revenue through client acquisition across B2B, B2C, D2C.
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
             </div>
 
-            <div class="scroll-card">
-              <h3>Encube Enterprise</h3>
-              <p class="scroll-card-meta">Managing Partner · 2020–2021 · Mumbai</p>
-              <p class="scroll-card-body">
-                Led a medical 3D-printing company producing custom
-                prosthetics, implants, and surgical guides under
-                regulatory compliance. Built hospital relationships and
-                drove R&amp;D in biocompatible materials.
-              </p>
+            <div class="scroll-card scroll-card--uniform">
+              <div class="card">
+                <h3 class="card-heading">Encube Enterprise</h3>
+                <p class="card-meta">Managing Partner · 2020–2021 · Mumbai</p>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    Led a medical 3D-printing company producing custom
+                    prosthetics, implants, and surgical guides under
+                    regulatory compliance. Built hospital relationships and
+                    drove R&amp;D in biocompatible materials.
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
             </div>
 
-            <div class="scroll-card">
-              <h3>Startup Jalsa</h3>
-              <p class="scroll-card-meta">Startup Ambassador · 2017–2018</p>
-              <p class="scroll-card-body">
-                Facilitated 50+ startup-investor matches driving $3M+ in
-                seed funding. Built a 2,000+ entrepreneur community, ran
-                25+ events, mentored 30+ startups, 80% accelerator
-                placement rate.
-              </p>
+            <div class="scroll-card scroll-card--uniform">
+              <div class="card">
+                <h3 class="card-heading">Startup Jalsa</h3>
+                <p class="card-meta">Startup Ambassador · 2017–2018</p>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    Facilitated 50+ startup-investor matches driving $3M+ in
+                    seed funding. Built a 2,000+ entrepreneur community, ran
+                    25+ events, mentored 30+ startups, 80% accelerator
+                    placement rate.
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
             </div>
           </div>
 
