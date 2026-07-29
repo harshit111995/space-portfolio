@@ -10,6 +10,7 @@
 // ===================================================================
 
 import * as THREE from 'three'
+import { updateCursorRotation } from './pointerRotation.js'
 
 // sceneApi is the object exported by scene.js - it bundles the actual
 // THREE.Scene (sceneApi.scene) plus addUpdate(), which lets us hook
@@ -42,11 +43,27 @@ export function createMercury(sceneApi, manager) {
   mercury.position.set(-10, 0, -230)
   sceneApi.scene.add(mercury)
 
-  // ---- Slow rotation ---------------------------------------------------
+  // ---- Slow rotation, plus a gentle turn toward the cursor -----------------
   // A tiny rotation added every frame, the same technique used for
   // every other planet - just enough to feel alive, not a fast spin.
+  // cursorRotation/previousCursorOffsetY add the same gentle
+  // turn-toward-cursor behavior the Moon already has (see
+  // src/scene/pointerRotation.js) ON TOP of that auto-spin - only the
+  // CHANGE in the eased cursor offset since last frame gets added to
+  // rotation.y, so the two effects add together instead of one
+  // overwriting the other.
+  const cursorRotation = { offsetX: 0, offsetY: 0 }
+  let previousCursorOffsetY = 0
+
   sceneApi.addUpdate(() => {
     mercury.rotation.y += 0.0005
+
+    updateCursorRotation(cursorRotation)
+    mercury.rotation.y += cursorRotation.offsetY - previousCursorOffsetY
+    previousCursorOffsetY = cursorRotation.offsetY
+    // rotation.x has no auto-spin of its own to protect, so the eased
+    // cursor offset can just be set onto it directly.
+    mercury.rotation.x = cursorRotation.offsetX
   })
 
   return mercury

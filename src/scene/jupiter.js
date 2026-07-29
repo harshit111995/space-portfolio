@@ -6,6 +6,7 @@
 // ===================================================================
 
 import * as THREE from 'three'
+import { updateCursorRotation } from './pointerRotation.js'
 
 // sceneApi is the object exported by scene.js - it bundles the actual
 // THREE.Scene (sceneApi.scene) plus addUpdate(), which lets us hook
@@ -38,11 +39,27 @@ export function createJupiter(sceneApi, manager) {
   jupiter.position.set(14, -10, -200)
   sceneApi.scene.add(jupiter)
 
-  // ---- Slow rotation ---------------------------------------------------
+  // ---- Slow rotation, plus a gentle turn toward the cursor -----------------
   // Real Jupiter spins faster than any other planet, so it gets a
-  // slightly quicker turn than Saturn's - still gentle, not dizzying.
+  // slightly quicker auto-spin than Saturn's - still gentle, not
+  // dizzying. cursorRotation/previousCursorOffsetY add the same
+  // gentle turn-toward-cursor behavior the Moon already has (see
+  // src/scene/pointerRotation.js) ON TOP of that auto-spin - only the
+  // CHANGE in the eased cursor offset since last frame gets added to
+  // rotation.y, which is what lets the two effects add together
+  // instead of one overwriting the other.
+  const cursorRotation = { offsetX: 0, offsetY: 0 }
+  let previousCursorOffsetY = 0
+
   sceneApi.addUpdate(() => {
     jupiter.rotation.y += 0.0007
+
+    updateCursorRotation(cursorRotation)
+    jupiter.rotation.y += cursorRotation.offsetY - previousCursorOffsetY
+    previousCursorOffsetY = cursorRotation.offsetY
+    // rotation.x has no auto-spin of its own to protect, so the eased
+    // cursor offset can just be set onto it directly.
+    jupiter.rotation.x = cursorRotation.offsetX
   })
 
   return jupiter

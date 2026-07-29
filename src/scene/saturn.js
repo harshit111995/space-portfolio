@@ -7,6 +7,7 @@
 // ===================================================================
 
 import * as THREE from 'three'
+import { updateCursorRotation } from './pointerRotation.js'
 
 // sceneApi is the object exported by scene.js - it bundles the actual
 // THREE.Scene (sceneApi.scene) plus addUpdate(), which lets us hook
@@ -93,11 +94,28 @@ export function createSaturn(sceneApi, manager) {
   // enough, the rings tag along for free.
   saturn.add(rings)
 
-  // ---- Slow rotation ---------------------------------------------------
-  // A tiny rotation added every frame, the same technique used for
-  // the other planets - just enough to feel alive, not a fast spin.
+  // ---- Slow rotation, plus a gentle turn toward the cursor -----------------
+  // cursorRotation holds Saturn's own current "how far toward the
+  // cursor has it drifted" offset, eased smoothly every frame by
+  // updateCursorRotation() (see src/scene/pointerRotation.js - the
+  // same gentle turn-toward-cursor behavior the Moon already has).
+  // previousCursorOffsetY remembers last frame's Y offset so only the
+  // CHANGE since then gets added to Saturn's own rotation.y below -
+  // that's what makes the cursor-follow ADD ON TOP of the steady
+  // auto-spin instead of fighting or overwriting it.
+  const cursorRotation = { offsetX: 0, offsetY: 0 }
+  let previousCursorOffsetY = 0
+
   sceneApi.addUpdate(() => {
+    // Saturn's own steady auto-spin - unchanged from before.
     saturn.rotation.y += 0.0004
+
+    updateCursorRotation(cursorRotation)
+    saturn.rotation.y += cursorRotation.offsetY - previousCursorOffsetY
+    previousCursorOffsetY = cursorRotation.offsetY
+    // rotation.x has no auto-spin of its own to protect, so the eased
+    // cursor offset can just be set onto it directly.
+    saturn.rotation.x = cursorRotation.offsetX
   })
 
   return saturn

@@ -6,6 +6,7 @@
 // ===================================================================
 
 import * as THREE from 'three'
+import { updateCursorRotation } from './pointerRotation.js'
 
 // sceneApi is the object exported by scene.js - it bundles the actual
 // THREE.Scene (sceneApi.scene) plus addUpdate(), which lets us hook
@@ -80,14 +81,47 @@ export function createPlanets(sceneApi, manager) {
   earth.position.set(5, -3, -260)
   sceneApi.scene.add(earth)
 
-  // ---- Slow rotation for each planet --------------------------------------
+  // ---- Slow rotation for each planet, plus a gentle turn toward the cursor -
   // A tiny rotation added every single frame for each planet. Larger
   // numbers spin faster - Mars turns quickest, Venus slowest, Earth in
   // between.
+  //
+  // Each planet also gets its own independent cursorRotation/
+  // previousCursorOffsetY pair - the same gentle turn-toward-cursor
+  // behavior the Moon already has (see src/scene/pointerRotation.js) -
+  // ON TOP of its own auto-spin above. Only the CHANGE in each
+  // planet's eased cursor offset since last frame gets added to its
+  // own rotation.y, which is what lets the two effects add together
+  // instead of one overwriting the other. Keeping three SEPARATE state
+  // objects (rather than one shared one) is what lets Mars, Venus, and
+  // Earth each ease toward the cursor independently, at their own
+  // pace, instead of all three being forced to move in exact lockstep.
+  const marsCursorRotation = { offsetX: 0, offsetY: 0 }
+  const venusCursorRotation = { offsetX: 0, offsetY: 0 }
+  const earthCursorRotation = { offsetX: 0, offsetY: 0 }
+  let previousMarsOffsetY = 0
+  let previousVenusOffsetY = 0
+  let previousEarthOffsetY = 0
+
   sceneApi.addUpdate(() => {
     mars.rotation.y += 0.0008
     venus.rotation.y += 0.0005
     earth.rotation.y += 0.0006
+
+    updateCursorRotation(marsCursorRotation)
+    mars.rotation.y += marsCursorRotation.offsetY - previousMarsOffsetY
+    previousMarsOffsetY = marsCursorRotation.offsetY
+    mars.rotation.x = marsCursorRotation.offsetX // no auto-spin of its own on this axis to protect
+
+    updateCursorRotation(venusCursorRotation)
+    venus.rotation.y += venusCursorRotation.offsetY - previousVenusOffsetY
+    previousVenusOffsetY = venusCursorRotation.offsetY
+    venus.rotation.x = venusCursorRotation.offsetX
+
+    updateCursorRotation(earthCursorRotation)
+    earth.rotation.y += earthCursorRotation.offsetY - previousEarthOffsetY
+    previousEarthOffsetY = earthCursorRotation.offsetY
+    earth.rotation.x = earthCursorRotation.offsetX
   })
 
   return { mars, venus, earth }
