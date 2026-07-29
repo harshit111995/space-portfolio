@@ -115,8 +115,8 @@ export function initScrollCards(pinId, cardCount) {
   // this stop - there's no need to duplicate that range by hand here
   // (or risk it drifting out of sync with the real pin). Instead,
   // this reads the REAL, already-computed pixel boundaries straight
-  // off that existing pin, the same way src/ui/certificatePanels.js
-  // and src/ui/portrait.js already do for their own stops.
+  // off that existing pin, the same way src/ui/portrait.js already
+  // does for its own stop.
   const pinTrigger = ScrollTrigger.getAll().find(
     (scrollTrigger) => scrollTrigger.trigger && scrollTrigger.trigger.id === pinId && scrollTrigger.pin,
   )
@@ -145,11 +145,11 @@ export function initScrollCards(pinId, cardCount) {
   // A second, independent ScrollTrigger watching the exact same
   // start/end pixel range as the camera's own pin - GSAP is fine with
   // more than one ScrollTrigger sharing a range like this (portrait.js
-  // and certificatePanels.js both already do the same thing for their
-  // own stops). scrub: true just means "keep this tied directly to
-  // the live scroll position," not any particular animation - the
-  // actual cross-fade math happens by hand in applyProgress() above,
-  // called fresh every time onUpdate fires.
+  // already does the same thing for its own stop). scrub: true just
+  // means "keep this tied directly to the live scroll position," not
+  // any particular animation - the actual cross-fade math happens by
+  // hand in applyProgress() above, called fresh every time onUpdate
+  // fires.
   ScrollTrigger.create({
     start: pinTrigger.start,
     end: pinTrigger.end,

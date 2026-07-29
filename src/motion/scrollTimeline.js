@@ -167,7 +167,11 @@ const BODIES = [
     id: 'constellations', // src/scene/constellations.js - center of the whole field
     position: new THREE.Vector3(-10, 0, -110),
     park: { x: 25, y: -35 }, // ~49.5 units out - pulled back further so the wide field reads at once
-    holdLengthVh: 1.479,
+    // 4.0vh = 8 certificate cards (see src/motion/scrollCards.js) x
+    // ~0.5 screen-heights of scroll each, same per-card pacing as
+    // every other card stop - was 1.479vh, back when this stop was a
+    // click-to-reveal panel instead of a scroll-card stop.
+    holdLengthVh: 4.0,
     marker: false,
   },
   {

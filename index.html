@@ -667,94 +667,146 @@
 
       <div class="pin-runway" aria-hidden="true"></div>
 
-      <!-- 5. CONSTELLATIONS - Certificates. Unlike every other stop, the
-           camera here doesn't just hold still while content reveals
-           itself automatically - the 8 star-figures are genuinely
-           CLICKABLE (see src/ui/certificatePanels.js), each one
-           opening its own certificate panel below. The panels
-           themselves start invisible (see ".certificate-panel" in
-           src/styles/content.css) and are shown/hidden entirely by
-           that file, not by any scroll-triggered reveal like the
-           other stops use. -->
+      <!-- 5. CONSTELLATIONS - Certificates. Used to be the one stop
+           where the camera didn't just hold still while content
+           revealed itself - the 8 star-figures used to be genuinely
+           clickable, each one opening its own certificate panel. That
+           click interaction has been removed entirely: the
+           constellations are now purely decorative background (the
+           visual field the camera flies past, still twinkling and
+           drifting - see src/scene/constellations.js, itself
+           unchanged), and the 8 issuers are shown instead as 8
+           scroll-cards, exactly like Entrepreneur/Experience/Case
+           Studies/Volunteering above - same src/motion/scrollCards.js
+           mechanic, cross-fading one at a time as the visitor scrolls
+           through this stop's hold, called with pin-constellations
+           and 8 (see src/main.js).
+
+           These cards use the same uniform ".card" design as every
+           other card stop (see src/styles/card.css - reused exactly
+           as-is). No photos here, so no ".card-image" slot. Same
+           read-more toggle too, via src/ui/cardReadMore.js, pointed
+           at "pin-constellations" (see src/main.js) - only the
+           "Other" card (7 items) is long enough to actually need it. -->
       <div id="pin-constellations" class="pin-marker">
         <div class="pin-content">
           <h2>Certificates</h2>
-          <p class="certificates-hint">Click a constellation to explore</p>
 
-          <div class="certificate-panel" data-issuer="Google">
-            <h3>Google</h3>
-            <ul>
-              <li>Campaign Manager 360</li>
-              <li>Display &amp; Video 360</li>
-              <li>Search Ads 360</li>
-              <li>Ads Display</li>
-              <li>Tag Manager</li>
-              <li>Analytics</li>
-            </ul>
+          <div class="scroll-cards">
+            <div class="scroll-card scroll-card--uniform">
+              <div class="card">
+                <h3 class="card-heading">Google</h3>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    Campaign Manager 360, Display &amp; Video 360, Search Ads
+                    360, Ads Display, Tag Manager, Analytics.
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="scroll-card scroll-card--uniform">
+              <div class="card">
+                <h3 class="card-heading">Cannes Lions Academy</h3>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    Marketing Growth Agenda, Creative Effectiveness,
+                    Copywriting, Digital Marketing.
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="scroll-card scroll-card--uniform">
+              <div class="card">
+                <h3 class="card-heading">StackAdapt</h3>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    In-game Channel, DOOH, and CTV certifications.
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="scroll-card scroll-card--uniform">
+              <div class="card">
+                <h3 class="card-heading">CIM (Chartered Institute of Marketing)</h3>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    Planning &amp; Optimising Campaigns; Marketing &amp; Brand
+                    Strategy; Associate Member (ACIM).
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="scroll-card scroll-card--uniform">
+              <div class="card">
+                <h3 class="card-heading">Microsoft</h3>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    Generative AI Foundation.
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="scroll-card scroll-card--uniform">
+              <div class="card">
+                <h3 class="card-heading">Adelaide</h3>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    Fundamentals &amp; Applications of Attention; Attention
+                    Metrics in a Privacy-First World.
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="scroll-card scroll-card--uniform">
+              <div class="card">
+                <h3 class="card-heading">Agentic Advertising</h3>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    AdCP Specialist (AI agent for programmatic media buying);
+                    Member.
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="scroll-card scroll-card--uniform">
+              <div class="card">
+                <h3 class="card-heading">Other</h3>
+                <div class="card-body-wrapper">
+                  <p class="card-body">
+                    Magnite — Advanced TV; Seedtag — Contextual 101; LinkedIn
+                    — Data Strategy; TikTok Academy Pro; Ogilvy — Applied
+                    Behavioral Science; WARC — Marketing Strategy; Thinkbox —
+                    TV Masters.
+                  </p>
+                  <button type="button" class="card-read-more">Read more</button>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div class="certificate-panel" data-issuer="Cannes Lions">
-            <h3>Cannes Lions Academy</h3>
-            <ul>
-              <li>Marketing Growth Agenda</li>
-              <li>Creative Effectiveness</li>
-              <li>Copywriting</li>
-              <li>Digital Marketing</li>
-            </ul>
-          </div>
-
-          <div class="certificate-panel" data-issuer="StackAdapt">
-            <h3>StackAdapt</h3>
-            <ul>
-              <li>In-game Channel</li>
-              <li>DOOH</li>
-              <li>CTV</li>
-            </ul>
-          </div>
-
-          <div class="certificate-panel" data-issuer="CIM">
-            <h3>CIM (Chartered Institute of Marketing)</h3>
-            <ul>
-              <li>Planning &amp; Optimising Marketing Campaigns</li>
-              <li>Marketing &amp; Brand Strategy</li>
-              <li>Associate Member (ACIM)</li>
-            </ul>
-          </div>
-
-          <div class="certificate-panel" data-issuer="Microsoft">
-            <h3>Microsoft</h3>
-            <ul>
-              <li>Generative AI Foundation</li>
-            </ul>
-          </div>
-
-          <div class="certificate-panel" data-issuer="Adelaide">
-            <h3>Adelaide</h3>
-            <ul>
-              <li>Fundamentals &amp; Applications of Attention</li>
-              <li>Attention Metrics in a Privacy-First World</li>
-            </ul>
-          </div>
-
-          <div class="certificate-panel" data-issuer="Agentic/AdCP">
-            <h3>Agentic Advertising</h3>
-            <ul>
-              <li>AdCP Specialist (AI agent for programmatic media buying)</li>
-              <li>Member</li>
-            </ul>
-          </div>
-
-          <div class="certificate-panel" data-issuer="Other">
-            <h3>Other</h3>
-            <ul>
-              <li>Magnite — Advanced TV</li>
-              <li>Seedtag — Contextual 101</li>
-              <li>LinkedIn — Data Strategy</li>
-              <li>TikTok Academy Pro</li>
-              <li>Ogilvy — Applied Behavioral Science</li>
-              <li>WARC — Marketing Strategy</li>
-              <li>Thinkbox — TV Masters</li>
-            </ul>
+          <div class="scroll-cards-dots">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
           </div>
         </div>
       </div>

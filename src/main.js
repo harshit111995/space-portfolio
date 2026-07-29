@@ -29,7 +29,6 @@ import { initTestimonialsReveal } from './motion/testimonialsReveal.js'
 import { initEducationReveal } from './motion/educationReveal.js'
 import { initSkillsReveal } from './motion/skillsReveal.js'
 import { initContactReveal } from './motion/contactReveal.js'
-import { initCertificatePanels } from './ui/certificatePanels.js'
 import { initScrollCards } from './motion/scrollCards.js'
 import { initCardReadMore } from './ui/cardReadMore.js'
 
@@ -85,23 +84,19 @@ const asteroids = createAsteroids(scene)
 const satellites = createSatellites(scene)
 
 // Build the 8 certificate constellations at the certificates stop
-// (69%). Also no LoadingManager needed - the star glow is a small
-// canvas-drawn sprite, not a downloaded texture.
-const constellations = createConstellations(scene)
+// (69%) - purely decorative background now (see the big comment on
+// #pin-constellations in index.html - the click-to-reveal interaction
+// that used to live here has been removed entirely, the 8 issuers are
+// shown as scroll-cards instead, further below). Also no
+// LoadingManager needed - the star glow is a small canvas-drawn
+// sprite, not a downloaded texture.
+createConstellations(scene)
 
 // v2: the old v1 single hover-panel-per-planet behavior (built in
 // src/scene/raycaster.js) is retired - nothing has called
 // registerTarget() on it in a long time, and it's no longer switched
 // on here either. It's left in place, unused, rather than deleted, in
-// case a similar planet-hover system is wanted again later - but
-// actually calling initRaycaster() here was doing real, active harm:
-// with zero targets registered, its own per-frame check ALWAYS "hits
-// nothing," which made it forcibly reset the cursor back to "default"
-// on every single frame - fighting with and overriding the NEW
-// constellation hover cursor set up below in
-// src/ui/certificatePanels.js. Found and confirmed directly while
-// building that feature (the cursor kept flickering back to normal
-// instead of staying as a pointer over a clickable constellation).
+// case a similar planet-hover system is wanted again later.
 
 // Hook up scrolling so it drives the camera's journey through space.
 initScrollTimeline(scene.camera)
@@ -141,15 +136,11 @@ initSkillsReveal()
 // actually arrives at the Earth/contact stop.
 initContactReveal()
 
-// Let the visitor click any of the 8 certificate constellations to
-// open that issuer's certificate panel, at the certificates stop.
-initCertificatePanels(scene.camera, constellations)
-
 // Cross-fade between the 3 entrepreneur cards as the visitor scrolls
-// through Saturn's held pin. The same reusable function is called 3
-// more times below for Mars, Venus, and Jupiter - same mechanic,
-// completely unchanged, just a different stop id and card count each
-// time.
+// through Saturn's held pin. The same reusable function is called
+// several more times below for Mars, Venus, Constellations, and
+// Jupiter - same mechanic, completely unchanged, just a different
+// stop id and card count each time.
 initScrollCards('pin-saturn', 3)
 
 // Cross-fade between the 9 experience cards as the visitor scrolls
@@ -160,20 +151,26 @@ initScrollCards('pin-mars', 9)
 // through Venus's held pin.
 initScrollCards('pin-venus', 12)
 
+// Cross-fade between the 8 certificate cards as the visitor scrolls
+// through the constellations stop's held pin - replaces the old
+// click-to-reveal panel interaction entirely.
+initScrollCards('pin-constellations', 8)
+
 // Cross-fade between the 3 volunteering cards as the visitor scrolls
 // through Jupiter's held pin.
 initScrollCards('pin-jupiter', 3)
 
-// Turn on the "Read more"/"Read less" toggle for all four scroll-card
+// Turn on the "Read more"/"Read less" toggle for all five scroll-card
 // stops - Venus's 12 case-study cards, Mars's 9 experience cards,
-// Saturn's 3 entrepreneur cards, and Jupiter's 3 volunteering cards -
-// all now use the same uniform card design (see src/styles/card.css).
-// This only ever changes text/CSS locally on a card; it has no effect
-// on, and isn't affected by, the crossfade mechanic set up by
-// initScrollCards above.
+// Saturn's 3 entrepreneur cards, Constellations's 8 certificate cards,
+// and Jupiter's 3 volunteering cards - all now use the same uniform
+// card design (see src/styles/card.css). This only ever changes
+// text/CSS locally on a card; it has no effect on, and isn't affected
+// by, the crossfade mechanic set up by initScrollCards above.
 initCardReadMore('pin-venus')
 initCardReadMore('pin-mars')
 initCardReadMore('pin-saturn')
+initCardReadMore('pin-constellations')
 initCardReadMore('pin-jupiter')
 
 // Same toggle for the Skills stop's 2 static cards - Technical Skills
