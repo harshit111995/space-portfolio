@@ -1,0 +1,186 @@
+/* ===================================================================
+   STOPNAV.CSS
+   Styles the fixed right-side navigation built by src/ui/stopNav.js -
+   a small vertical list of 10 buttons (one per stop on the journey),
+   each showing a dot plus its section name. Sits on the right edge of
+   the screen the whole time, vertically centered.
+   =================================================================== */
+
+.stop-nav {
+  position: fixed;
+  top: 50%;
+  right: 1.5rem;
+  transform: translateY(-50%);
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+
+  /* Above the 3D canvas (z-index 1) and the page content (z-index 2),
+     the same idea as the audio toggle button (z-index 20) - but well
+     below the loading screen's cover (z-index 999999, see index.html
+     and src/ui/loader.js), so this stays hidden/unclickable behind it
+     until the visitor actually clicks "Enter", with no extra code
+     needed to coordinate that. */
+  z-index: 15;
+}
+
+/* One row: a dot, then its label, side by side. A plain <button> (not
+   a styled block or link) so this is properly clickable/keyboard-
+   operable - background/border are stripped off here since a pill
+   shape is drawn instead, further down. */
+.stop-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+
+  padding: 0.35rem 0.75rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: none;
+
+  cursor: pointer;
+  /* Both the border and background below are what "glow" on hover
+     actually changes - transitioning them here is what makes that
+     change smooth instead of snapping on abruptly. */
+  transition: border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stop-nav-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0; /* keeps the dot from being squashed thinner than its own circle if the label text ever runs long */
+
+  background: rgba(255, 255, 255, 0.35);
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stop-nav-label {
+  font-size: 0.72rem;
+  white-space: nowrap; /* never wraps onto a second line, which would break the tidy one-row-per-stop layout */
+  color: rgba(255, 255, 255, 0.55);
+  transition: color 0.3s ease;
+}
+
+/* ---- Hover glow: soft blue-white, matching the card hover glow -----------
+   Same palette as ".card:hover" in src/styles/card.css (a cool
+   blue-white, not a plain white) so this reads as part of the same
+   visual language as the rest of the site, not a different effect.
+
+   "@media (hover: hover) and (pointer: fine)" is the same deliberate
+   choice made for the card glow - it keeps this a mouse/trackpad-only
+   effect. Touch screens don't have a real hover state, and without
+   this, tapping an item could leave its glow stuck "on" until the
+   visitor happens to tap something else. */
+@media (hover: hover) and (pointer: fine) {
+  .stop-nav-item:hover {
+    border-color: rgba(150, 200, 255, 0.3);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .stop-nav-item:hover .stop-nav-dot {
+    background: rgba(150, 200, 255, 0.9);
+    box-shadow: 0 0 8px rgba(120, 180, 255, 0.6);
+  }
+
+  .stop-nav-item:hover .stop-nav-label {
+    color: rgba(220, 235, 255, 0.95);
+  }
+}
+
+/* A keyboard-focused item (Tab key, not a mouse) gets the exact same
+   glow as a hovered one - a visitor navigating by keyboard deserves
+   the same clear feedback about which item they're about to activate. */
+.stop-nav-item:focus-visible {
+  border-color: rgba(150, 200, 255, 0.3);
+  background: rgba(255, 255, 255, 0.05);
+  outline: none; /* replaced by the border/background glow above instead of the browser's default outline */
+}
+
+.stop-nav-item:focus-visible .stop-nav-dot {
+  background: rgba(150, 200, 255, 0.9);
+  box-shadow: 0 0 8px rgba(120, 180, 255, 0.6);
+}
+
+.stop-nav-item:focus-visible .stop-nav-label {
+  color: rgba(220, 235, 255, 0.95);
+}
+
+/* ---- The current stop: stays highlighted, no hover needed ----------------
+   src/ui/stopNav.js toggles this class onto whichever ONE item matches
+   however far the visitor has scrolled - only ever one at a time. A
+   slightly stronger glow than plain hover (fully solid dot, fully
+   white bold label) is what makes "where you are" read as clearly
+   different from "what you're pointing at". */
+.stop-nav-item.is-active {
+  border-color: rgba(150, 200, 255, 0.4);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.stop-nav-item.is-active .stop-nav-dot {
+  background: rgba(170, 210, 255, 1);
+  box-shadow: 0 0 10px rgba(120, 180, 255, 0.75);
+}
+
+.stop-nav-item.is-active .stop-nav-label {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* ---- Narrow screens: collapse to dots-only -------------------------------
+   A full "dot + label" row for 10 stops is too wide to sit comfortably
+   on the right edge of a narrow phone screen without either running
+   into the page's own content or getting uncomfortably cramped. Below
+   this width, the label text is hidden (still present for screen
+   readers via each button's own aria-label - see stopNav.js - just
+   not shown visually), leaving only the dots. Padding is INCREASED
+   here, not reduced, even though there's less to show - a real
+   fingertip needs a bigger tap target than a mouse cursor does, so
+   shrinking the button along with the hidden label would make these
+   harder to tap accurately, exactly backwards from what a touch
+   screen needs. */
+@media (max-width: 700px) {
+  .stop-nav {
+    right: 0.5rem;
+    gap: 0.3rem;
+  }
+
+  .stop-nav-label {
+    display: none;
+  }
+
+  /* ~44px square, the commonly-recommended minimum comfortable
+     touch-target size - padding this generous around a small 9px dot
+     looks like a lot of empty space around it, but that empty space
+     is still part of the clickable button, not wasted. */
+  .stop-nav-item {
+    padding: 0.95rem;
+  }
+
+  .stop-nav-dot {
+    width: 9px;
+    height: 9px;
+  }
+}
+
+/* ---- Narrow AND short: a phone lying on its side ------------------------
+   10 comfortably-sized (~44px) touch targets stacked up add up to well
+   over 400px tall - fine on a normal, upright phone screen, but taller
+   than the ENTIRE screen on a phone turned sideways (landscape), or
+   any other narrow browser window that's short rather than tall.
+   Found and confirmed directly by testing real short heights, the same
+   way the portrait-photo overlap fix earlier in this project was found
+   (see src/styles/portrait.css) - this isn't a guess. Below this
+   height, the touch targets shrink back down again so the WHOLE list
+   still fits on-screen at once, rather than some items running off the
+   top or bottom where they'd be impossible to reach at all. */
+@media (max-width: 700px) and (max-height: 500px) {
+  .stop-nav {
+    gap: 0.15rem;
+  }
+
+  .stop-nav-item {
+    padding: 0.55rem;
+  }
+}
