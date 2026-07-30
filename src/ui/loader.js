@@ -254,23 +254,15 @@ export function initLoader(manager) {
     // very fast double-click) while the fade-out is already playing.
     enterButton.disabled = true
 
-    // #app (the real CV/portfolio content) starts hidden by default -
-    // see the "#app" rule in src/styles/base.css - as a second,
-    // backup layer of protection against ever flashing that content
-    // too early, on top of this whole loading-cover overlay. Revealing
-    // it right NOW, the instant "Enter" is clicked - rather than only
-    // after the fade-out below finishes - matters: this overlay is
-    // opaque and still fully covering the screen at this exact moment,
-    // so the visitor can't actually see #app becoming visible yet
-    // anyway. By the time the fade-out below finishes playing and this
-    // overlay is gone, #app needs to ALREADY be sitting there fully
-    // visible underneath it - otherwise the visitor would watch this
-    // overlay fade away to reveal nothing at all for a moment.
-    const app = document.getElementById('app')
-    if (app) {
-      app.style.opacity = '1'
-      app.style.visibility = 'visible'
-    }
+    // Note: #app (the real CV/portfolio content) is NOT hidden or
+    // revealed anywhere in this file - it stays fully rendered and
+    // visible-to-the-layout the entire time, underneath this overlay.
+    // See the big comment on "#app" in src/styles/base.css for why:
+    // hiding it broke src/motion/scrollTimeline.js, which measures
+    // #app's real height to work out the whole scroll journey. This
+    // overlay being solid and opaque (see index.html's own
+    // "#loading-cover") is what actually keeps the visitor from seeing
+    // #app before now, not anything done to #app itself.
 
     // Fade the whole overlay out smoothly using anime.js.
     animate(overlay, {
