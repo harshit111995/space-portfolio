@@ -33,13 +33,15 @@
 }
 
 /* ---- The Moon stop's intro text -----------------------------------------
-   "Harshit Dabhi" gets its OWN, slightly smaller heading size here
-   (overriding the bigger shared default in base.css) specifically to
-   help this whole block fit into the limited safe space above the
-   Moon - see the comment above this rule for why that space is
-   limited, and the comment on .stats-row below for the same reasoning
-   applied to ITS spacing. */
-.intro h2 {
+   "Harshit Dabhi" (the page's one H1 - see index.html) gets its OWN,
+   slightly smaller heading size and tighter gap below it here
+   (overriding the bigger, bolder shared h1 default in base.css)
+   specifically to help this whole block fit into the limited safe
+   space above the Moon - see the comment above this rule for why that
+   space is limited, and the comment on .stats-row below for the same
+   reasoning applied to ITS spacing. It keeps the shared h1's bold
+   weight and tight letter-spacing, just sized down. */
+.intro h1 {
   font-size: 2rem;
   margin-bottom: 0.5rem;
 }
@@ -49,10 +51,12 @@
   margin-bottom: 1rem;
 }
 
+/* No margin-bottom of its own here - the shared "p + p" rule in
+   base.css already puts a consistent gap above .intro-summary, right
+   below, since it directly follows this paragraph. */
 .intro-subtitle {
   font-size: 1.1rem;
   color: rgba(255, 255, 255, 0.75);
-  margin-bottom: 0.6rem;
 }
 
 .intro-summary {
@@ -415,24 +419,16 @@
   border: none;
 }
 
-.scroll-card h3 {
-  margin-bottom: 0.35rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #ffffff;
-}
-
-.scroll-card-meta {
-  margin-bottom: 0.75rem;
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.55);
-}
-
-.scroll-card-body {
-  font-size: 0.9rem;
-  line-height: 1.6;
-  color: rgba(255, 255, 255, 0.85);
-}
+/* Note: heading/meta/body styling for the h3/p elements actually used
+   inside these cards (.card-heading, .card-meta, .card-body) lives in
+   ONE place only - src/styles/card.css - so every card-based stop
+   stays visually consistent automatically. This file used to also
+   define its own separate ".scroll-card h3"/".scroll-card-meta"/
+   ".scroll-card-body" rules with the exact same values, duplicating
+   card.css instead of reusing it - removed, since no markup actually
+   used those last two classes, and the h3 rule only risked silently
+   overriding card.css's own if the two were ever changed to different
+   values. */
 
 /* ---- Cards that also carry an image (Venus, Jupiter) ---------------------
    ".scroll-cards--with-image" is added to both the outer ".scroll-cards"

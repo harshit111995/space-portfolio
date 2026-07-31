@@ -146,7 +146,13 @@
       <div id="pin-moon" class="pin-marker">
         <div class="pin-content">
           <div class="intro">
-            <h2>Harshit Dabhi</h2>
+            <!-- The one and only H1 on the whole page - the site's real
+                 title (this person's name), with every other heading
+                 (Entrepreneur, Experience, Case Studies, ...) below it
+                 in the hierarchy as a plain h2 section heading, and
+                 every card title as an h3 (see src/styles/base.css for
+                 how h1 is styled more prominently than h2/h3). -->
+            <h1>Harshit Dabhi</h1>
             <p class="intro-subtitle">Programmatic Media Manager · Dubai</p>
             <p class="intro-summary">
               Real-time bidding, campaign optimization, and ad-tech across
@@ -462,11 +468,17 @@
       <div class="pin-runway" aria-hidden="true"></div>
 
       <!-- 4. VENUS - Case Studies. The third "scroll-card" stop, and the
-           biggest one (12 cards) - same src/motion/scrollCards.js
-           mechanic, unchanged, just called with pin-venus and 12 (see
-           src/main.js).
+           biggest one (11 cards - Digibet and NHS used to be two
+           separate cards here, but were actually one and the same
+           campaign, so they're now combined into a single "Digibet /
+           NHS" card instead) - same src/motion/scrollCards.js
+           mechanic, unchanged, just called with pin-venus and 11 (see
+           src/main.js). Venus's own pinned-hold length (see
+           src/motion/scrollTimeline.js) was shortened to match, from
+           12 cards down to 11, at the same 0.5 screen-heights-per-card
+           pace every other card stop already uses.
 
-           These 12 cards are the first to use the new, reusable
+           These 11 cards are the first to use the new, reusable
            ".card" design (see src/styles/card.css) instead of the
            older per-stop styling in this file - the plan is for
            Saturn/Mars/Jupiter to eventually switch over to it too,
@@ -610,30 +622,21 @@
               </div>
             </div>
 
+            <!-- Digibet and NHS used to be two separate cards, but were
+                 actually one and the same campaign, so they're combined
+                 into this single card instead - see the big comment on
+                 this stop further up for why Case Studies now has 11
+                 cards instead of 12. -->
             <div class="scroll-card scroll-card--with-image scroll-card--uniform">
               <div class="card">
                 <div class="card-image"><span class="card-image-label">Campaign image</span></div>
-                <h3 class="card-heading">Digibet</h3>
+                <h3 class="card-heading">Digibet / NHS</h3>
                 <p class="card-meta">Programmatic campaign</p>
                 <div class="card-body-wrapper">
                   <p class="card-body">
                     Sports-betting audience acquisition across CTV and
-                    native.
-                  </p>
-                  <button type="button" class="card-read-more">Read more</button>
-                </div>
-              </div>
-            </div>
-
-            <div class="scroll-card scroll-card--with-image scroll-card--uniform">
-              <div class="card">
-                <div class="card-image"><span class="card-image-label">Campaign image</span></div>
-                <h3 class="card-heading">NHS</h3>
-                <p class="card-meta">Programmatic campaign</p>
-                <div class="card-body-wrapper">
-                  <p class="card-body">
-                    Public-health awareness reach across the UK, display
-                    and social.
+                    native, alongside public-health awareness reach across
+                    the UK, display and social.
                   </p>
                   <button type="button" class="card-read-more">Read more</button>
                 </div>
@@ -694,7 +697,6 @@
           </div>
 
           <div class="scroll-cards-dots">
-            <span class="dot"></span>
             <span class="dot"></span>
             <span class="dot"></span>
             <span class="dot"></span>
@@ -1122,7 +1124,7 @@
       <div id="pin-earth" class="pin-marker">
         <div class="pin-content">
           <div class="contact-block">
-            <h2>Get in touch</h2>
+            <h2>Say hello</h2>
             <ul class="contact-details">
               <li>
                 <span class="contact-label">Email</span>

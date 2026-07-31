@@ -155,9 +155,10 @@ initScrollCards('pin-saturn', 3)
 // through Mars's held pin.
 initScrollCards('pin-mars', 9)
 
-// Cross-fade between the 12 case-study cards as the visitor scrolls
-// through Venus's held pin.
-initScrollCards('pin-venus', 12)
+// Cross-fade between the 11 case-study cards as the visitor scrolls
+// through Venus's held pin (Digibet and NHS were merged into one card
+// - see index.html - so this dropped from 12 to 11).
+initScrollCards('pin-venus', 11)
 
 // Cross-fade between the 8 certificate cards as the visitor scrolls
 // through the constellations stop's held pin - replaces the old
@@ -169,7 +170,7 @@ initScrollCards('pin-constellations', 8)
 initScrollCards('pin-jupiter', 3)
 
 // Turn on the "Read more"/"Read less" toggle for all five scroll-card
-// stops - Venus's 12 case-study cards, Mars's 9 experience cards,
+// stops - Venus's 11 case-study cards, Mars's 9 experience cards,
 // Saturn's 3 entrepreneur cards, Constellations's 8 certificate cards,
 // and Jupiter's 3 volunteering cards - all now use the same uniform
 // card design (see src/styles/card.css). This only ever changes

@@ -157,10 +157,11 @@ const BODIES = [
     id: 'venus', // src/scene/planets.js
     position: new THREE.Vector3(-10, -2, -80),
     park: { x: -34, y: 12 }, // ~27.8 units out
-    // 6.0vh = 12 case-study cards (not built yet, same reasoning as
-    // Mars above) x ~0.5 screen-heights each - the longest hold, since
-    // it's also the stop with the most cards to get through.
-    holdLengthVh: 6.0,
+    // 5.5vh = 11 case-study cards (Digibet and NHS were merged into
+    // one card - see index.html - so this dropped from 12 cards/6.0vh)
+    // x ~0.5 screen-heights each - the longest hold, since it's also
+    // the stop with the most cards to get through.
+    holdLengthVh: 5.5,
     marker: false,
   },
   {

@@ -33,11 +33,59 @@ body {
 }
 
 /* Dark background for the whole site, with light text so it stays
-   readable on top of that dark background. */
+   readable on top of that dark background. line-height: 1.6 here is
+   the ONE place body text's line spacing is set - everything else
+   (card text, paragraphs, etc) just inherits it rather than each
+   piece of text needing its own line-height rule. */
 body {
   background: #0a0a0a;
   color: #f3f4f6;
   font-family: system-ui, sans-serif;
+  line-height: 1.6;
+}
+
+/* ---- Vertical rhythm (single source of truth) ---------------------------
+   A small, shared set of spacing rules that every heading/paragraph on
+   the page automatically follows, so new content added later lines up
+   evenly with everything already here without needing its own
+   one-off spacing tweaked by hand.
+     --heading-gap  -> space below EVERY heading (h1, h2, or h3) and
+                       before whatever content follows it.
+     --paragraph-gap -> space above a paragraph that directly follows
+                       ANOTHER paragraph (see the "p + p" rule below -
+                       the first paragraph in a block sits right under
+                       its heading, with no gap of its own to add).
+   Individual stops/components can still override these where there's
+   a real, documented reason to (see ".intro h1" in content.css for
+   one - it needs a smaller gap to fit above the Moon) - the point of
+   this section is just to give every ordinary heading/paragraph a
+   sensible shared default, not to forbid exceptions entirely. */
+:root {
+  --heading-gap: 1rem;
+  --paragraph-gap: 1rem;
+}
+
+h1,
+h2,
+h3 {
+  margin-bottom: var(--heading-gap);
+}
+
+p + p {
+  margin-top: var(--paragraph-gap);
+}
+
+/* The single H1 on the page (see index.html) - deliberately styled
+   MORE prominently (bigger, bolder, tighter letter-spacing) than the
+   h2 section headings below it, so it reads as the page's one true
+   title rather than just another section heading. Its one real
+   instance (".intro h1" in content.css) sizes this back down to fit
+   the limited space above the Moon, but keeps this same bold, tight
+   feel. */
+h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 /* ---- Layer 1: the WebGL canvas ---------------------------------------
@@ -119,17 +167,17 @@ body {
   padding: 2rem;
 }
 
-/* Heading style for each stop. */
+/* Heading style for each stop. Its margin-bottom comes from the
+   shared "h1, h2, h3" rule above - no need to repeat it here. */
 .pin-content h2 {
   font-size: 2.5rem;
-  margin-bottom: 1rem;
 }
 
 /* Paragraph style: capped width so lines of text don't stretch too
-   wide to read comfortably. */
+   wide to read comfortably. line-height comes from body's own shared
+   rule above - no need to repeat it here. */
 .pin-content p {
   max-width: 60ch;
-  line-height: 1.6;
 }
 
 /* ---- Pin runways (weave/approach scroll room between stops) -----------
