@@ -145,6 +145,21 @@
            Moon's actual surface instead of sitting on top of it. -->
       <div id="pin-moon" class="pin-marker">
         <div class="pin-content">
+          <!-- ".about-layout" is what actually puts the intro text and
+               the 6 stats SIDE BY SIDE on a screen with room for it
+               (see the rule in src/styles/content.css) - once the 4
+               body paragraphs below made the text itself much taller,
+               stacking the stats underneath it (the old layout) pushed
+               them down far enough to sit right on top of the Moon's
+               lit surface. Side by side, the whole block is only ever
+               as tall as its TALLER column, not both added together,
+               which is what keeps it clear of the Moon. On a narrow
+               screen, this same rule just wraps the stats underneath
+               the text automatically instead (the exact same
+               flex-wrap trick already used for ".skills-cards" and
+               ".testimonials-row" further down this file) - no
+               separate "mobile" version of this layout is needed. -->
+          <div class="about-layout">
           <div class="intro">
             <!-- The one and only H1 on the whole page - the site's real
                  title (this person's name), with every other heading
@@ -154,10 +169,34 @@
                  how h1 is styled more prominently than h2/h3). -->
             <h1>Harshit Dabhi</h1>
             <p class="intro-subtitle">Programmatic Media Manager · Dubai</p>
-            <p class="intro-summary">
-              Real-time bidding, campaign optimization, and ad-tech across
-              EMEA, Americas, APAC &amp; CIS. Managing budgets up to
-              $250K/month at 200%+ ROI.
+
+            <!-- 4 body paragraphs instead of the old single summary line
+                 - each one is just a plain <p>, so the shared "p + p"
+                 rhythm rule (see src/styles/base.css) already puts a
+                 consistent gap between every one of them automatically,
+                 the same way it does for .intro-subtitle above. They
+                 share one class (.intro-paragraph, in content.css) so
+                 they all read as one consistent block of body text. -->
+            <p class="intro-paragraph">
+              Programmatic &amp; Performance Media Manager with 12+ years
+              turning data into results.
+            </p>
+            <p class="intro-paragraph">
+              I build targeted programmatic campaigns that connect with the
+              right audiences and move the numbers that matter—engagement,
+              conversion, growth. My approach is equal parts strategic and
+              hands-on: I read market trends, dig into the data, and shape
+              every campaign around clear business goals.
+            </p>
+            <p class="intro-paragraph">
+              I'm driven by KPIs and measurable outcomes. Colleagues know me
+              as focused, detail-oriented, and relentless about getting
+              results—someone who balances big-picture vision with the
+              fine-tuning that great campaigns demand.
+            </p>
+            <p class="intro-paragraph">
+              At my core, I'm here to push digital marketing forward and
+              build brand experiences that actually perform.
             </p>
           </div>
 
@@ -200,6 +239,7 @@
               <span class="stat-label">Years in Digital Marketing</span>
             </div>
           </div>
+          </div>
         </div>
       </div>
 
@@ -234,10 +274,18 @@
                 <p class="card-meta">Founder · 2016–2021 · Mumbai</p>
                 <div class="card-body-wrapper">
                   <p class="card-body">
-                    Founded and led a full-service digital agency —
-                    advertising, branding, web development, content. Built a
-                    cross-functional team; drove growth to 64% of gross
-                    revenue through client acquisition across B2B, B2C, D2C.
+                    Founded and led a digital agency delivering comprehensive
+                    marketing solutions across digital advertising, branding,
+                    web development, and content creation. Built and managed
+                    a cross-functional team of designers, developers,
+                    marketers, and strategists to deliver client-focused
+                    campaigns, driving agency expansion and client
+                    acquisition to 64% of gross revenue. Oversaw end-to-end
+                    project management for high-impact campaigns, optimizing
+                    client ROI through data-driven insights, and led digital
+                    transformation projects that helped clients leverage
+                    emerging platforms and analytics across B2B, B2C, and D2C
+                    portfolios.
                   </p>
                   <button type="button" class="card-read-more">Read more</button>
                 </div>
@@ -250,26 +298,50 @@
                 <p class="card-meta">Managing Partner · 2020–2021 · Mumbai</p>
                 <div class="card-body-wrapper">
                   <p class="card-body">
-                    Led a medical 3D-printing company producing custom
-                    prosthetics, implants, and surgical guides under
-                    regulatory compliance. Built hospital relationships and
-                    drove R&amp;D in biocompatible materials.
+                    Led a 3D-printing company specializing in tailored
+                    solutions for the medical industry, overseeing
+                    operations, strategic planning, and growth. Directed
+                    development and production of custom medical devices —
+                    prosthetics, implants, and surgical guides — ensuring
+                    regulatory compliance, while cultivating relationships
+                    with hospitals and healthcare providers. Spearheaded
+                    R&amp;D in biocompatible materials and precision
+                    engineering, streamlined production processes, and
+                    positioned the company as a leader in medical 3D
+                    printing through industry partnerships and targeted
+                    marketing, achieving significant growth by expanding
+                    into new healthcare markets.
                   </p>
                   <button type="button" class="card-read-more">Read more</button>
                 </div>
               </div>
             </div>
 
+            <!-- This third card used to be "Startup Jalsa" - moved out
+                 of here and into the Experience stop further down
+                 instead (see "Startup Ambassador" in #pin-mars), since
+                 that role belongs there. Vile Parle moved the OPPOSITE
+                 direction - out of Experience and into here - since
+                 running it was entrepreneurial work, not a job. Net
+                 result: still exactly 3 cards here, just a different
+                 3rd one. -->
             <div class="scroll-card scroll-card--uniform">
               <div class="card">
-                <h3 class="card-heading">Startup Jalsa</h3>
-                <p class="card-meta">Startup Ambassador · 2017–2018</p>
+                <h3 class="card-heading">Vile Parle Premier League</h3>
+                <p class="card-meta">Creative Marketing Manager &amp; Core Team Member · Dec 2014–Dec 2018 · Mumbai</p>
                 <div class="card-body-wrapper">
                   <p class="card-body">
-                    Facilitated 50+ startup-investor matches driving $3M+ in
-                    seed funding. Built a 2,000+ entrepreneur community, ran
-                    25+ events, mentored 30+ startups, 80% accelerator
-                    placement rate.
+                    Led creative direction and marketing for the Vile Parle
+                    Premier League, a 14-day community football event with
+                    nine regional teams. Developed cohesive advertising and
+                    marketing campaigns, designing layouts and visuals across
+                    logos, packaging, advertising materials, and digital
+                    assets. Managed creative content quality for client
+                    pitches and new-business opportunities, conducted press
+                    checks for print accuracy, and coordinated all aspects of
+                    the event — establishing the league as a model of
+                    impactful marketing, creative vision, and community
+                    engagement.
                   </p>
                   <button type="button" class="card-read-more">Read more</button>
                 </div>
@@ -295,9 +367,15 @@
            big comment on Saturn's own cards further up for how this
            mechanic works) - reuses src/motion/scrollCards.js completely
            unchanged, just called with a different pin id and a
-           different card count (9, in src/main.js).
+           different card count (8, in src/main.js - was 9, until the
+           old "Creative Marketing Manager"/Vile Parle card moved out to
+           the Entrepreneur stop instead, see the comment further down
+           where it used to sit). Mars's own pinned-hold length (see
+           src/motion/scrollTimeline.js) was shortened to match, from
+           9 cards down to 8, at the same 0.5 screen-heights-per-card
+           pace every other card stop uses.
 
-           These 9 cards now use the same uniform ".card" design as
+           These 8 cards now use the same uniform ".card" design as
            Case Studies (see src/styles/card.css - untouched here, just
            reused) instead of Mars's own older styling. The difference
            from Case Studies: these cards have NO photo, so there's
@@ -306,7 +384,16 @@
            that piece missing entirely, nothing needs to be added to
            "fill the gap." Same read-more behavior as Case Studies too,
            via the same src/ui/cardReadMore.js, just pointed at
-           "pin-mars" instead (see src/main.js). -->
+           "pin-mars" instead (see src/main.js).
+
+           All 8 cards below now have their real, full body text (the
+           first 7 of them did - the 8th, "Marketing Coordinator", was
+           already filled in earlier and is left exactly as it was).
+           Every body here is plain, real prose - no structural changes
+           were needed to show it; the card component already handles
+           prose the same way it always has. Some of these are dense
+           enough to trigger the built-in "Read more" truncation (see
+           src/ui/cardReadMore.js), especially the very first card. -->
       <div id="pin-mars" class="pin-marker">
         <div class="pin-content">
           <h2>Experience</h2>
@@ -318,11 +405,22 @@
                 <p class="card-meta">Media Agency Group · Feb 2024–Present · Dubai</p>
                 <div class="card-body-wrapper">
                   <p class="card-body">
-                    Global programmatic across Europe, Americas, Asia, CIS.
-                    6:1 avg ROI, best performer consecutive quarters. Cut
-                    dead leads 74% MoM, lifted MQL/SQL 11%→38%. Clients:
-                    NHS, Binance, DWF Labs, Komatsu &amp; F1 Abu Dhabi, HP,
-                    Interactive Brokers.
+                    Managing global programmatic campaigns for clients
+                    including NHS, Binance, DWF Labs, Komatsu &amp; F1 Abu
+                    Dhabi, Lexis Nexis, HP, Interactive Brokers, Kuwait
+                    Airways, and Klarna. Collaborate and negotiate with major
+                    DSPs — DV360, The Trade Desk, Amazon, StackAdapt, and
+                    Quantcast — to secure better media costs and precise
+                    audience targeting, working with inventory suppliers
+                    across MENA, Asia, Russia, the Americas, and Europe.
+                    Reduced dead inbound leads by 74% month-over-month,
+                    improved MQL-to-SQL inquiries from 11% to 38%, and
+                    generated an average 6:1 ROI — recognized as best
+                    performer for consecutive quarters. Also manage internal
+                    global PPC campaigns on a £100K monthly budget, implement
+                    tracking and analytics via GA4, Tableau, and Salesforce,
+                    and report campaign performance directly to director and
+                    chairperson level.
                   </p>
                   <button type="button" class="card-read-more">Read more</button>
                 </div>
@@ -335,10 +433,19 @@
                 <p class="card-meta">Vazir Group · Feb 2023–Feb 2024 · Dubai</p>
                 <div class="card-body-wrapper">
                   <p class="card-body">
-                    Paid media for investment &amp; migration across North
-                    America, EMEA, GCC, APAC, Caribbean. +126% traffic,
-                    +1,173% social engagement, +86% CTR, +62.7% conversions,
-                    −88% bounce rate.
+                    Developed and executed paid media strategies for
+                    investment and migration programs across North America,
+                    EMEA, GCC, APAC, the Caribbean, and Turkey. Led media
+                    buying on Google Ads, Meta, LinkedIn, and Waze — driving
+                    a 126% increase in website traffic, a 1,173% boost in
+                    social engagement, an 86% lift in click-through rate,
+                    and a 62.7% rise in conversions. Launched specialized
+                    campaigns for Caribbean citizenship and European
+                    residency programs with precise targeting, increased
+                    qualified US-migration inquiries by 11%, and used
+                    Microsoft Clarity to cut bounce rates by 88%. Reported
+                    paid media and PPC performance directly to the Managing
+                    Director and Chairperson.
                   </p>
                   <button type="button" class="card-read-more">Read more</button>
                 </div>
@@ -351,10 +458,19 @@
                 <p class="card-meta">UNO Capital · Jan 2022–Feb 2023 · Dubai</p>
                 <div class="card-body-wrapper">
                   <p class="card-body">
-                    HNWI/UHNWI targeting, industry-leading 1.68% conversion.
-                    +77.8% YoY leads, +34.8% lead quality. Expanded into
-                    Nigeria, EMEA, North Africa. Led a team of digital
-                    marketers.
+                    Developed targeted digital strategies to reach
+                    high-net-worth and ultra-high-net-worth individuals,
+                    achieving a 1.68% conversion rate — the highest in the
+                    industry. Led a team of digital marketers and media
+                    specialists across Google Search and Display, Meta,
+                    LinkedIn, Snapchat, and TikTok, driving brand awareness
+                    and high-quality leads in new markets across Nigeria,
+                    EMEA, and North Africa. Enhanced lead quality by 34.8%
+                    within six months and grew lead generation 77.8%
+                    year-over-year through performance-focused paid media,
+                    native advertising, and AI-driven engagement tools.
+                    Managed $100K in quarterly and annual paid-media budgets
+                    with a focus on ROAS.
                   </p>
                   <button type="button" class="card-read-more">Read more</button>
                 </div>
@@ -364,12 +480,20 @@
             <div class="scroll-card scroll-card--uniform">
               <div class="card">
                 <h3 class="card-heading">Digital Marketing Specialist</h3>
-                <p class="card-meta">Samana Group · Sep–Dec 2021 · Dubai</p>
+                <p class="card-meta">Samana Group · Sep 2021–Dec 2021 · Dubai</p>
                 <div class="card-body-wrapper">
                   <p class="card-body">
-                    Real estate &amp; immigration lead gen, 483.2% avg
-                    ROAS. ~$100K budget. Arabic social/search, GCC
-                    geo-targeting.
+                    Ran lead-generation campaigns for the group's real
+                    estate and immigration businesses, managing an ad
+                    budget of approximately $100K and achieving an average
+                    ROAS of 483.2% across campaigns. Implemented Google
+                    Analytics and Tag Manager for daily data analysis,
+                    curated and published Arabic-language social and search
+                    ads in coordination with an Arabic content writer, and
+                    optimized campaigns daily. Executed display and
+                    geo-targeted campaigns to reach new audiences for
+                    business immigration and investment opportunities
+                    across the GCC and wider Middle East.
                   </p>
                   <button type="button" class="card-read-more">Read more</button>
                 </div>
@@ -379,42 +503,50 @@
             <div class="scroll-card scroll-card--uniform">
               <div class="card">
                 <h3 class="card-heading">Digital Marketing Strategist</h3>
-                <p class="card-meta">Espada Group · Feb–Sep 2021 · Dubai</p>
+                <p class="card-meta">Espada Group · Feb 2021–Sep 2021 · UAE</p>
                 <div class="card-body-wrapper">
                   <p class="card-body">
-                    Strategy for three group entities. 8.4% CTR, 6.3%
-                    conversion, +200% organic reach in 6 months. Local SEO,
-                    web dev, creative.
+                    Curated digital marketing and content strategy for
+                    three group entities — Espada Business Center, Espada
+                    Technical Services, and Dental Hub Clinic. Built monthly
+                    content calendars, formulated data-driven Google Ads and
+                    social media strategies, and managed online presence,
+                    local SEO, and website development. Delivered a
+                    consistent 8.4% click-through rate and 6.3% conversion
+                    rate on PPC campaigns, and grew organic impressions and
+                    reach by over 200% across all entities within six
+                    months.
                   </p>
                   <button type="button" class="card-read-more">Read more</button>
                 </div>
               </div>
             </div>
 
-            <div class="scroll-card scroll-card--uniform">
-              <div class="card">
-                <h3 class="card-heading">Creative Marketing Manager</h3>
-                <p class="card-meta">Vile Parle Premier Sports · Dec 2014–Dec 2018 · Mumbai</p>
-                <div class="card-body-wrapper">
-                  <p class="card-body">
-                    Led creative direction for a 14-day, 9-team community
-                    football league — advertising, branding, event
-                    campaigns.
-                  </p>
-                  <button type="button" class="card-read-more">Read more</button>
-                </div>
-              </div>
-            </div>
-
+            <!-- The old "Creative Marketing Manager" (Vile Parle) card
+                 that used to sit here has moved OUT of Experience and
+                 into the Entrepreneur stop instead (see "Vile Parle
+                 Premier League" in #pin-saturn, further up) - running
+                 it was entrepreneurial work, not a job, so it belongs
+                 there instead. This dropped Experience from 9 cards to
+                 8 - see the card count passed to initScrollCards() in
+                 src/main.js and the matching dot count just below. -->
             <div class="scroll-card scroll-card--uniform">
               <div class="card">
                 <h3 class="card-heading">Startup Ambassador</h3>
                 <p class="card-meta">Startup Jalsa · Sep 2017–Sep 2018 · Mumbai</p>
                 <div class="card-body-wrapper">
                   <p class="card-body">
-                    50+ investor matches, $3M+ seed funding. 2,000+
-                    entrepreneur community, 25+ events, 80% accelerator
-                    placement.
+                    Facilitated 50+ startup-investor matches resulting in
+                    $3M+ in seed funding, and built a community of 2,000+
+                    entrepreneurs across LinkedIn and Instagram. Organized
+                    25+ networking and pitch events connecting 200+
+                    startups with top-tier VCs, mentored 30+ early-stage
+                    startups on pitch decks and investor outreach, and
+                    achieved an 80% success rate placing startups into
+                    leading accelerator programs. Developed relationships
+                    with 100+ angel investors and 30+ VC firms, launched a
+                    digital mentorship program, and ran a weekly newsletter
+                    reaching 5,000+ ecosystem stakeholders.
                   </p>
                   <button type="button" class="card-read-more">Read more</button>
                 </div>
@@ -424,11 +556,19 @@
             <div class="scroll-card scroll-card--uniform">
               <div class="card">
                 <h3 class="card-heading">Digital Marketing Intern</h3>
-                <p class="card-meta">The Marketing Nerdz · Apr–May 2016 · Mumbai</p>
+                <p class="card-meta">The Marketing Nerdz · Apr 2016–May 2016 · Mumbai</p>
                 <div class="card-body-wrapper">
                   <p class="card-body">
-                    Social content across IG/LinkedIn/FB (+25% engagement),
-                    email to 10K+ subscribers, SEO blog writing.
+                    Created and scheduled daily social media content across
+                    Instagram, LinkedIn, and Facebook, increasing follower
+                    engagement by 25%. Assisted with email marketing
+                    campaigns reaching 10,000+ subscribers at a 22% average
+                    open rate, wrote and optimized 2–3 SEO blog posts
+                    weekly, and designed social graphics and marketing
+                    collateral. Tracked and reported campaign metrics via
+                    Google Analytics, supported competitor and market
+                    research, and collaborated on content-calendar
+                    planning.
                   </p>
                   <button type="button" class="card-read-more">Read more</button>
                 </div>
@@ -441,9 +581,16 @@
                 <p class="card-meta">Massive Advertising · Sep 2015–Mar 2016 · Mumbai</p>
                 <div class="card-body-wrapper">
                   <p class="card-body">
-                    12+ integrated campaigns (+40% engagement), +65% social
-                    following, email open 18%→28%, managed $50K quarterly
-                    budget.
+                    Led 12+ integrated marketing campaigns across digital
+                    channels, achieving 40% higher engagement than previous
+                    efforts. Grew social media following 65% through
+                    strategic content planning, lifted email open rates from
+                    18% to 28% via A/B testing and segmentation, and
+                    increased organic blog traffic 45%. Managed a $50K
+                    quarterly budget across concurrent projects, produced
+                    marketing materials for three major product launches,
+                    and streamlined the marketing–sales approval process to
+                    cut campaign deployment time 30%.
                   </p>
                   <button type="button" class="card-read-more">Read more</button>
                 </div>
@@ -452,7 +599,6 @@
           </div>
 
           <div class="scroll-cards-dots">
-            <span class="dot"></span>
             <span class="dot"></span>
             <span class="dot"></span>
             <span class="dot"></span>
@@ -1127,9 +1273,13 @@
             <h2>Say hello</h2>
             <ul class="contact-details">
               <li>
+                <!-- The visible text and the "mailto:" link both have to
+                     name the same address by hand - the browser doesn't
+                     derive one from the other, so both were updated
+                     together here to keep them matching. -->
                 <span class="contact-label">Email</span>
-                <a class="contact-link" href="mailto:dabhiharshit11@gmail.com"
-                  >dabhiharshit11@gmail.com</a
+                <a class="contact-link" href="mailto:sayhello@harshitdabhi.com"
+                  >sayhello@harshitdabhi.com</a
                 >
               </li>
               <li>

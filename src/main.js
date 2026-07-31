@@ -151,9 +151,11 @@ initContactReveal()
 // stop id and card count each time.
 initScrollCards('pin-saturn', 3)
 
-// Cross-fade between the 9 experience cards as the visitor scrolls
-// through Mars's held pin.
-initScrollCards('pin-mars', 9)
+// Cross-fade between the 8 experience cards as the visitor scrolls
+// through Mars's held pin (the old "Creative Marketing Manager"/Vile
+// Parle card moved to Entrepreneur instead - see index.html - so this
+// dropped from 9 to 8).
+initScrollCards('pin-mars', 8)
 
 // Cross-fade between the 11 case-study cards as the visitor scrolls
 // through Venus's held pin (Digibet and NHS were merged into one card
@@ -170,7 +172,7 @@ initScrollCards('pin-constellations', 8)
 initScrollCards('pin-jupiter', 3)
 
 // Turn on the "Read more"/"Read less" toggle for all five scroll-card
-// stops - Venus's 11 case-study cards, Mars's 9 experience cards,
+// stops - Venus's 11 case-study cards, Mars's 8 experience cards,
 // Saturn's 3 entrepreneur cards, Constellations's 8 certificate cards,
 // and Jupiter's 3 volunteering cards - all now use the same uniform
 // card design (see src/styles/card.css). This only ever changes

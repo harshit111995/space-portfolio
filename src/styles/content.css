@@ -19,17 +19,34 @@
 /* ---- Keeping this content off of the Moon's actual surface --------------
    Every stop's content normally sits dead-center on screen (see
    ".pin-content" in base.css) - fine for a single short heading, but
-   the Moon's own content here is much taller (an intro AND a whole
-   row of stats), and the Moon itself sits low in the frame with its
-   lit face cropped off by the bottom of the screen rather than fitting
-   neatly inside it. Centering this much content would push a good
-   chunk of it down onto the Moon's actual surface. Pinning it to the
-   TOP of the screen instead (with a bit of breathing room above it)
-   keeps it clear of the Moon entirely, in the open space above where
-   the Moon rises into frame. */
+   the Moon's own content here is much taller (a name, subtitle, 4
+   body paragraphs, AND a whole row of 6 stats), and the Moon itself
+   sits low in the frame with its lit face cropped off by the bottom
+   of the screen rather than fitting neatly inside it. Centering this
+   much content would push a good chunk of it down onto the Moon's
+   actual surface. Pinning it to the TOP of the screen instead (with a
+   bit of breathing room above it) keeps it clear of the Moon entirely,
+   in the open space above where the Moon rises into frame.
+
+   max-height + overflow-y: auto is the safety net for whatever's left
+   over: on a short screen (a phone, especially in landscape, or a
+   shallow browser window), name + subtitle + 4 paragraphs + 6 stats
+   can add up to more than the screen is actually tall. That matters
+   more here than it would on an ordinary page, because this stop's
+   own scroll is PINNED while it's held (see
+   src/motion/scrollTimeline.js) - the normal page scroll is busy
+   holding the camera still, so it can't also be used to reveal
+   anything that runs past the bottom edge of the screen. Giving this
+   block its own independent scrollbar means it can always be scrolled
+   into view by itself (a mouse wheel or touch drag directly over it),
+   no matter how short the screen is. On any screen roomy enough to
+   fit everything already, this does nothing at all - max-height only
+   ever kicks in once the content actually would have overflowed. */
 #pin-moon .pin-content {
   justify-content: flex-start;
   padding-top: 3.5vh;
+  max-height: 100vh;
+  overflow-y: auto;
 }
 
 /* ---- The Moon stop's intro text -----------------------------------------
@@ -46,20 +63,55 @@
   margin-bottom: 0.5rem;
 }
 
+/* ---- Side by side with the 6 stats on a wide screen ----------------------
+   ".about-layout" (see index.html) is the flex row that holds both
+   ".intro" (this text column) and ".stats-row" side by side - the
+   whole point being that the block's total height only ever needs to
+   be as tall as its TALLER column, not both stacked one on top of the
+   other, which is what keeps it clear of the Moon's lit surface
+   further down the screen (see the comment on "#pin-moon .pin-content"
+   above). flex-wrap on the row is what drops ".stats-row" underneath
+   ".intro" automatically once the screen is too narrow to fit both
+   columns side by side - the exact same trick already used by
+   ".skills-cards"/".testimonials-row" further down this file. */
+.about-layout {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+/* flex: 0 1 460px -> this column targets 460px wide (comfortably
+   matching the ~60ch line-length cap already put on every paragraph
+   by ".pin-content p" in base.css), and is allowed to shrink narrower
+   than that on a tighter screen before wrapping entirely - but never
+   grows wider than it, so the text doesn't stretch out just because
+   there's spare space next to a short stats column. No margin-bottom
+   here any more - ".about-layout"'s own "gap" above already provides
+   consistent spacing after this column, however it ends up arranged
+   (side by side OR stacked). */
 .intro {
-  max-width: 640px;
-  margin-bottom: 1rem;
+  flex: 0 1 460px;
+  max-width: 460px;
 }
 
 /* No margin-bottom of its own here - the shared "p + p" rule in
-   base.css already puts a consistent gap above .intro-summary, right
-   below, since it directly follows this paragraph. */
+   base.css already puts a consistent gap above the first
+   .intro-paragraph right below, since it directly follows this
+   paragraph - and that same rule spaces all 4 .intro-paragraph
+   paragraphs evenly from each other too, with no extra rule needed
+   per-paragraph. */
 .intro-subtitle {
   font-size: 1.1rem;
   color: rgba(255, 255, 255, 0.75);
 }
 
-.intro-summary {
+/* The 4 body paragraphs (see index.html) all share this one class, so
+   they read as one consistent block of body text rather than each
+   needing its own styling. */
+.intro-paragraph {
   font-size: 0.9rem;
   color: rgba(255, 255, 255, 0.85);
 }
@@ -379,6 +431,23 @@
   width: min(90vw, 480px);
   height: 300px;
   margin: 1.5rem auto 0;
+
+  /* This custom property is the actual fix for cards overflowing past
+     their own bottom edge (see the big comment on ".card" in
+     src/styles/card.css for the full story) - it hands this box's own
+     height down to the ".card" nested two levels inside it (through
+     ".scroll-card"), as a real, hard ceiling on how tall a card is
+     ever allowed to render. A plain CSS variable is used here
+     specifically instead of a percentage (like "height: 100%") because
+     percentages need a PARENT with a definite, fixed-in-advance height
+     to measure against - ".scroll-card" (the actual parent of ".card")
+     deliberately does NOT have one (it sizes itself to fit whatever's
+     inside it, up to this same 300px), so a percentage on ".card"
+     silently gets ignored by the browser and the card grows however
+     tall its content wants. A custom property has no such requirement
+     - it just passes this exact 300px value straight down to ".card",
+     however many elements sit in between. */
+  --card-frame-height: 300px;
 }
 
 .scroll-card {
@@ -438,13 +507,20 @@
    ".scroll-card" already do above. */
 .scroll-cards--with-image {
   /* Tall enough for the worst case: an image, a heading, a meta line,
-     a full 4-line clamped body, AND a "Read more" button underneath -
-     all at once. Venus's uniform cards (src/styles/card.css) can hit
-     every one of those at the same time; the old, shorter 480px here
-     was sized back when this card only ever held a single short line
-     of placeholder text, and left the "Read more" button clipped
-     below the fold with no visible way to scroll down to it. */
+     a clamped body, AND a "Read more" button underneath - all at once.
+     Venus's uniform cards (src/styles/card.css) can hit every one of
+     those at the same time; the old, shorter 480px here was sized
+     back when this card only ever held a single short line of
+     placeholder text, and left the "Read more" button clipped below
+     the fold with no visible way to scroll down to it. */
   height: 580px;
+
+  /* Same idea as "--card-frame-height" on ".scroll-cards" above, just
+     the taller number that matches THIS box's own height instead -
+     see the comment there for why a custom property (not a
+     percentage) is what actually gets this hard ceiling down to
+     ".card". */
+  --card-frame-height: 580px;
 }
 
 /* The image placeholder itself. aspect-ratio is the important part

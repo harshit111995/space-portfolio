@@ -28,9 +28,39 @@
    This is the ONLY place any card's background/blur/border is set -
    whatever wraps this (see ".scroll-card--uniform" in
    src/styles/content.css, which deliberately hands off ALL of its own
-   visual styling to this file) just handles POSITIONING, not looks. */
+   visual styling to this file) just handles POSITIONING, not looks.
+
+   ---- Why long card text used to run off the bottom edge -----------------
+   On the scroll-card stops (Entrepreneur, Experience, Case Studies,
+   Certificates, Volunteering - see ".scroll-cards" in content.css),
+   each card sits in a box with a fixed, limited height (300px, or
+   580px for the ones with a photo) - real content is meant to always
+   fit inside that. "height: 100%" here was SUPPOSED to make this card
+   match that height exactly, but it quietly never worked: a
+   percentage height only resolves against a parent that has its OWN
+   definite, fixed-in-advance height, and this card's real parent
+   (".scroll-card" in content.css) deliberately does NOT have one - it
+   sizes itself to fit whatever's inside it instead. So "height: 100%"
+   here was silently ignored by the browser, and a card with enough
+   text just grew as tall as it needed to, past the frame everyone
+   could actually see - most visible once "Read more" was clicked and
+   the full text appeared, which is when a whole extra paragraph could
+   run straight off the bottom of the card with no border in sight.
+
+   "max-height: var(--card-frame-height, none)" is the actual fix - a
+   CSS custom property, not a percentage, so it isn't affected by that
+   same parent-height problem (see the comment on "--card-frame-height"
+   on ".scroll-cards" in content.css for exactly how it gets passed
+   down here). On the scroll-card stops, this reliably caps the card at
+   the real 300px/580px frame, no matter how long its text is. On the
+   Skills/Testimonials stops - which reuse this exact same ".card" but
+   were never part of this bug (they're plain stacked content, not
+   fixed-height frames) - nothing ever sets that variable, so it falls
+   back to "none" (no cap at all), leaving those two stops completely
+   unaffected. */
 .card {
   height: 100%;
+  max-height: var(--card-frame-height, none);
   padding: 1.5rem 1.75rem;
   border-radius: 18px;
   text-align: left;
@@ -39,6 +69,18 @@
   backdrop-filter: blur(18px) saturate(150%);
   -webkit-backdrop-filter: blur(18px) saturate(150%);
   border: 1px solid rgba(255, 255, 255, 0.1);
+
+  /* Capping the card's height (above) is only half the fix - without
+     this, the HEADING/META/BODY/BUTTON inside would still just keep
+     stacking past that cap the same way the card itself used to.
+     Turning the card into a column flexbox is what makes the heading,
+     meta, and button always keep their own full natural size (see
+     "flex-shrink: 0" on each of them below) while handing whatever
+     room is LEFT OVER to the body text - which is exactly the part
+     that needs to flex/shrink/scroll instead (see ".card-body-wrapper"
+     and ".card-body" further down). */
+  display: flex;
+  flex-direction: column;
 
   /* min-height: 0 is a small, easy-to-miss fix needed because this
      card can sit inside a flex/scroll layout above it - without this,
@@ -102,6 +144,14 @@
 
   background: rgba(255, 255, 255, 0.03);
   border: 1px dashed rgba(255, 255, 255, 0.15);
+
+  /* ".card" is a flex column now (see the big comment on it above) -
+     without this, a flex child is allowed to shrink itself smaller
+     than its own natural size whenever the card runs short on room,
+     which would quietly squash this image's own fixed 3:2 shape.
+     flex-shrink: 0 keeps it locked at its real aspect-ratio size no
+     matter what. */
+  flex-shrink: 0;
 }
 
 /* Once a real photo is added (as an <img> inside ".card-image"), this
@@ -122,34 +172,71 @@
   color: rgba(255, 255, 255, 0.35);
 }
 
-/* ---- 2 & 3. Heading and meta line ----------------------------------------- */
+/* ---- 2 & 3. Heading and meta line -----------------------------------------
+   flex-shrink: 0 on both, for the same reason as ".card-image" above -
+   ".card" is a flex column now, and these two must always keep their
+   own full, natural size (never get squeezed) so they stay fully
+   readable no matter how long the body text below them is. This is
+   also what guarantees the heading/meta stay visible within the
+   card's frame even in the worst case - see the big comment on
+   ".card" in this file for the full picture. */
 .card-heading {
   margin-bottom: 0.35rem;
   font-size: 1.1rem;
   font-weight: 600;
   color: #ffffff;
+  flex-shrink: 0;
 }
 
 .card-meta {
   margin-bottom: 0.75rem;
   font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.55);
+  flex-shrink: 0;
 }
 
 /* ---- 4. Body text, with built-in "Read more" -----------------------------
    ".card-body-wrapper" just groups the paragraph and its button
    together so the button always sits directly under the text,
-   regardless of how tall that text currently is. */
+   regardless of how tall that text currently is.
+
+   Every card's body today is a single <p class="card-body"> - but if
+   one ever needs more than one paragraph, no extra spacing rule needs
+   adding here for that: the shared "p + p" rule already set up in
+   src/styles/base.css puts a consistent gap above any paragraph that
+   directly follows another one, anywhere on the page, including two
+   ".card-body" paragraphs sitting side by side in here.
+
+   "flex: 1 1 auto" + "min-height: 0" is what hands this wrapper
+   whatever room is LEFT inside the card after the heading/meta above
+   it (which never shrink - see "flex-shrink: 0" on them further up)
+   and the "Read more" button below it (same - see ".card-read-more"
+   further down). min-height: 0 overrides a flex item's normal
+   default (which otherwise refuses to shrink smaller than its own
+   content), and is exactly what lets the ACTUAL scrolling further
+   down (on ".card-body" itself) kick in instead of just quietly
+   pushing the card taller than its frame - the same root cause
+   explained in the big comment on ".card" further up this file. */
 .card-body-wrapper {
   display: flex;
   flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
+/* Same "flex: 1 1 auto" + "min-height: 0" here, one level deeper -
+   this is the piece that actually gets its own real, bounded height
+   from the flex layout above (rather than just growing to fit its
+   text), which is what "overflow-y: auto" on ".card-body--expanded"
+   below needs in order to scroll ONLY this text - not the whole card
+   - once the expanded text is taller than the room available. */
 .card-body {
   position: relative; /* an anchor for the fade effect below, which is positioned relative to this */
   font-size: 0.9rem;
   line-height: 1.6;
   color: rgba(255, 255, 255, 0.85);
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 /* ---- The clamped (truncated) state ---------------------------------------
@@ -162,14 +249,38 @@
    The clamping itself uses "-webkit-line-clamp" - despite the
    "-webkit-" name, every major browser now supports this the same
    way; it's simply never been renamed. It cuts the text off after a
-   fixed NUMBER OF LINES (4 here) rather than a fixed pixel height,
-   which keeps it working correctly regardless of the exact font size
-   or how the text happens to wrap. */
+   fixed NUMBER OF LINES (3 here - was 4, but on the LONGEST real
+   cards, a 2-line heading plus a 2-line meta line left only a sliver
+   of room below a 4-line clamp before hitting the card's own bottom
+   edge, no matter how tall the card was allowed to be. 3 lines
+   leaves comfortable, consistent breathing room under the text and
+   the "Read more" button on every card, not just the short ones)
+   rather than a fixed pixel height, which keeps it working correctly
+   regardless of the exact font size or how the text happens to wrap. */
 .card-body--clamped {
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 4;
+  -webkit-line-clamp: 3;
   overflow: hidden;
+}
+
+/* ---- The expanded (fully open) state --------------------------------------
+   src/ui/cardReadMore.js adds this class instead, in place of
+   ".card-body--clamped" above, the moment "Read more" is clicked -
+   the full, un-clamped text becomes visible again. On a short card
+   that's the end of the story. On a long one, though, the FULL text
+   can easily be taller than the room actually left inside the card's
+   fixed frame - "overflow-y: auto" is what makes THIS text scroll
+   internally to reach the rest, instead of the old behavior, where
+   the text (and the whole rest of the card along with it) just kept
+   growing straight past the card's own bottom border with nothing
+   stopping it. Because ".card-body" above already gets its real,
+   bounded height from the surrounding flex layout (not just
+   "however tall its text wants to be"), this scrollbar only ever
+   appears when it's actually needed - a card whose full text already
+   fits within the space available shows no scrollbar at all. */
+.card-body--expanded {
+  overflow-y: auto;
 }
 
 /* A soft fade over the last line of clamped text, hinting that more
@@ -196,6 +307,13 @@
    right under the (possibly faded) text. */
 .card-read-more {
   align-self: flex-start; /* sizes to fit its own short text, instead of stretching the full card width like a block button would */
+  /* Same reason as ".card-heading"/".card-meta" further up: this
+     button must always keep its own full size and never get squeezed
+     away by the flex layout - it's what guarantees "Read more" (or
+     "Read less") stays visible and clickable at the bottom of every
+     card, even the longest one, instead of ever being pushed out of
+     view. */
+  flex-shrink: 0;
   margin-top: 0.5rem;
   padding: 0;
   border: none;

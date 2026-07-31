@@ -147,10 +147,11 @@ const BODIES = [
     id: 'mars', // src/scene/planets.js
     position: new THREE.Vector3(-10, 1, -50),
     park: { x: 12, y: -11 }, // ~25.1 units out - reused from the Saturn/Mars proof phase
-    // 4.5vh = 9 experience cards (not built yet - this stop will reuse
-    // the same scroll-card pattern proven on Saturn) x ~0.5
+    // 4.0vh = 8 experience cards (the old "Creative Marketing Manager"/
+    // Vile Parle card moved to the Entrepreneur stop instead - see
+    // index.html - so this dropped from 9 cards/4.5vh) x ~0.5
     // screen-heights each, matching Saturn's own per-card pacing.
-    holdLengthVh: 4.5,
+    holdLengthVh: 4.0,
     marker: false,
   },
   {
