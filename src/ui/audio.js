@@ -6,12 +6,17 @@
 //
 //   1. It defaults to OFF, and remembers whatever the visitor last
 //      chose, across visits (using localStorage - the browser's own
-//      small persistent storage).
+//      small persistent storage) - UNLESS the visitor just picked one
+//      of the loader's two Enter buttons ("Enter with sound"/"Enter
+//      without sound" - see src/ui/loader.js), which always wins over
+//      whatever was remembered from before, since choosing one of
+//      those two buttons is a deliberate choice too.
 //   2. It never even TRIES to play sound until the visitor has
-//      clicked "Enter" (the experience:start event fired by
-//      src/ui/loader.js). Browsers actively block audio that starts
-//      on its own before a real click - trying earlier wouldn't just
-//      be rude, it would silently fail (or log a warning) anyway.
+//      clicked one of the two Enter buttons (the experience:start
+//      event fired by src/ui/loader.js). Browsers actively block
+//      audio that starts on its own before a real click - trying
+//      earlier wouldn't just be rude, it would silently fail (or log
+//      a warning) anyway.
 // ===================================================================
 
 const STORAGE_KEY = 'audio-enabled'
@@ -170,20 +175,29 @@ export function initAudio() {
   })
 
   // ---- Waiting for the visitor's deliberate "Enter" click -------------------
-  // src/ui/loader.js only fires 'experience:start' from inside its
-  // Enter button's own click handler - so hearing this event is proof
-  // a real, deliberate click already happened. That's what makes it
-  // safe (and allowed by the browser) to start playback here, if the
-  // visitor had left sound turned on during an earlier visit.
+  // src/ui/loader.js now offers TWO buttons - "Enter with sound" and
+  // "Enter without sound" - and fires 'experience:start' from inside
+  // whichever one was actually clicked, with "event.detail.withSound"
+  // saying which. Either way, hearing this event at all is proof a
+  // real, deliberate click already happened - that's what makes it
+  // safe (and allowed by the browser) to start playback here, the
+  // same guarantee this relied on before there were two buttons.
+  //
+  // Calling setEnabled() (the exact same function the little speaker
+  // toggle button above calls) is what makes this respect the whole
+  // existing audio system instead of half-reimplementing it here:
+  // "Enter with sound" ends up doing precisely what clicking the
+  // toggle to "on" would do (play, fade the volume up, flip the icon,
+  // save "true" to localStorage), and "Enter without sound" does
+  // precisely what clicking it to "off" would do (fade down, pause,
+  // flip the icon, save "false") - even overriding whatever this
+  // visitor's own last-saved preference happened to be, since picking
+  // a button here is just as deliberate a choice as clicking the
+  // toggle itself later would be.
   window.addEventListener(
     'experience:start',
-    () => {
-      if (isEnabled) {
-        if (audio.paused) {
-          audio.play().catch(() => {})
-        }
-        fadeVolumeTo(0.5, 800)
-      }
+    (event) => {
+      setEnabled(Boolean(event.detail?.withSound))
     },
     { once: true },
   )

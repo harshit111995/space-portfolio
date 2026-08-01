@@ -224,12 +224,17 @@
    together so the button always sits directly under the text,
    regardless of how tall that text currently is.
 
-   Every card's body today is a single <p class="card-body"> - but if
-   one ever needs more than one paragraph, no extra spacing rule needs
-   adding here for that: the shared "p + p" rule already set up in
-   src/styles/base.css puts a consistent gap above any paragraph that
-   directly follows another one, anywhere on the page, including two
-   ".card-body" paragraphs sitting side by side in here.
+   Most cards' bodies are a single <p class="card-body"> - Entrepreneur,
+   Experience, and Volunteering's cards are the exception, each split
+   into 2-3 shorter <p class="card-body"> paragraphs instead of one
+   dense block (their prose was long enough that one unbroken paragraph
+   read as a wall of text). No extra spacing rule was needed for that: the
+   shared "p + p" rule already set up in src/styles/base.css puts a
+   consistent gap above any paragraph that directly follows another
+   one, anywhere on the page, including several ".card-body"
+   paragraphs stacked one after another in here - splitting a body
+   into more paragraphs is purely a change to the TEXT (see
+   index.html), nothing here needed to change at all to support it.
 
    "flex: 1 1 auto" + "min-height: 0" is what hands this wrapper
    whatever room is LEFT inside the card after the heading/meta above

@@ -3,8 +3,9 @@
 // This file builds the full-screen loading overlay you see first,
 // before the site is ready: a little shuttle with an exhaust plume
 // that grows as real files (textures, images) finish downloading, a
-// percentage counter, and an "Enter" button that only works once
-// everything has actually finished loading.
+// percentage counter, and two Enter buttons - "Enter with sound" and
+// "Enter without sound" - that only work once everything has actually
+// finished loading.
 //
 // GSAP/anime.js division of labor, kept consistent with earlier
 // phases: this file uses anime.js for the loader's own fade-out
@@ -205,28 +206,56 @@ export function initLoader(manager) {
     opacity: '0.85',
   })
 
-  // ---- The Enter button ----------------------------------------------------
-  // Starts disabled - it only becomes clickable once the manager
-  // reports everything has finished loading, further down.
-  const enterButton = document.createElement('button')
-  enterButton.textContent = 'Enter'
-  enterButton.disabled = true
-  Object.assign(enterButton.style, {
-    padding: '0.75rem 2rem',
-    fontSize: '1rem',
-    borderRadius: '999px',
-    border: '1px solid rgba(255,255,255,0.3)',
-    background: 'transparent',
-    color: 'inherit',
-    cursor: 'not-allowed',
-    opacity: '0.35',
-    transition: 'opacity 0.3s ease',
+  // ---- The two Enter buttons -------------------------------------------------
+  // Two separate buttons instead of one - "Enter with sound" and "Enter
+  // without sound" - so the visitor's very first click also picks
+  // their audio preference, right up front, rather than entering
+  // silently and having to go find the small speaker toggle in the
+  // corner afterward (see src/ui/audio.js) if they actually wanted
+  // sound. Both buttons do the EXACT same thing to get into the site
+  // (same fade-out, same #app handling, same event dispatched at the
+  // end) - the only difference between them is a true/false flag
+  // saying which one was clicked, sent along with that event so
+  // audio.js knows which way to set the toggle. Neither button plays
+  // any audio itself, directly - see the big comment further down on
+  // why that's left entirely to audio.js's own listener instead.
+  //
+  // Both start disabled, same as the old single button did - they
+  // only become clickable once the manager reports everything has
+  // finished loading, further down. A plain flex row holds the two of
+  // them side by side, with a small gap between.
+  const buttonRow = document.createElement('div')
+  Object.assign(buttonRow.style, {
+    display: 'flex',
+    gap: '0.75rem',
   })
+
+  function makeEnterButton(label) {
+    const button = document.createElement('button')
+    button.textContent = label
+    button.disabled = true
+    Object.assign(button.style, {
+      padding: '0.75rem 1.5rem',
+      fontSize: '0.95rem',
+      borderRadius: '999px',
+      border: '1px solid rgba(255,255,255,0.3)',
+      background: 'transparent',
+      color: 'inherit',
+      cursor: 'not-allowed',
+      opacity: '0.35',
+      transition: 'opacity 0.3s ease',
+    })
+    return button
+  }
+
+  const enterWithSoundButton = makeEnterButton('Enter with sound')
+  const enterWithoutSoundButton = makeEnterButton('Enter without sound')
+  buttonRow.append(enterWithSoundButton, enterWithoutSoundButton)
 
   // Put all the pieces together inside the overlay - no need to add it
   // to the page ourselves, it's already there (see the top of this
   // function).
-  overlay.append(shuttleWrapper, plume, percentText, enterButton)
+  overlay.append(shuttleWrapper, plume, percentText, buttonRow)
 
   // ---- Tracking real loading progress --------------------------------------
   // onProgress is called by the LoadingManager every time ONE more
@@ -241,18 +270,25 @@ export function initLoader(manager) {
   }
 
   // onLoad is called once, only after every single tracked file has
-  // finished loading. Only then do we unlock the Enter button.
+  // finished loading. Only then do we unlock BOTH Enter buttons.
   manager.onLoad = () => {
-    enterButton.disabled = false
-    enterButton.style.cursor = 'pointer'
-    enterButton.style.opacity = '1'
+    ;[enterWithSoundButton, enterWithoutSoundButton].forEach((button) => {
+      button.disabled = false
+      button.style.cursor = 'pointer'
+      button.style.opacity = '1'
+    })
   }
 
   // ---- Leaving the loader screen --------------------------------------------
-  enterButton.addEventListener('click', () => {
+  // One shared function for both buttons, since everything about
+  // LEAVING the loader is identical either way - only "withSound"
+  // differs between the two click handlers further down.
+  function enterExperience(withSound) {
     // Prevent accidentally triggering this more than once (e.g. a
-    // very fast double-click) while the fade-out is already playing.
-    enterButton.disabled = true
+    // very fast double-click, or clicking the other button too) while
+    // the fade-out is already playing.
+    enterWithSoundButton.disabled = true
+    enterWithoutSoundButton.disabled = true
 
     // Note: #app (the real CV/portfolio content) is NOT hidden or
     // revealed anywhere in this file - it stays fully rendered and
@@ -281,9 +317,19 @@ export function initLoader(manager) {
         // started the experience." Later phases (like audio) can
         // listen for this to know it's safe/appropriate to begin,
         // since it only ever fires from this real button click - never
-        // automatically on page load.
-        window.dispatchEvent(new CustomEvent('experience:start'))
+        // automatically on page load. "detail.withSound" carries
+        // WHICH of the two buttons was actually clicked, so
+        // src/ui/audio.js knows whether to turn the toggle on or
+        // leave it off - see the big comment there for what it does
+        // with this.
+        window.dispatchEvent(new CustomEvent('experience:start', { detail: { withSound } }))
       },
     })
-  })
+  }
+
+  // Each button calls the same shared function above, just with a
+  // different "withSound" flag - this is the ONLY thing that actually
+  // differs between clicking one versus the other.
+  enterWithSoundButton.addEventListener('click', () => enterExperience(true))
+  enterWithoutSoundButton.addEventListener('click', () => enterExperience(false))
 }
