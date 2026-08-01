@@ -1244,10 +1244,24 @@
 
            These cards use the same uniform ".card" design as every
            other card stop (see src/styles/card.css - reused exactly
-           as-is). No photos here, so no ".card-image" slot. Same
-           read-more toggle too, via src/ui/cardReadMore.js, pointed
-           at "pin-constellations" (see src/main.js) - only the
-           "Other" card (7 items) is long enough to actually need it. -->
+           as-is). No photos here, so no ".card-image" slot.
+
+           Each body is now the STRUCTURED shape (see the big comment
+           on ".card-body--structured" in src/styles/card.css) holding
+           just a single plain bulleted list of that issuer's
+           certifications - no ".card-body-label"/".card-body-section"
+           wrapper needed here, since there's only ever one list per
+           card, not several labeled ones the way Case Studies or
+           Skills have. Same "Read more" toggle as every other stop,
+           via src/ui/cardReadMore.js, pointed at "pin-constellations"
+           (see src/main.js) - half of these 8 (Google, Cannes Lions
+           Academy, StackAdapt, CIM, and Other) are long enough to need
+           it now that each certification gets its own bulleted line
+           instead of being run together in one comma-separated
+           sentence. Only "Other" (7 items, the longest) is ALSO long
+           enough to need the ▲▼ scroll arrows (src/ui/cardScroll.js)
+           even once fully expanded - every other card's full list
+           already fits inside the frame on its own. -->
       <div id="pin-constellations" class="pin-marker">
         <div class="pin-content">
           <h2>Certificates</h2>
@@ -1257,10 +1271,16 @@
               <div class="card">
                 <h3 class="card-heading">Google</h3>
                 <div class="card-body-wrapper">
-                  <p class="card-body">
-                    Campaign Manager 360, Display &amp; Video 360, Search Ads
-                    360, Ads Display, Tag Manager, Analytics.
-                  </p>
+                  <div class="card-body card-body--structured">
+                    <ul>
+                      <li>Campaign Manager 360</li>
+                      <li>Display &amp; Video 360</li>
+                      <li>Search Ads 360</li>
+                      <li>Ads Display</li>
+                      <li>Google Tag Manager Fundamentals</li>
+                      <li>Google Analytics</li>
+                    </ul>
+                  </div>
                   <button type="button" class="card-read-more">Read more</button>
                 </div>
               </div>
@@ -1270,10 +1290,14 @@
               <div class="card">
                 <h3 class="card-heading">Cannes Lions Academy</h3>
                 <div class="card-body-wrapper">
-                  <p class="card-body">
-                    Marketing Growth Agenda, Creative Effectiveness,
-                    Copywriting, Digital Marketing.
-                  </p>
+                  <div class="card-body card-body--structured">
+                    <ul>
+                      <li>ANA Marketing Growth Agenda</li>
+                      <li>Creative Effectiveness</li>
+                      <li>Copywriting</li>
+                      <li>Digital Marketing</li>
+                    </ul>
+                  </div>
                   <button type="button" class="card-read-more">Read more</button>
                 </div>
               </div>
@@ -1283,9 +1307,13 @@
               <div class="card">
                 <h3 class="card-heading">StackAdapt</h3>
                 <div class="card-body-wrapper">
-                  <p class="card-body">
-                    In-game Channel, DOOH, and CTV certifications.
-                  </p>
+                  <div class="card-body card-body--structured">
+                    <ul>
+                      <li>In-game Channel Certification</li>
+                      <li>DOOH Certification</li>
+                      <li>CTV Certification</li>
+                    </ul>
+                  </div>
                   <button type="button" class="card-read-more">Read more</button>
                 </div>
               </div>
@@ -1295,10 +1323,13 @@
               <div class="card">
                 <h3 class="card-heading">CIM (Chartered Institute of Marketing)</h3>
                 <div class="card-body-wrapper">
-                  <p class="card-body">
-                    Planning &amp; Optimising Campaigns; Marketing &amp; Brand
-                    Strategy; Associate Member (ACIM).
-                  </p>
+                  <div class="card-body card-body--structured">
+                    <ul>
+                      <li>Planning &amp; Optimising Marketing Campaigns</li>
+                      <li>Marketing &amp; Brand Strategy</li>
+                      <li>ACIM Member</li>
+                    </ul>
+                  </div>
                   <button type="button" class="card-read-more">Read more</button>
                 </div>
               </div>
@@ -1308,9 +1339,11 @@
               <div class="card">
                 <h3 class="card-heading">Microsoft</h3>
                 <div class="card-body-wrapper">
-                  <p class="card-body">
-                    Generative AI Foundation.
-                  </p>
+                  <div class="card-body card-body--structured">
+                    <ul>
+                      <li>Generative AI Foundation Certificate</li>
+                    </ul>
+                  </div>
                   <button type="button" class="card-read-more">Read more</button>
                 </div>
               </div>
@@ -1320,10 +1353,12 @@
               <div class="card">
                 <h3 class="card-heading">Adelaide</h3>
                 <div class="card-body-wrapper">
-                  <p class="card-body">
-                    Fundamentals &amp; Applications of Attention; Attention
-                    Metrics in a Privacy-First World.
-                  </p>
+                  <div class="card-body card-body--structured">
+                    <ul>
+                      <li>Fundamentals &amp; Applications of Attention</li>
+                      <li>The Role of Attention Metrics in a Privacy-First World</li>
+                    </ul>
+                  </div>
                   <button type="button" class="card-read-more">Read more</button>
                 </div>
               </div>
@@ -1333,10 +1368,11 @@
               <div class="card">
                 <h3 class="card-heading">Agentic Advertising</h3>
                 <div class="card-body-wrapper">
-                  <p class="card-body">
-                    AdCP Specialist (AI agent for programmatic media buying);
-                    Member.
-                  </p>
+                  <div class="card-body card-body--structured">
+                    <ul>
+                      <li>AdCP Specialist (AI agent for programmatic media buying)</li>
+                    </ul>
+                  </div>
                   <button type="button" class="card-read-more">Read more</button>
                 </div>
               </div>
@@ -1346,12 +1382,17 @@
               <div class="card">
                 <h3 class="card-heading">Other</h3>
                 <div class="card-body-wrapper">
-                  <p class="card-body">
-                    Magnite — Advanced TV; Seedtag — Contextual 101; LinkedIn
-                    — Data Strategy; TikTok Academy Pro; Ogilvy — Applied
-                    Behavioral Science; WARC — Marketing Strategy; Thinkbox —
-                    TV Masters.
-                  </p>
+                  <div class="card-body card-body--structured">
+                    <ul>
+                      <li>Advanced TV for Advertisers (Magnite)</li>
+                      <li>Contextual 101 (Seedtag)</li>
+                      <li>Data Strategy (LinkedIn)</li>
+                      <li>TikTok Academy Pro</li>
+                      <li>Applied Behavioral Science (Ogilvy)</li>
+                      <li>Marketing Strategy (WARC)</li>
+                      <li>TV Masters (Thinkbox)</li>
+                    </ul>
+                  </div>
                   <button type="button" class="card-read-more">Read more</button>
                 </div>
               </div>
