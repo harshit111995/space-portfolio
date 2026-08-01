@@ -1414,20 +1414,26 @@
            reveal pattern already used for the Moon's stats, the
            testimonials cards, and the education panel.
 
-           Both cards use the same uniform ".card" design as the four
-           scroll-card stops (see src/styles/card.css - reused exactly
-           as-is, nothing in that file changed). Skills have no photo,
-           so neither card has a ".card-image" slot. The Technical
-           Skills card is intentionally dense - all 5 tool categories
-           are written as ONE flowing paragraph, with each category
-           name simply bolded in-line rather than given its own
-           heading/list. That's on purpose: the 4-line-clamp + "Read
-           more" toggle (src/ui/cardReadMore.js) works by counting
-           lines of plain running text, and nested headings/lists
-           would make that count unreliable. The shorter Soft Skills
-           card uses that exact same structure for consistency - it
-           just never has enough text to actually need its own "Read
-           more" button. -->
+           Both cards use the same uniform ".card" design as every
+           other stop (see src/styles/card.css - reused exactly as-is,
+           nothing in that file changed). Skills have no photo, so
+           neither card has a ".card-image" slot.
+
+           Both bodies now use the STRUCTURED body shape (see the big
+           comment on ".card-body--structured" in src/styles/card.css -
+           the same one Case Studies already uses) instead of the old
+           single flowing paragraph with bolded in-line labels - six
+           small labeled sections each, most of them a bulleted list of
+           short tools/skills rather than a paragraph, since that's
+           what each one actually is (a list of items), not a
+           sentence. Neither card has a ".card-image", and neither sits
+           inside a height-capped frame the way the scroll-card stops
+           do (see "--card-frame-height" in content.css - nothing sets
+           that custom property for "#pin-satellites", so it falls back
+           to no cap at all, and these cards simply grow as tall as
+           they need to) - so the ▲▼ scroll arrows never apply here,
+           only the "Read more" truncation. Technical Skills is dense
+           enough to need that; Soft Skills is close but still fits. -->
       <div id="pin-satellites" class="pin-marker">
         <div class="pin-content">
           <h2>Skills</h2>
@@ -1436,19 +1442,89 @@
               <div class="card">
                 <h3 class="card-heading">Technical Skills</h3>
                 <div class="card-body-wrapper">
-                  <p class="card-body">
-                    <strong>Programmatic Platforms:</strong> DV360, Trade Desk,
-                    Amazon DSP, StackAdapt, Quantcast, Outbrain, CM360,
-                    Displayce, Vistar, Adjust, Appsflyer.
-                    <strong>Media Channels:</strong> CTV, DOOH, PDOOH, Display,
-                    Video, Social, Search, Native, Audio.
-                    <strong>Analytics:</strong> GA4, Tableau, Salesforce,
-                    Microsoft Clarity, Adobe Analytics, Nielsen Adintel.
-                    <strong>Ad Serving:</strong> Google, Meta, TikTok, Snapchat,
-                    LinkedIn, Twitter Ads.
-                    <strong>Marketing Automation:</strong> Braze, Mailchimp,
-                    HubSpot, Zoho, ActiveCampaign.
-                  </p>
+                  <div class="card-body card-body--structured">
+                    <div class="card-body-section">
+                      <span class="card-body-label">Programmatic Platforms</span>
+                      <ul>
+                        <li>DV360</li>
+                        <li>Trade Desk</li>
+                        <li>Amazon DSP</li>
+                        <li>YAN Network</li>
+                        <li>Quantcast</li>
+                        <li>Smartyads</li>
+                        <li>Outbrain</li>
+                        <li>StackAdapt</li>
+                        <li>Broadsign</li>
+                        <li>CM360</li>
+                        <li>Displayce</li>
+                        <li>Vistar</li>
+                        <li>Adjust</li>
+                        <li>Appsflyer</li>
+                      </ul>
+                    </div>
+                    <div class="card-body-section">
+                      <span class="card-body-label">Media Channels</span>
+                      <ul>
+                        <li>CTV</li>
+                        <li>DOOH</li>
+                        <li>PDOOH</li>
+                        <li>Display</li>
+                        <li>Video</li>
+                        <li>Social</li>
+                        <li>Search</li>
+                        <li>Native</li>
+                        <li>Audio</li>
+                      </ul>
+                    </div>
+                    <div class="card-body-section">
+                      <span class="card-body-label">Analytics Tools</span>
+                      <ul>
+                        <li>GA4</li>
+                        <li>Tableau</li>
+                        <li>Salesforce</li>
+                        <li>Microsoft Clarity</li>
+                        <li>Adobe Analytics</li>
+                        <li>Zoho</li>
+                        <li>Tag Manager</li>
+                        <li>Nielsen Adintel</li>
+                      </ul>
+                    </div>
+                    <div class="card-body-section">
+                      <span class="card-body-label">Core Competencies</span>
+                      <ul>
+                        <li>Omnichannel Media Buying</li>
+                        <li>Yield Optimization</li>
+                        <li>CAC/LTV Management</li>
+                        <li>Audience Segmentation</li>
+                        <li>Performance Marketing</li>
+                        <li>Budget Management</li>
+                        <li>Native Advertising</li>
+                        <li>Social Media Advertising</li>
+                        <li>Content Strategy</li>
+                      </ul>
+                    </div>
+                    <div class="card-body-section">
+                      <span class="card-body-label">Ad Serving Tools</span>
+                      <ul>
+                        <li>Google Search Ads</li>
+                        <li>Meta Ads</li>
+                        <li>TikTok Ads</li>
+                        <li>Snapchat Ads</li>
+                        <li>LinkedIn Ads</li>
+                        <li>Twitter Ads</li>
+                      </ul>
+                    </div>
+                    <div class="card-body-section">
+                      <span class="card-body-label">Marketing Automation</span>
+                      <ul>
+                        <li>Braze</li>
+                        <li>Mailchimp</li>
+                        <li>HubSpot</li>
+                        <li>Zoho SalesIQ</li>
+                        <li>ActiveCampaign</li>
+                      </ul>
+                    </div>
+                  </div>
                   <button type="button" class="card-read-more">Read more</button>
                 </div>
               </div>
@@ -1458,12 +1534,62 @@
               <div class="card">
                 <h3 class="card-heading">Soft Skills</h3>
                 <div class="card-body-wrapper">
-                  <p class="card-body">
-                    Leadership, communication, negotiation, and strategic
-                    thinking, with strong stakeholder management and
-                    cross-functional collaboration. Mentoring experience and
-                    cultural awareness across MENA, EMEA, and APAC.
-                  </p>
+                  <div class="card-body card-body--structured">
+                    <div class="card-body-section">
+                      <span class="card-body-label">Leadership</span>
+                      <ul>
+                        <li>Team management</li>
+                        <li>Project leadership</li>
+                        <li>Stakeholder management</li>
+                        <li>Mentoring &amp; development</li>
+                      </ul>
+                    </div>
+                    <div class="card-body-section">
+                      <span class="card-body-label">Communication</span>
+                      <ul>
+                        <li>Negotiation</li>
+                        <li>Client relationship management</li>
+                        <li>Cross-functional collaboration</li>
+                        <li>Presentation skills</li>
+                      </ul>
+                    </div>
+                    <div class="card-body-section">
+                      <span class="card-body-label">Strategic Thinking</span>
+                      <ul>
+                        <li>Problem-solving</li>
+                        <li>Analytical mindset</li>
+                        <li>Strategic planning</li>
+                        <li>Data-driven decision-making</li>
+                      </ul>
+                    </div>
+                    <div class="card-body-section">
+                      <span class="card-body-label">Personal Qualities</span>
+                      <ul>
+                        <li>Results-oriented</li>
+                        <li>Adaptable</li>
+                        <li>Detail-oriented</li>
+                        <li>Proactive</li>
+                        <li>Innovative</li>
+                      </ul>
+                    </div>
+                    <div class="card-body-section">
+                      <span class="card-body-label">Project Management</span>
+                      <ul>
+                        <li>Budget management</li>
+                        <li>Time management</li>
+                        <li>Resource allocation</li>
+                        <li>Risk assessment</li>
+                        <li>Bid management</li>
+                      </ul>
+                    </div>
+                    <div class="card-body-section">
+                      <span class="card-body-label">Cultural Awareness</span>
+                      <p>
+                        Experience with global teams and diverse markets
+                        across MENA, EMEA, and APAC.
+                      </p>
+                    </div>
+                  </div>
                   <button type="button" class="card-read-more">Read more</button>
                 </div>
               </div>

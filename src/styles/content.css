@@ -319,6 +319,23 @@
   justify-content: center;
   gap: 1.5rem;
   max-width: 960px;
+
+  /* Without an explicit width, this box was sizing itself to its own
+     "intrinsic" width instead of actually using the space available
+     to it - normally invisible, but it means how wide this box turns
+     out to be can shift depending on what's INSIDE the two cards
+     (their content, not just their own max-width caps). That's
+     exactly what happened once the cards' bodies became long lists of
+     short items instead of a couple of short paragraphs: this box's
+     own intrinsic width came out narrower than the ~904px both cards
+     need to sit side by side, so they wrapped onto separate lines
+     even on a screen plenty wide enough for both. "width: 100%" makes
+     this box simply fill whatever space its parent actually gives it
+     (up to the "max-width" above), so whether the two cards fit
+     side by side from here on only ever depends on the real screen
+     width - exactly what ".skills-card"'s own flex-wrap sizing below
+     was always meant to control on its own. */
+  width: 100%;
 }
 
 .skills-card {
