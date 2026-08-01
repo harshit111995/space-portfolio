@@ -124,7 +124,10 @@ export const lookBaseRotation = { x: 0, y: 0 }
 // target that depends on how tall the WHOLE page ends up (which
 // changes as pins are added), so every hold is defined here in a
 // fixed, real unit instead, and turned into percent further down once
-// the actual page height is known.
+// the actual page height is known. Venus is the one exception - it has
+// "naturalHeight: true" instead of a "holdLengthVh" number, because
+// its hold length isn't hand-picked at all anymore; see the big
+// comment on it below, and on "naturalHeight" further down this file.
 const BODIES = [
   {
     id: 'moon', // src/scene/moon.js - the small moon near the start
@@ -158,11 +161,20 @@ const BODIES = [
     id: 'venus', // src/scene/planets.js
     position: new THREE.Vector3(-10, -2, -80),
     park: { x: -34, y: 12 }, // ~27.8 units out
-    // 5.5vh = 11 case-study cards (Digibet and NHS were merged into
-    // one card - see index.html - so this dropped from 12 cards/6.0vh)
-    // x ~0.5 screen-heights each - the longest hold, since it's also
-    // the stop with the most cards to get through.
-    holdLengthVh: 5.5,
+    // No "holdLengthVh" here, on purpose - every other body's hold
+    // length is a fixed, hand-picked number of screen-heights, but
+    // Case Studies (Venus) no longer works that way. Its 11 full-length
+    // cards now scroll past naturally instead of being frozen inside a
+    // small fixed box (see the big comment on "#pin-venus" in
+    // index.html), so there's no fixed length to pick by hand anymore -
+    // "naturalHeight: true" tells the setup code further down to
+    // MEASURE this stop's own real, rendered height instead, exactly
+    // the same way it already measures every pin's real pixel size,
+    // just without also freezing the page for that stretch. The camera
+    // still parks here and holds completely still, for however long
+    // that measured stretch of scrolling turns out to be - see
+    // "naturalHeight" further down in this file for exactly how.
+    naturalHeight: true,
     marker: false,
   },
   {
@@ -276,15 +288,58 @@ function setupParkedStop(elementId, holdLengthPx) {
   return trigger
 }
 
+// ---- Measuring a stop that scrolls naturally instead of pinning -----------
+// This is Case Studies (Venus)'s equivalent of setupParkedStop() above,
+// for a stop that doesn't freeze the page at all. Its 11 full-length
+// cards already sit in plain, ordinary document flow (see
+// "#pin-venus .pin-content" in src/styles/content.css - unlike every
+// other stop, it's deliberately NOT taken out of the page's normal
+// flow), so there's nothing to pin - the browser already gives this
+// element exactly the real scroll distance its actual content needs,
+// for free, the same way it would for any ordinary paragraph of text.
+//
+// What this DOES still need to do is find out exactly where that
+// naturally-sized block starts and ends, in real scroll pixels, so the
+// camera further down this file knows how long to hold still here -
+// "start: 'top top'" / "end: 'bottom top'" ask ScrollTrigger to report
+// back the scroll position where this element's top, and then its
+// bottom, each reach the top of the screen - i.e. exactly the range of
+// scrolling this element's own real height occupies. No "pin: true"
+// here at all - this ScrollTrigger only ever WATCHES that range, it
+// never freezes anything.
+function measureNaturalStop(elementId) {
+  const trigger = ScrollTrigger.create({
+    trigger: `#${elementId}`,
+    start: 'top top',
+    end: 'bottom top',
+  })
+  ScrollTrigger.refresh()
+  return trigger
+}
+
 export function init(camera) {
-  // ---- Pin all 10 stops, settling each one's spacing before the next ------
+  // ---- Setting up all 10 stops, settling each one's spacing before the next -
   // Pins are created REGARDLESS of reduced motion - freezing the page
   // content so a visitor can read it without it sliding away is a
   // readability aid, not the kind of motion "reduce motion" asks to
   // avoid. Only the camera's off-axis framing/turning (built further
   // below) is skipped under reduced motion, same as before.
+  //
+  // 9 of these 10 calls genuinely PIN the page (see setupParkedStop()
+  // above); Case Studies (Venus) is the one exception, using
+  // measureNaturalStop() instead, since it has "naturalHeight: true"
+  // on its BODIES entry rather than a "holdLengthVh" number (see the
+  // big comment there for why). Both functions return the same SHAPE
+  // of ScrollTrigger object (something with a real, measured
+  // ".start"/".end" in pixels), so every single line of code below
+  // this point - the percent conversion, the camera's z/x/y holds, the
+  // look-aim - can keep treating all 10 stops completely identically,
+  // never needing to know or care which of the two ways any given
+  // stop's own hold boundaries were actually measured.
   const pinTriggers = BODIES.map((body) =>
-    setupParkedStop(`pin-${body.id}`, body.holdLengthVh * window.innerHeight),
+    body.naturalHeight
+      ? measureNaturalStop(`pin-${body.id}`)
+      : setupParkedStop(`pin-${body.id}`, body.holdLengthVh * window.innerHeight),
   )
 
   // One more refresh after all 10 exist, so the percentages read below
@@ -349,7 +404,11 @@ export function init(camera) {
   // Two kinds of segment make up the whole page:
   //   - a PIN HOLD (how long the camera stays frozen on one body) -
   //     these are set directly from holdLengthVh above, so they should
-  //     match that intended number exactly.
+  //     match that intended number exactly. Case Studies (Venus) is
+  //     the one exception - it has no hand-picked "intended" number to
+  //     compare against at all (see "naturalHeight" further up this
+  //     file), so its own line below just reports the real measured
+  //     length plainly, with no "intended" comparison alongside it.
   //   - a RUNWAY (the plain .pin-runway spacer before each pin, see
   //     index.html) - every one of these is meant to be exactly one
   //     screen-height (100vh in CSS, i.e. window.innerHeight in px).
@@ -373,9 +432,10 @@ export function init(camera) {
       console.log(
         `runway before ${body.id}: ${runwayPx.toFixed(0)}px = ${(runwayPx / vh).toFixed(3)}vh (intended ~1.000vh)`,
       )
-      console.log(
-        `${body.id} hold: ${holdPx.toFixed(0)}px = ${(holdPx / vh).toFixed(3)}vh (intended ${body.holdLengthVh.toFixed(3)}vh)`,
-      )
+      const intendedNote = body.naturalHeight
+        ? '(natural height, no fixed number to compare against)'
+        : `(intended ${body.holdLengthVh.toFixed(3)}vh)`
+      console.log(`${body.id} hold: ${holdPx.toFixed(0)}px = ${(holdPx / vh).toFixed(3)}vh ${intendedNote}`)
       previousEndPx = trigger.end
     })
 

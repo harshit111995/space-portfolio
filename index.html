@@ -613,615 +613,558 @@
 
       <div class="pin-runway" aria-hidden="true"></div>
 
-      <!-- 4. VENUS - Case Studies. The third "scroll-card" stop, and the
-           biggest one (11 cards - Digibet and NHS used to be two
-           separate cards here, thought to be one combined campaign, so
-           they were merged into a single card - see the comment further
-           down where that card now sits for how that turned out once
-           real content arrived) - same src/motion/scrollCards.js
-           mechanic, unchanged, just called with pin-venus and 11 (see
-           src/main.js). Venus's own pinned-hold length (see
-           src/motion/scrollTimeline.js) was shortened to match, from
-           12 cards down to 11, at the same 0.5 screen-heights-per-card
-           pace every other card stop already uses.
+      <!-- 4. VENUS - Case Studies. UNLIKE every other card stop on this
+           page (Entrepreneur, Experience, Certificates, Volunteering -
+           all of which freeze the camera in a small, fixed-height card
+           frame and cross-fade between cards, see
+           src/motion/scrollCards.js), Case Studies deliberately does
+           NOT do that anymore. Cramming 11 detailed case studies (each
+           with an image, a heading, a meta line, and 4 labeled
+           sections) into a small fixed box meant most of each card was
+           always hidden behind "Read more" and the ▲▼ scroll arrows -
+           technically working, but genuinely hard to read.
 
-           These 11 cards are the first to use the new, reusable
-           ".card" design (see src/styles/card.css) instead of the
-           older per-stop styling in this file - the plan is for
-           Saturn/Mars/Jupiter to eventually switch over to it too,
-           but for now they're untouched and keep using their old
-           look. Each ".scroll-card" below still does exactly what it
-           always did (that's what the crossfade mechanic actually
-           moves/fades) - it just now WRAPS a ".card" instead of being
-           styled directly itself, via the "scroll-card--uniform"
-           modifier (see content.css) that hands all of the visual
-           styling over to card.css.
+           The fix: this stop now scrolls NATURALLY, like an ordinary
+           long webpage section, instead of being pinned/frozen at all.
+           All 11 cards sit in plain, ordinary document flow (see
+           ".case-studies-list" in content.css), each at its own real,
+           full height - no height cap, no clamp, no "Read more", no
+           arrows. As the visitor scrolls through them, Venus itself
+           stays framed and completely still in the 3D background the
+           whole time (see the big comment on "naturalHeight" in
+           src/motion/scrollTimeline.js for exactly how the camera
+           knows how long to hold still here, now that this section's
+           real length depends on how tall 11 full cards turn out to
+           be, not a hand-picked number).
 
-           Each card also has an image placeholder above its text - a
-           plain, fixed-shape box standing in for a real campaign
-           photo that will be dropped in later (see the big comment on
-           ".card-image" in src/styles/card.css for why it's built the
-           way it is).
-
-           All 11 bodies below now use the STRUCTURED body shape (see
-           the big comment on ".card-body--structured" in
-           src/styles/card.css) instead of one flowing paragraph - each
-           is broken into 4 labeled sections (Objective, Strategy, Key
-           KPIs, Results), with the last two as bulleted lists. This is
-           the first real, live use of that shape - everything about
-           HOW it's clamped/expanded/scrolled/height-capped is handled
-           generically by card.css and src/ui/cardScroll.js already, so
-           nothing needed to change there. Several of these are dense
-           enough to trigger the built-in "Read more" truncation and
-           the ▲▼ scroll arrows (see src/ui/cardReadMore.js and
-           src/ui/cardScroll.js) - Ariana Grande Perfume, with 6
-           bullets in both Key KPIs and Results, is the longest. This
-           stop's own card frame is also taller than every other card
-           stop's (see "--card-frame-height" on "#pin-venus
-           .scroll-cards" in src/styles/content.css) so more of each
-           card is readable before needing the arrows at all. -->
+           Each card still uses the exact same reusable ".card" design
+           as every other stop (see src/styles/card.css - nothing in
+           that file needed to change for this) and the same STRUCTURED
+           body shape (see ".card-body--structured" in card.css) with
+           its 4 labeled sections (Objective, Strategy, Key KPIs,
+           Results) - only the OUTER wrapping changed here, from the
+           old absolutely-positioned, cross-faded ".scroll-card" boxes
+           to plain ".card"s stacked directly one after another. Each
+           card also keeps its image placeholder above the text (see
+           the big comment on ".card-image" in src/styles/card.css for
+           why it's built the way it is) - a real campaign photo can
+           drop straight into that same slot later. -->
       <div id="pin-venus" class="pin-marker">
         <div class="pin-content">
           <h2>Case Studies</h2>
 
-          <div class="scroll-cards scroll-cards--with-image">
-            <div class="scroll-card scroll-card--with-image scroll-card--uniform">
-              <div class="card">
-                <div class="card-image"><span class="card-image-label">Campaign image</span></div>
-                <h3 class="card-heading">Binance — DOOH · UAE Domination with Cristiano Ronaldo</h3>
-                <p class="card-meta">UAE · Binance Week 2025, Dubai</p>
-                <div class="card-body-wrapper">
-                  <div class="card-body card-body--structured">
-                    <div class="card-body-section">
-                      <span class="card-body-label">Objective</span>
-                      <p>
-                        Own the UAE out-of-home landscape during Binance Week
-                        and convert Cristiano Ronaldo's global pull into mass
-                        local awareness and brand credibility for Binance.
-                      </p>
-                    </div>
-                    <div class="card-body-section">
-                      <span class="card-body-label">Strategy</span>
-                      <p>
-                        Premium full-motion DOOH built around the CR7
-                        creative — Sheikh Zayed Road digital billboards,
-                        Dubai landmark LED, high-footfall malls, roadside
-                        networks, and airport screens, timed for maximum
-                        share-of-voice.
-                      </p>
-                    </div>
-                    <div class="card-body-section">
-                      <span class="card-body-label">Key KPIs</span>
-                      <ul>
-                        <li>Total impressions delivered</li>
-                        <li>Unique reach &amp; average frequency</li>
-                        <li>Share of Voice in premium corridors</li>
-                        <li>Premium screens/locations activated</li>
-                        <li>Brand recall &amp; awareness lift</li>
-                        <li>Earned/social amplification</li>
-                      </ul>
-                    </div>
-                    <div class="card-body-section">
-                      <span class="card-body-label">Results</span>
-                      <ul>
-                        <li>45M delivered impressions</li>
-                        <li>3.8M unique reach at 11.8× average frequency</li>
-                        <li>Up to 92% SOV on flagship Sheikh Zayed Road screens</li>
-                        <li>65 premium screens/landmark locations</li>
-                        <li>+34% brand recall lift vs. control</li>
-                        <li>Strong organic amplification from the Ronaldo creative</li>
-                      </ul>
-                    </div>
+          <div class="case-studies-list">
+            <div class="card">
+              <div class="card-image"><span class="card-image-label">Campaign image</span></div>
+              <h3 class="card-heading">Binance — DOOH · UAE Domination with Cristiano Ronaldo</h3>
+              <p class="card-meta">UAE · Binance Week 2025, Dubai</p>
+              <div class="card-body-wrapper">
+                <div class="card-body card-body--structured">
+                  <div class="card-body-section">
+                    <span class="card-body-label">Objective</span>
+                    <p>
+                      Own the UAE out-of-home landscape during Binance Week
+                      and convert Cristiano Ronaldo's global pull into mass
+                      local awareness and brand credibility for Binance.
+                    </p>
                   </div>
-                  <button type="button" class="card-read-more">Read more</button>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Strategy</span>
+                    <p>
+                      Premium full-motion DOOH built around the CR7
+                      creative — Sheikh Zayed Road digital billboards,
+                      Dubai landmark LED, high-footfall malls, roadside
+                      networks, and airport screens, timed for maximum
+                      share-of-voice.
+                    </p>
+                  </div>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Key KPIs</span>
+                    <ul>
+                      <li>Total impressions delivered</li>
+                      <li>Unique reach &amp; average frequency</li>
+                      <li>Share of Voice in premium corridors</li>
+                      <li>Premium screens/locations activated</li>
+                      <li>Brand recall &amp; awareness lift</li>
+                      <li>Earned/social amplification</li>
+                    </ul>
+                  </div>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Results</span>
+                    <ul>
+                      <li>45M delivered impressions</li>
+                      <li>3.8M unique reach at 11.8× average frequency</li>
+                      <li>Up to 92% SOV on flagship Sheikh Zayed Road screens</li>
+                      <li>65 premium screens/landmark locations</li>
+                      <li>+34% brand recall lift vs. control</li>
+                      <li>Strong organic amplification from the Ronaldo creative</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div class="scroll-card scroll-card--with-image scroll-card--uniform">
-              <div class="card">
-                <div class="card-image"><span class="card-image-label">Campaign image</span></div>
-                <h3 class="card-heading">Informa — Middle East Energy · Programmatic DOOH + Performance</h3>
-                <p class="card-meta">UAE / GCC · Middle East Energy cycle</p>
-                <div class="card-body-wrapper">
-                  <div class="card-body card-body--structured">
-                    <div class="card-body-section">
-                      <span class="card-body-label">Objective</span>
-                      <p>
-                        Drive exhibition awareness among energy-sector
-                        professionals and deliver measurable registrations at
-                        efficient cost.
-                      </p>
-                    </div>
-                    <div class="card-body-section">
-                      <span class="card-body-label">Strategy</span>
-                      <p>
-                        Dual-layer — programmatic DOOH across business
-                        districts, airport, and malls for reach, paired with
-                        digital retargeting (display/social) pushing
-                        DOOH-exposed audiences to the registration page.
-                      </p>
-                    </div>
-                    <div class="card-body-section">
-                      <span class="card-body-label">Key KPIs</span>
-                      <ul>
-                        <li>DOOH impressions &amp; reach</li>
-                        <li>Registrations</li>
-                        <li>Cost per Registration</li>
-                        <li>Companion CTR &amp; landing visits</li>
-                        <li>DOOH-assisted registrations</li>
-                      </ul>
-                    </div>
-                    <div class="card-body-section">
-                      <span class="card-body-label">Results</span>
-                      <ul>
-                        <li>12M programmatic DOOH impressions</li>
-                        <li>2,800 registrations</li>
-                        <li>CPR 22% below target</li>
-                        <li>Companion CTR 0.38%</li>
-                        <li>DOOH-exposed audiences converted 31% higher when retargeted</li>
-                      </ul>
-                    </div>
+            <div class="card">
+              <div class="card-image"><span class="card-image-label">Campaign image</span></div>
+              <h3 class="card-heading">Informa — Middle East Energy · Programmatic DOOH + Performance</h3>
+              <p class="card-meta">UAE / GCC · Middle East Energy cycle</p>
+              <div class="card-body-wrapper">
+                <div class="card-body card-body--structured">
+                  <div class="card-body-section">
+                    <span class="card-body-label">Objective</span>
+                    <p>
+                      Drive exhibition awareness among energy-sector
+                      professionals and deliver measurable registrations at
+                      efficient cost.
+                    </p>
                   </div>
-                  <button type="button" class="card-read-more">Read more</button>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Strategy</span>
+                    <p>
+                      Dual-layer — programmatic DOOH across business
+                      districts, airport, and malls for reach, paired with
+                      digital retargeting (display/social) pushing
+                      DOOH-exposed audiences to the registration page.
+                    </p>
+                  </div>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Key KPIs</span>
+                    <ul>
+                      <li>DOOH impressions &amp; reach</li>
+                      <li>Registrations</li>
+                      <li>Cost per Registration</li>
+                      <li>Companion CTR &amp; landing visits</li>
+                      <li>DOOH-assisted registrations</li>
+                    </ul>
+                  </div>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Results</span>
+                    <ul>
+                      <li>12M programmatic DOOH impressions</li>
+                      <li>2,800 registrations</li>
+                      <li>CPR 22% below target</li>
+                      <li>Companion CTR 0.38%</li>
+                      <li>DOOH-exposed audiences converted 31% higher when retargeted</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div class="scroll-card scroll-card--with-image scroll-card--uniform">
-              <div class="card">
-                <div class="card-image"><span class="card-image-label">Campaign image</span></div>
-                <h3 class="card-heading">DWF Labs — Dubai Airport · Programmatic DOOH</h3>
-                <p class="card-meta">Dubai International Airport</p>
-                <div class="card-body-wrapper">
-                  <div class="card-body card-body--structured">
-                    <div class="card-body-section">
-                      <span class="card-body-label">Objective</span>
-                      <p>
-                        Reach high-net-worth international travellers and the
-                        crypto/investor audience in a premium, high-dwell
-                        environment to build DWF Labs' credibility.
-                      </p>
-                    </div>
-                    <div class="card-body-section">
-                      <span class="card-body-label">Strategy</span>
-                      <p>
-                        Programmatic DOOH across premium airport touchpoints
-                        — arrivals, departures, gates, lounges — targeting
-                        business-travel dayparts.
-                      </p>
-                    </div>
-                    <div class="card-body-section">
-                      <span class="card-body-label">Key KPIs</span>
-                      <ul>
-                        <li>Total impressions</li>
-                        <li>Unique traveller reach</li>
-                        <li>Premium touchpoints</li>
-                        <li>Audience quality</li>
-                        <li>Dwell-time value</li>
-                      </ul>
-                    </div>
-                    <div class="card-body-section">
-                      <span class="card-body-label">Results</span>
-                      <ul>
-                        <li>8.5M airport impressions</li>
-                        <li>1.6M international travellers reached</li>
-                        <li>40 premium airport screen locations</li>
-                        <li>High-quality exposure to a business-traveller and investor audience</li>
-                      </ul>
-                    </div>
+            <div class="card">
+              <div class="card-image"><span class="card-image-label">Campaign image</span></div>
+              <h3 class="card-heading">DWF Labs — Dubai Airport · Programmatic DOOH</h3>
+              <p class="card-meta">Dubai International Airport</p>
+              <div class="card-body-wrapper">
+                <div class="card-body card-body--structured">
+                  <div class="card-body-section">
+                    <span class="card-body-label">Objective</span>
+                    <p>
+                      Reach high-net-worth international travellers and the
+                      crypto/investor audience in a premium, high-dwell
+                      environment to build DWF Labs' credibility.
+                    </p>
                   </div>
-                  <button type="button" class="card-read-more">Read more</button>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Strategy</span>
+                    <p>
+                      Programmatic DOOH across premium airport touchpoints
+                      — arrivals, departures, gates, lounges — targeting
+                      business-travel dayparts.
+                    </p>
+                  </div>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Key KPIs</span>
+                    <ul>
+                      <li>Total impressions</li>
+                      <li>Unique traveller reach</li>
+                      <li>Premium touchpoints</li>
+                      <li>Audience quality</li>
+                      <li>Dwell-time value</li>
+                    </ul>
+                  </div>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Results</span>
+                    <ul>
+                      <li>8.5M airport impressions</li>
+                      <li>1.6M international travellers reached</li>
+                      <li>40 premium airport screen locations</li>
+                      <li>High-quality exposure to a business-traveller and investor audience</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div class="scroll-card scroll-card--with-image scroll-card--uniform">
-              <div class="card">
-                <div class="card-image"><span class="card-image-label">Campaign image</span></div>
-                <h3 class="card-heading">SolarWinds — GITEX 2025 · Airport &amp; Citywide Programmatic DOOH</h3>
-                <p class="card-meta">Dubai · GITEX Global 2025</p>
-                <div class="card-body-wrapper">
-                  <div class="card-body card-body--structured">
-                    <div class="card-body-section">
-                      <span class="card-body-label">Objective</span>
-                      <p>
-                        Dominate the GITEX moment among B2B tech
-                        decision-makers with airport + citywide coverage.
-                      </p>
-                    </div>
-                    <div class="card-body-section">
-                      <span class="card-body-label">Strategy</span>
-                      <p>
-                        Programmatic DOOH pairing airport screens (inbound
-                        delegates) with citywide roadside and
-                        business-district networks, weighted to the DWTC /
-                        GITEX zone.
-                      </p>
-                    </div>
-                    <div class="card-body-section">
-                      <span class="card-body-label">Key KPIs</span>
-                      <ul>
-                        <li>Impressions &amp; reach</li>
-                        <li>SOV during GITEX</li>
-                        <li>Airport vs. citywide distribution</li>
-                        <li>DWTC proximity</li>
-                      </ul>
-                    </div>
-                    <div class="card-body-section">
-                      <span class="card-body-label">Results</span>
-                      <ul>
-                        <li>15M impressions across GITEX week</li>
-                        <li>Airport + 55 citywide screens</li>
-                        <li>Up to 88% SOV across DWTC and business districts</li>
-                        <li>Delegates captured arrival-to-event</li>
-                      </ul>
-                    </div>
+            <div class="card">
+              <div class="card-image"><span class="card-image-label">Campaign image</span></div>
+              <h3 class="card-heading">SolarWinds — GITEX 2025 · Airport &amp; Citywide Programmatic DOOH</h3>
+              <p class="card-meta">Dubai · GITEX Global 2025</p>
+              <div class="card-body-wrapper">
+                <div class="card-body card-body--structured">
+                  <div class="card-body-section">
+                    <span class="card-body-label">Objective</span>
+                    <p>
+                      Dominate the GITEX moment among B2B tech
+                      decision-makers with airport + citywide coverage.
+                    </p>
                   </div>
-                  <button type="button" class="card-read-more">Read more</button>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Strategy</span>
+                    <p>
+                      Programmatic DOOH pairing airport screens (inbound
+                      delegates) with citywide roadside and
+                      business-district networks, weighted to the DWTC /
+                      GITEX zone.
+                    </p>
+                  </div>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Key KPIs</span>
+                    <ul>
+                      <li>Impressions &amp; reach</li>
+                      <li>SOV during GITEX</li>
+                      <li>Airport vs. citywide distribution</li>
+                      <li>DWTC proximity</li>
+                    </ul>
+                  </div>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Results</span>
+                    <ul>
+                      <li>15M impressions across GITEX week</li>
+                      <li>Airport + 55 citywide screens</li>
+                      <li>Up to 88% SOV across DWTC and business districts</li>
+                      <li>Delegates captured arrival-to-event</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div class="scroll-card scroll-card--with-image scroll-card--uniform">
-              <div class="card">
-                <div class="card-image"><span class="card-image-label">Campaign image</span></div>
-                <h3 class="card-heading">Komatsu × F1 Abu Dhabi · Programmatic DOOH</h3>
-                <p class="card-meta">Abu Dhabi · F1 Grand Prix weekend</p>
-                <div class="card-body-wrapper">
-                  <div class="card-body card-body--structured">
-                    <div class="card-body-section">
-                      <span class="card-body-label">Objective</span>
-                      <p>
-                        Build B2B brand visibility for Komatsu by aligning
-                        with the premium, high-attention F1 audience.
-                      </p>
-                    </div>
-                    <div class="card-body-section">
-                      <span class="card-body-label">Strategy</span>
-                      <p>
-                        Programmatic DOOH concentrated around Yas Island,
-                        business/industrial corridors, and approach routes,
-                        timed to the race-weekend surge.
-                      </p>
-                    </div>
-                    <div class="card-body-section">
-                      <span class="card-body-label">Key KPIs</span>
-                      <ul>
-                        <li>Impressions &amp; reach</li>
-                        <li>SOV during F1 weekend</li>
-                        <li>Coverage around Yas Marina</li>
-                        <li>B2B delivery</li>
-                      </ul>
-                    </div>
-                    <div class="card-body-section">
-                      <span class="card-body-label">Results</span>
-                      <ul>
-                        <li>6.5M impressions</li>
-                        <li>900K reach around Yas Island</li>
-                        <li>28 screens near the circuit and routes</li>
-                        <li>Strong SOV against a premium B2B audience</li>
-                      </ul>
-                    </div>
+            <div class="card">
+              <div class="card-image"><span class="card-image-label">Campaign image</span></div>
+              <h3 class="card-heading">Komatsu × F1 Abu Dhabi · Programmatic DOOH</h3>
+              <p class="card-meta">Abu Dhabi · F1 Grand Prix weekend</p>
+              <div class="card-body-wrapper">
+                <div class="card-body card-body--structured">
+                  <div class="card-body-section">
+                    <span class="card-body-label">Objective</span>
+                    <p>
+                      Build B2B brand visibility for Komatsu by aligning
+                      with the premium, high-attention F1 audience.
+                    </p>
                   </div>
-                  <button type="button" class="card-read-more">Read more</button>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Strategy</span>
+                    <p>
+                      Programmatic DOOH concentrated around Yas Island,
+                      business/industrial corridors, and approach routes,
+                      timed to the race-weekend surge.
+                    </p>
+                  </div>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Key KPIs</span>
+                    <ul>
+                      <li>Impressions &amp; reach</li>
+                      <li>SOV during F1 weekend</li>
+                      <li>Coverage around Yas Marina</li>
+                      <li>B2B delivery</li>
+                    </ul>
+                  </div>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Results</span>
+                    <ul>
+                      <li>6.5M impressions</li>
+                      <li>900K reach around Yas Island</li>
+                      <li>28 screens near the circuit and routes</li>
+                      <li>Strong SOV against a premium B2B audience</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div class="scroll-card scroll-card--with-image scroll-card--uniform">
-              <div class="card">
-                <div class="card-image"><span class="card-image-label">Campaign image</span></div>
-                <h3 class="card-heading">LexisNexis — Global Programmatic · New Product Launch</h3>
-                <p class="card-meta">Global · 12 markets</p>
-                <div class="card-body-wrapper">
-                  <div class="card-body card-body--structured">
-                    <div class="card-body-section">
-                      <span class="card-body-label">Objective</span>
-                      <p>
-                        Launch a new product to a legal/professional B2B
-                        audience across markets, driving qualified demand
-                        alongside awareness.
-                      </p>
-                    </div>
-                    <div class="card-body-section">
-                      <span class="card-body-label">Strategy</span>
-                      <p>
-                        Programmatic display + video with contextual and B2B
-                        targeting (role, industry, intent) across priority
-                        markets, plus a lower-funnel conversion layer.
-                      </p>
-                    </div>
-                    <div class="card-body-section">
-                      <span class="card-body-label">Key KPIs</span>
-                      <ul>
-                        <li>Impressions &amp; reach</li>
-                        <li>CTR &amp; viewability</li>
-                        <li>Video Completion Rate</li>
-                        <li>Demo requests/leads</li>
-                        <li>CPL &amp; MQL volume</li>
-                      </ul>
-                    </div>
-                    <div class="card-body-section">
-                      <span class="card-body-label">Results</span>
-                      <ul>
-                        <li>28M impressions across 12 markets</li>
-                        <li>CTR 0.42% (above B2B benchmark)</li>
-                        <li>71% viewability</li>
-                        <li>68% VCR</li>
-                        <li>1,450 qualified leads</li>
-                        <li>CPL 27% below target</li>
-                      </ul>
-                    </div>
+            <div class="card">
+              <div class="card-image"><span class="card-image-label">Campaign image</span></div>
+              <h3 class="card-heading">LexisNexis — Global Programmatic · New Product Launch</h3>
+              <p class="card-meta">Global · 12 markets</p>
+              <div class="card-body-wrapper">
+                <div class="card-body card-body--structured">
+                  <div class="card-body-section">
+                    <span class="card-body-label">Objective</span>
+                    <p>
+                      Launch a new product to a legal/professional B2B
+                      audience across markets, driving qualified demand
+                      alongside awareness.
+                    </p>
                   </div>
-                  <button type="button" class="card-read-more">Read more</button>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Strategy</span>
+                    <p>
+                      Programmatic display + video with contextual and B2B
+                      targeting (role, industry, intent) across priority
+                      markets, plus a lower-funnel conversion layer.
+                    </p>
+                  </div>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Key KPIs</span>
+                    <ul>
+                      <li>Impressions &amp; reach</li>
+                      <li>CTR &amp; viewability</li>
+                      <li>Video Completion Rate</li>
+                      <li>Demo requests/leads</li>
+                      <li>CPL &amp; MQL volume</li>
+                    </ul>
+                  </div>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Results</span>
+                    <ul>
+                      <li>28M impressions across 12 markets</li>
+                      <li>CTR 0.42% (above B2B benchmark)</li>
+                      <li>71% viewability</li>
+                      <li>68% VCR</li>
+                      <li>1,450 qualified leads</li>
+                      <li>CPL 27% below target</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div class="scroll-card scroll-card--with-image scroll-card--uniform">
-              <div class="card">
-                <div class="card-image"><span class="card-image-label">Campaign image</span></div>
-                <h3 class="card-heading">Ariana Grande Perfume — Global Full-Funnel</h3>
-                <p class="card-meta">Global · Fragrance launch</p>
-                <div class="card-body-wrapper">
-                  <div class="card-body card-body--structured">
-                    <div class="card-body-section">
-                      <span class="card-body-label">Objective</span>
-                      <p>
-                        Full-funnel global launch — mass awareness,
-                        mid-funnel engagement, and measurable shopping
-                        conversions and ROAS.
-                      </p>
-                    </div>
-                    <div class="card-body-section">
-                      <span class="card-body-label">Strategy</span>
-                      <p>
-                        Integrated — shopping/e-commerce media for
-                        conversions, Pinterest for high-intent discovery,
-                        paid + video social for reach, DOOH for iconic
-                        mass-awareness presence.
-                      </p>
-                    </div>
-                    <div class="card-body-section">
-                      <span class="card-body-label">Key KPIs</span>
-                      <ul>
-                        <li>Reach &amp; impressions</li>
-                        <li>ROAS &amp; conversions</li>
-                        <li>Add-to-cart rate</li>
-                        <li>Pinterest saves &amp; clicks</li>
-                        <li>Social engagement &amp; views</li>
-                        <li>DOOH impressions</li>
-                      </ul>
-                    </div>
-                    <div class="card-body-section">
-                      <span class="card-body-label">Results</span>
-                      <ul>
-                        <li>180M global reach</li>
-                        <li>4.6:1 ROAS on shopping media</li>
-                        <li>240K conversions / +38% add-to-cart</li>
-                        <li>Pinterest 620K saves, 1.2% CTR</li>
-                        <li>Social 5.4% engagement, 42M video views</li>
-                        <li>25M DOOH impressions</li>
-                      </ul>
-                    </div>
+            <div class="card">
+              <div class="card-image"><span class="card-image-label">Campaign image</span></div>
+              <h3 class="card-heading">Ariana Grande Perfume — Global Full-Funnel</h3>
+              <p class="card-meta">Global · Fragrance launch</p>
+              <div class="card-body-wrapper">
+                <div class="card-body card-body--structured">
+                  <div class="card-body-section">
+                    <span class="card-body-label">Objective</span>
+                    <p>
+                      Full-funnel global launch — mass awareness,
+                      mid-funnel engagement, and measurable shopping
+                      conversions and ROAS.
+                    </p>
                   </div>
-                  <button type="button" class="card-read-more">Read more</button>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Strategy</span>
+                    <p>
+                      Integrated — shopping/e-commerce media for
+                      conversions, Pinterest for high-intent discovery,
+                      paid + video social for reach, DOOH for iconic
+                      mass-awareness presence.
+                    </p>
+                  </div>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Key KPIs</span>
+                    <ul>
+                      <li>Reach &amp; impressions</li>
+                      <li>ROAS &amp; conversions</li>
+                      <li>Add-to-cart rate</li>
+                      <li>Pinterest saves &amp; clicks</li>
+                      <li>Social engagement &amp; views</li>
+                      <li>DOOH impressions</li>
+                    </ul>
+                  </div>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Results</span>
+                    <ul>
+                      <li>180M global reach</li>
+                      <li>4.6:1 ROAS on shopping media</li>
+                      <li>240K conversions / +38% add-to-cart</li>
+                      <li>Pinterest 620K saves, 1.2% CTR</li>
+                      <li>Social 5.4% engagement, 42M video views</li>
+                      <li>25M DOOH impressions</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <!-- This card used to be labeled "Digibet / NHS" - Digibet and
-                 NHS were originally thought to be two halves of one
-                 combined campaign, back when Case Studies was trimmed from
-                 12 cards to 11 (see the big comment on this stop further
-                 up for that count change, which still stands). Real
-                 content below now confirms this is specifically Digibet's
-                 own UK app-install campaign, not a merge of two - only the
-                 heading/body changed here, the card count is unaffected. -->
-            <div class="scroll-card scroll-card--with-image scroll-card--uniform">
-              <div class="card">
-                <div class="card-image"><span class="card-image-label">Campaign image</span></div>
-                <h3 class="card-heading">Digibet — UK · App Downloads Campaign</h3>
-                <p class="card-meta">United Kingdom · App-install</p>
-                <div class="card-body-wrapper">
-                  <div class="card-body card-body--structured">
-                    <div class="card-body-section">
-                      <span class="card-body-label">Objective</span>
-                      <p>
-                        Drive efficient, high-quality app downloads and
-                        activations in the UK.
-                      </p>
-                    </div>
-                    <div class="card-body-section">
-                      <span class="card-body-label">Strategy</span>
-                      <p>
-                        Performance-led app-install across paid social,
-                        programmatic, and app-install networks, optimised to
-                        installs and post-install activation.
-                      </p>
-                    </div>
-                    <div class="card-body-section">
-                      <span class="card-body-label">Key KPIs</span>
-                      <ul>
-                        <li>App installs</li>
-                        <li>Cost Per Install</li>
-                        <li>Install CVR</li>
-                        <li>Post-install activations</li>
-                        <li>D1/D7 retention</li>
-                      </ul>
-                    </div>
-                    <div class="card-body-section">
-                      <span class="card-body-label">Results</span>
-                      <ul>
-                        <li>52,000 installs</li>
-                        <li>CPI 24% below target</li>
-                        <li>6.2% install CVR</li>
-                        <li>34,000 post-install activations</li>
-                        <li>41% D7 retention</li>
-                      </ul>
-                    </div>
+          <!-- This card used to be labeled "Digibet / NHS" - Digibet and
+               NHS were originally thought to be two halves of one
+               combined campaign, back when Case Studies was trimmed from
+               12 cards to 11 (see the big comment on this stop further
+               up for that count change, which still stands). Real
+               content below now confirms this is specifically Digibet's
+               own UK app-install campaign, not a merge of two - only the
+               heading/body changed here, the card count is unaffected. -->
+            <div class="card">
+              <div class="card-image"><span class="card-image-label">Campaign image</span></div>
+              <h3 class="card-heading">Digibet — UK · App Downloads Campaign</h3>
+              <p class="card-meta">United Kingdom · App-install</p>
+              <div class="card-body-wrapper">
+                <div class="card-body card-body--structured">
+                  <div class="card-body-section">
+                    <span class="card-body-label">Objective</span>
+                    <p>
+                      Drive efficient, high-quality app downloads and
+                      activations in the UK.
+                    </p>
                   </div>
-                  <button type="button" class="card-read-more">Read more</button>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Strategy</span>
+                    <p>
+                      Performance-led app-install across paid social,
+                      programmatic, and app-install networks, optimised to
+                      installs and post-install activation.
+                    </p>
+                  </div>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Key KPIs</span>
+                    <ul>
+                      <li>App installs</li>
+                      <li>Cost Per Install</li>
+                      <li>Install CVR</li>
+                      <li>Post-install activations</li>
+                      <li>D1/D7 retention</li>
+                    </ul>
+                  </div>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Results</span>
+                    <ul>
+                      <li>52,000 installs</li>
+                      <li>CPI 24% below target</li>
+                      <li>6.2% install CVR</li>
+                      <li>34,000 post-install activations</li>
+                      <li>41% D7 retention</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div class="scroll-card scroll-card--with-image scroll-card--uniform">
-              <div class="card">
-                <div class="card-image"><span class="card-image-label">Campaign image</span></div>
-                <h3 class="card-heading">HP — GITEX Dubai · Programmatic DOOH</h3>
-                <p class="card-meta">Dubai · GITEX Global</p>
-                <div class="card-body-wrapper">
-                  <div class="card-body card-body--structured">
-                    <div class="card-body-section">
-                      <span class="card-body-label">Objective</span>
-                      <p>
-                        Maximise HP brand and product visibility during
-                        GITEX among tech-buyer and enterprise audiences.
-                      </p>
-                    </div>
-                    <div class="card-body-section">
-                      <span class="card-body-label">Strategy</span>
-                      <p>
-                        Programmatic DOOH weighted around DWTC / GITEX plus
-                        supporting citywide and business-district screens
-                        across the week.
-                      </p>
-                    </div>
-                    <div class="card-body-section">
-                      <span class="card-body-label">Key KPIs</span>
-                      <ul>
-                        <li>Impressions, reach &amp; frequency</li>
-                        <li>Screens/locations</li>
-                        <li>SOV around DWTC</li>
-                        <li>Tech-audience delivery</li>
-                      </ul>
-                    </div>
-                    <div class="card-body-section">
-                      <span class="card-body-label">Results</span>
-                      <ul>
-                        <li>10M impressions</li>
-                        <li>1.4M reach at 7.1× frequency</li>
-                        <li>45 screens around the GITEX zone</li>
-                        <li>Strong SOV in the exhibition and business districts</li>
-                      </ul>
-                    </div>
+            <div class="card">
+              <div class="card-image"><span class="card-image-label">Campaign image</span></div>
+              <h3 class="card-heading">HP — GITEX Dubai · Programmatic DOOH</h3>
+              <p class="card-meta">Dubai · GITEX Global</p>
+              <div class="card-body-wrapper">
+                <div class="card-body card-body--structured">
+                  <div class="card-body-section">
+                    <span class="card-body-label">Objective</span>
+                    <p>
+                      Maximise HP brand and product visibility during
+                      GITEX among tech-buyer and enterprise audiences.
+                    </p>
                   </div>
-                  <button type="button" class="card-read-more">Read more</button>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Strategy</span>
+                    <p>
+                      Programmatic DOOH weighted around DWTC / GITEX plus
+                      supporting citywide and business-district screens
+                      across the week.
+                    </p>
+                  </div>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Key KPIs</span>
+                    <ul>
+                      <li>Impressions, reach &amp; frequency</li>
+                      <li>Screens/locations</li>
+                      <li>SOV around DWTC</li>
+                      <li>Tech-audience delivery</li>
+                    </ul>
+                  </div>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Results</span>
+                    <ul>
+                      <li>10M impressions</li>
+                      <li>1.4M reach at 7.1× frequency</li>
+                      <li>45 screens around the GITEX zone</li>
+                      <li>Strong SOV in the exhibition and business districts</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div class="scroll-card scroll-card--with-image scroll-card--uniform">
-              <div class="card">
-                <div class="card-image"><span class="card-image-label">Campaign image</span></div>
-                <h3 class="card-heading">Interactive Brokers — UAE · Programmatic DOOH</h3>
-                <p class="card-meta">UAE</p>
-                <div class="card-body-wrapper">
-                  <div class="card-body card-body--structured">
-                    <div class="card-body-section">
-                      <span class="card-body-label">Objective</span>
-                      <p>
-                        Reach an affluent investor and active-trader audience
-                        in the UAE to build presence and drive consideration.
-                      </p>
-                    </div>
-                    <div class="card-body-section">
-                      <span class="card-body-label">Strategy</span>
-                      <p>
-                        Programmatic DOOH targeting financial districts
-                        (DIFC), premium business corridors, and affluent
-                        dayparts.
-                      </p>
-                    </div>
-                    <div class="card-body-section">
-                      <span class="card-body-label">Key KPIs</span>
-                      <ul>
-                        <li>Impressions &amp; reach</li>
-                        <li>SOV in financial districts</li>
-                        <li>Audience quality</li>
-                        <li>Assisted site visits</li>
-                      </ul>
-                    </div>
-                    <div class="card-body-section">
-                      <span class="card-body-label">Results</span>
-                      <ul>
-                        <li>7.5M impressions</li>
-                        <li>Reach concentrated in DIFC and business districts</li>
-                        <li>32 premium screens</li>
-                        <li>18,000 assisted site visits from DOOH-exposed audiences</li>
-                      </ul>
-                    </div>
+            <div class="card">
+              <div class="card-image"><span class="card-image-label">Campaign image</span></div>
+              <h3 class="card-heading">Interactive Brokers — UAE · Programmatic DOOH</h3>
+              <p class="card-meta">UAE</p>
+              <div class="card-body-wrapper">
+                <div class="card-body card-body--structured">
+                  <div class="card-body-section">
+                    <span class="card-body-label">Objective</span>
+                    <p>
+                      Reach an affluent investor and active-trader audience
+                      in the UAE to build presence and drive consideration.
+                    </p>
                   </div>
-                  <button type="button" class="card-read-more">Read more</button>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Strategy</span>
+                    <p>
+                      Programmatic DOOH targeting financial districts
+                      (DIFC), premium business corridors, and affluent
+                      dayparts.
+                    </p>
+                  </div>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Key KPIs</span>
+                    <ul>
+                      <li>Impressions &amp; reach</li>
+                      <li>SOV in financial districts</li>
+                      <li>Audience quality</li>
+                      <li>Assisted site visits</li>
+                    </ul>
+                  </div>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Results</span>
+                    <ul>
+                      <li>7.5M impressions</li>
+                      <li>Reach concentrated in DIFC and business districts</li>
+                      <li>32 premium screens</li>
+                      <li>18,000 assisted site visits from DOOH-exposed audiences</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div class="scroll-card scroll-card--with-image scroll-card--uniform">
-              <div class="card">
-                <div class="card-image"><span class="card-image-label">Campaign image</span></div>
-                <h3 class="card-heading">Clearblue — UAE / GCC · E-commerce, Amazon, Noon &amp; YouTube</h3>
-                <p class="card-meta">UAE / GCC</p>
-                <div class="card-body-wrapper">
-                  <div class="card-body card-body--structured">
-                    <div class="card-body-section">
-                      <span class="card-body-label">Objective</span>
-                      <p>
-                        Drive e-commerce sales across Amazon and Noon while
-                        building reach via YouTube.
-                      </p>
-                    </div>
-                    <div class="card-body-section">
-                      <span class="card-body-label">Strategy</span>
-                      <p>
-                        Full-funnel commerce — retail media on Amazon and
-                        Noon for conversions, YouTube for reach and
-                        view-through demand, optimised to sales efficiency.
-                      </p>
-                    </div>
-                    <div class="card-body-section">
-                      <span class="card-body-label">Key KPIs</span>
-                      <ul>
-                        <li>ROAS &amp; sales</li>
-                        <li>Amazon ACOS, CVR, glance views</li>
-                        <li>Noon sales &amp; CVR</li>
-                        <li>YouTube views, VTR, CPV</li>
-                        <li>Reach</li>
-                      </ul>
-                    </div>
-                    <div class="card-body-section">
-                      <span class="card-body-label">Results</span>
-                      <ul>
-                        <li>4.2:1 blended ROAS</li>
-                        <li>+46% sales uplift across marketplaces</li>
-                        <li>Amazon 22% ACOS at 14% CVR</li>
-                        <li>Noon 11% CVR</li>
-                        <li>YouTube 36% VTR at $0.03 CPV</li>
-                        <li>9M total reach</li>
-                      </ul>
-                    </div>
+            <div class="card">
+              <div class="card-image"><span class="card-image-label">Campaign image</span></div>
+              <h3 class="card-heading">Clearblue — UAE / GCC · E-commerce, Amazon, Noon &amp; YouTube</h3>
+              <p class="card-meta">UAE / GCC</p>
+              <div class="card-body-wrapper">
+                <div class="card-body card-body--structured">
+                  <div class="card-body-section">
+                    <span class="card-body-label">Objective</span>
+                    <p>
+                      Drive e-commerce sales across Amazon and Noon while
+                      building reach via YouTube.
+                    </p>
                   </div>
-                  <button type="button" class="card-read-more">Read more</button>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Strategy</span>
+                    <p>
+                      Full-funnel commerce — retail media on Amazon and
+                      Noon for conversions, YouTube for reach and
+                      view-through demand, optimised to sales efficiency.
+                    </p>
+                  </div>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Key KPIs</span>
+                    <ul>
+                      <li>ROAS &amp; sales</li>
+                      <li>Amazon ACOS, CVR, glance views</li>
+                      <li>Noon sales &amp; CVR</li>
+                      <li>YouTube views, VTR, CPV</li>
+                      <li>Reach</li>
+                    </ul>
+                  </div>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Results</span>
+                    <ul>
+                      <li>4.2:1 blended ROAS</li>
+                      <li>+46% sales uplift across marketplaces</li>
+                      <li>Amazon 22% ACOS at 14% CVR</li>
+                      <li>Noon 11% CVR</li>
+                      <li>YouTube 36% VTR at $0.03 CPV</li>
+                      <li>9M total reach</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div class="scroll-cards-dots">
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-          </div>
         </div>
       </div>
 
@@ -1236,11 +1179,13 @@
            visual field the camera flies past, still twinkling and
            drifting - see src/scene/constellations.js, itself
            unchanged), and the 8 issuers are shown instead as 8
-           scroll-cards, exactly like Entrepreneur/Experience/Case
-           Studies/Volunteering above - same src/motion/scrollCards.js
-           mechanic, cross-fading one at a time as the visitor scrolls
-           through this stop's hold, called with pin-constellations
-           and 8 (see src/main.js).
+           scroll-cards, exactly like Entrepreneur/Experience/
+           Volunteering elsewhere on this page (Case Studies used to
+           work this same way too, but no longer does - see the big
+           comment on "#pin-venus" further up for why) - same
+           src/motion/scrollCards.js mechanic, cross-fading one at a
+           time as the visitor scrolls through this stop's hold, called
+           with pin-constellations and 8 (see src/main.js).
 
            These cards use the same uniform ".card" design as every
            other card stop (see src/styles/card.css - reused exactly
@@ -1653,9 +1598,16 @@
            top (see the big comment on ".card-image" in card.css for
            why it's sized the way it is - a placeholder standing in
            for a real photo later, without anything else needing to
-           move when that photo is added). Same read-more toggle too,
-           via src/ui/cardReadMore.js, pointed at "pin-jupiter" (see
-           src/main.js). -->
+           move when that photo is added).
+
+           Each body is plain prose (a single <p class="card-body">),
+           same shape it always had - unlike Case Studies/Skills/
+           Certificates, nothing here needed breaking into labeled
+           sections or bulleted lists, so ".card-body--structured" is
+           deliberately NOT used on these three. Same read-more toggle
+           as every other stop, via src/ui/cardReadMore.js, pointed at
+           "pin-jupiter" (see src/main.js) - all three of these are
+           long enough now to actually need it. -->
       <div id="pin-jupiter" class="pin-marker">
         <div class="pin-content">
           <h2>Volunteering</h2>
@@ -1668,8 +1620,17 @@
                 <p class="card-meta">Competition Management Volunteer · Dec 2023–Present</p>
                 <div class="card-body-wrapper">
                   <p class="card-body">
-                    FIFA Beach Soccer World Cup — logistics, match-day
-                    operations, player/official liaison, fan engagement.
+                    Assisted in planning and executing the FIFA Beach Soccer
+                    World Cup, contributing to the management of a
+                    high-profile international sporting event. Coordinated
+                    logistics with event organizers — match scheduling,
+                    participant registrations, and FIFA-regulation
+                    compliance — and supported the competition management
+                    team in match-day operations, including team warm-ups,
+                    briefings, and timely game starts. Engaged with players,
+                    coaches, and officials to enhance their experience, and
+                    contributed to fan engagement and community outreach
+                    programs promoting the tournament.
                   </p>
                   <button type="button" class="card-read-more">Read more</button>
                 </div>
@@ -1680,12 +1641,18 @@
               <div class="card">
                 <div class="card-image"><span class="card-image-label">Volunteering photo</span></div>
                 <h3 class="card-heading">Robin Hood Army</h3>
-                <p class="card-meta">Strategist · 2014–Present</p>
+                <p class="card-meta">Strategist · Mar 2014–Present</p>
                 <div class="card-body-wrapper">
                   <p class="card-body">
-                    CSR across 28 Mumbai academies, 16,000 volunteers.
-                    Fighting hunger, promoting education access for
-                    underprivileged children.
+                    Implemented diverse CSR projects across 28 academies in
+                    Mumbai, engaging 16,000 volunteers to make a meaningful
+                    community impact. Provided professional exposure and
+                    learning opportunities for underprivileged children,
+                    inspiring youth and community members to participate in
+                    service initiatives and fostering social responsibility.
+                    Focused on combating hunger and promoting access to
+                    quality education, striving for equality and
+                    opportunity across communities.
                   </p>
                   <button type="button" class="card-read-more">Read more</button>
                 </div>
@@ -1696,12 +1663,19 @@
               <div class="card">
                 <div class="card-image"><span class="card-image-label">Volunteering photo</span></div>
                 <h3 class="card-heading">United Nations Volunteers</h3>
-                <p class="card-meta">Volunteer · Oct–Dec 2019</p>
+                <p class="card-meta">Volunteer · Oct 2019–Dec 2019</p>
                 <div class="card-body-wrapper">
                   <p class="card-body">
-                    Digital literacy workshops for underserved communities —
-                    internet navigation, software, online safety; bridging
-                    the digital divide.
+                    Facilitated digital literacy workshops empowering
+                    underserved communities with essential technology
+                    skills. Developed training materials covering internet
+                    navigation, software applications, and online safety,
+                    and collaborated with local organizations to tailor
+                    workshops to specific community needs. Engaged
+                    participants through interactive, hands-on sessions to
+                    build confidence with technology, supporting efforts to
+                    bridge the digital divide and advance the UN's mission
+                    of sustainable development through digital inclusion.
                   </p>
                   <button type="button" class="card-read-more">Read more</button>
                 </div>

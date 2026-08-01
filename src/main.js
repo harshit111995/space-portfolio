@@ -147,9 +147,12 @@ initContactReveal()
 
 // Cross-fade between the 3 entrepreneur cards as the visitor scrolls
 // through Saturn's held pin. The same reusable function is called
-// several more times below for Mars, Venus, Constellations, and
-// Jupiter - same mechanic, completely unchanged, just a different
-// stop id and card count each time.
+// several more times below for Mars, Constellations, and Jupiter -
+// same mechanic, completely unchanged, just a different stop id and
+// card count each time. Case Studies (Venus) used to be called here
+// too, but no longer is - its 11 cards now scroll naturally, all
+// visible together, instead of cross-fading one at a time inside a
+// fixed-size box (see the big comment on "#pin-venus" in index.html).
 initScrollCards('pin-saturn', 3)
 
 // Cross-fade between the 8 experience cards as the visitor scrolls
@@ -157,11 +160,6 @@ initScrollCards('pin-saturn', 3)
 // Parle card moved to Entrepreneur instead - see index.html - so this
 // dropped from 9 to 8).
 initScrollCards('pin-mars', 8)
-
-// Cross-fade between the 11 case-study cards as the visitor scrolls
-// through Venus's held pin (Digibet and NHS were merged into one card
-// - see index.html - so this dropped from 12 to 11).
-initScrollCards('pin-venus', 11)
 
 // Cross-fade between the 8 certificate cards as the visitor scrolls
 // through the constellations stop's held pin - replaces the old
@@ -172,31 +170,33 @@ initScrollCards('pin-constellations', 8)
 // through Jupiter's held pin.
 initScrollCards('pin-jupiter', 3)
 
-// Turn on the "Read more"/"Read less" toggle for all five scroll-card
-// stops - Venus's 11 case-study cards, Mars's 8 experience cards,
-// Saturn's 3 entrepreneur cards, Constellations's 8 certificate cards,
-// and Jupiter's 3 volunteering cards - all now use the same uniform
+// Turn on the "Read more"/"Read less" toggle for the four remaining
+// scroll-card stops - Mars's 8 experience cards, Saturn's 3
+// entrepreneur cards, Constellations's 8 certificate cards, and
+// Jupiter's 3 volunteering cards - all still using the same uniform
 // card design (see src/styles/card.css). This only ever changes
 // text/CSS locally on a card; it has no effect on, and isn't affected
-// by, the crossfade mechanic set up by initScrollCards above.
-initCardReadMore('pin-venus')
+// by, the crossfade mechanic set up by initScrollCards above. Case
+// Studies (Venus) is deliberately NOT called here anymore - its cards
+// show their full text all the time now, with nothing to expand (see
+// the big comment on "#pin-venus" in index.html).
 initCardReadMore('pin-mars')
 initCardReadMore('pin-saturn')
 initCardReadMore('pin-constellations')
 initCardReadMore('pin-jupiter')
 
-// Add the ▲▼ "read the rest" arrows to whichever of the same five
+// Add the ▲▼ "read the rest" arrows to whichever of the same four
 // stops' cards actually need them (see src/ui/cardScroll.js) - a long
 // card only ever gets these once BOTH "Read more" has been clicked AND
 // its full text still doesn't fit. Each call here MUST come after that
 // same stop's own initCardReadMore() call directly above, since this
 // file reads the clamped/expanded state that call's own click handler
-// sets up, the moment its own button is clicked. Skills and
-// Testimonials don't get this at all - their cards (see
-// src/styles/card.css) were never height-capped in the first place, so
-// they can never end up in the "expanded but still doesn't fit" state
+// sets up, the moment its own button is clicked. Skills, Testimonials,
+// and now Case Studies too, don't get this at all - Skills/Testimonials
+// cards (see src/styles/card.css) were never height-capped in the
+// first place, and Case Studies cards no longer are either, so none of
+// them can ever end up in the "expanded but still doesn't fit" state
 // this exists for.
-initCardScroll('pin-venus')
 initCardScroll('pin-mars')
 initCardScroll('pin-saturn')
 initCardScroll('pin-constellations')

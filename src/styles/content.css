@@ -429,20 +429,21 @@
   border-bottom-color: rgba(255, 255, 255, 0.9);
 }
 
-/* ---- Scroll-cards (Saturn, Mars, Venus, Constellations, Jupiter all
-   reuse this) ----------------------------------------------------------
-   Every card at every one of these 5 stops sits in this exact same
+/* ---- Scroll-cards (Saturn, Mars, Constellations, Jupiter all reuse
+   this - Case Studies used to as well, but no longer does, see the
+   big ".case-studies-list" comment further down) ---------------------
+   Every card at every one of these 4 stops sits in this exact same
    spot, one on top of the other - src/motion/scrollCards.js is what
    fades between them as the visitor scrolls, this file just controls
    how the whole thing looks. It's the SAME styling and the SAME
-   mechanic reused 5 times over, not 5 separate systems.
+   mechanic reused 4 times over, not 4 separate systems.
    ".scroll-cards" needs a real, fixed height for that stacking to
    work (an absolutely positioned child needs to know what box it's
    centering inside) - sized generously enough for Saturn's, Mars's,
-   and Constellations's text-only cards to fit comfortably. Venus's
-   and Jupiter's cards are taller (they also show an image placeholder
-   - see ".scroll-cards--with-image" further below), so they use their
-   own, taller version of this same height. */
+   and Constellations's text-only cards to fit comfortably. Jupiter's
+   cards are taller (they also show an image placeholder - see
+   ".scroll-cards--with-image" further below), so they use their own,
+   taller version of this same height. */
 .scroll-cards {
   position: relative;
   width: min(90vw, 480px);
@@ -484,18 +485,17 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* ---- Opt-out for stops using the NEW uniform card design -----------------
-   Venus's cards (see src/styles/card.css) carry both ".scroll-card"
-   (for the positioning above - the crossfade mechanic in
+/* ---- Every remaining scroll-card stop uses the uniform card design -----
+   Saturn, Mars, Constellations, and Jupiter's cards (see
+   src/styles/card.css) all carry both ".scroll-card" (for the
+   positioning above - the crossfade mechanic in
    src/motion/scrollCards.js needs that to keep working exactly as-is)
    AND this modifier, which strips back out every VISUAL property
    ".scroll-card" set above - the padding, the background, the blur,
    the border. That's on purpose: card.css's own ".card" (nested
    inside) provides ALL of the visual look now, so leaving
    ".scroll-card"'s own visual styling in place too would mean two
-   separate frosted boxes stacked on top of each other. Saturn, Mars,
-   and Jupiter don't use this modifier, so their cards are completely
-   unaffected and keep looking exactly as they already do. */
+   separate frosted boxes stacked on top of each other. */
 .scroll-card--uniform {
   padding: 0;
   border-radius: 0;
@@ -516,16 +516,19 @@
    overriding card.css's own if the two were ever changed to different
    values. */
 
-/* ---- Cards that also carry an image (Venus, Jupiter) ---------------------
+/* ---- Cards that also carry an image (Jupiter) -----------------------
    ".scroll-cards--with-image" is added to both the outer ".scroll-cards"
    box AND each individual ".scroll-card" inside it, wherever a stop's
    cards include a photo slot - it just means "make room for an image
    at the top of each card," on top of everything ".scroll-cards"/
-   ".scroll-card" already do above. */
+   ".scroll-card" already do above. Case Studies used to use this too,
+   back when it was also a fixed-height, cross-faded scroll-card stop -
+   it isn't anymore (see the big ".case-studies-list" comment further
+   down), so this is Jupiter's alone now. */
 .scroll-cards--with-image {
   /* Tall enough for the worst case: an image, a heading, a meta line,
      a clamped body, AND a "Read more" button underneath - all at once.
-     Venus's uniform cards (src/styles/card.css) can hit every one of
+     Jupiter's uniform cards (src/styles/card.css) can hit every one of
      those at the same time; the old, shorter 480px here was sized
      back when this card only ever held a single short line of
      placeholder text, and left the "Read more" button clipped below
@@ -540,89 +543,81 @@
   --card-frame-height: 580px;
 }
 
-/* ---- Case Studies specifically gets an even taller frame ------------------
-   Every other card stop - including Jupiter, which also uses
-   ".scroll-cards--with-image" right above - keeps that same 580px
-   frame untouched. This rule ONLY applies inside "#pin-venus" (an ID
-   selector always wins over ".scroll-cards--with-image" alone, no
-   matter which one is written first in this file, so this reliably
-   overrides it here without needing to touch that shared rule at
-   all), because Case Studies cards hold noticeably more text per card
-   (a name, a meta line, and 4 labeled sections) than Jupiter's do -
-   the old shared 580px frame left only about 110px of that actually
-   visible before needing "Read more" and the ▲▼ arrows, which meant a
-   lot of back-and-forth clicking just to read one card.
+/* ---- Case Studies: natural scroll instead of a fixed frame --------------
+   This is the one stop that deliberately does NOT use the fixed-height,
+   cross-faded ".scroll-cards" system above at all anymore - see the
+   big comment on "#pin-venus" in index.html for why (cramming 11
+   detailed case studies into a small box made most of each one hidden
+   behind "Read more" and the ▲▼ arrows). Instead, its cards live in
+   ".case-studies-list" below: a plain column that just grows as tall
+   as its content genuinely needs, exactly like normal body text on any
+   other webpage would.
 
-   900px is the TARGET height - tall enough that on a roomy screen
-   (about 1100px tall or more, where this hits its full 900px), the
-   visible body text runs to roughly 430px, comfortably covering
-   Objective, Strategy, and Key KPIs with Results already starting,
-   before any clicking at all. On the very common ~900px-tall laptop
-   window, this comes out shorter (around 700px of frame, ~230px of
-   visible body) - a real, roughly 2x improvement over the old 110px,
-   just not the full target, because the image alone (see
-   ".card-image" in src/styles/card.css) already takes up close to
-   280px of every card regardless of how tall the frame is. Making the
-   image itself smaller on a shorter screen, to free up more room for
-   the text, was considered and deliberately NOT done here - it would
-   mean the image looks different size to size, stop to stop, which
-   was judged worse than the body text simply having less room to
-   breathe on a shorter screen.
-
-   "min(900px, calc(100vh - 196px))" is what makes the frame shrink on
-   a shorter screen instead of just spilling off of it - "196px" is a
-   REAL, precisely measured number (not a rough guess): it's exactly
-   how much room the Case Studies heading above the cards, the gaps
-   above/below them, the row of dots underneath, and this whole
-   block's own top/bottom padding always take up together, confirmed
-   by checking directly in a real browser. On a screen shorter than
-   about 1100px tall, "100vh - 196px" comes out smaller than 900px,
-   and "min()" always picks whichever of the two numbers is smaller -
-   so this box shrinks right along with the screen.
-
-   IMPORTANT: both this "height" AND the "--card-frame-height" custom
-   property just below it use this exact same formula, character for
-   character, on purpose - a custom property is a plain, literal value
-   (whatever its own formula works out to), completely separate from
-   whatever the ACTUAL rendered box ends up being after layout. Every
-   flex child (this box included) is also normally allowed to shrink
-   itself smaller than its own stated height if its flex container
-   ever runs short on room (browsers do this completely automatically) -
-   so if this box's OWN formula were even slightly too generous, the
-   real rendered box could end up shrunk smaller than what
-   "--card-frame-height" still claims, and ".card" further down (see
-   src/styles/card.css) would then size itself to that now-WRONG,
-   too-tall number instead of the real one - which is exactly the
-   "card grows past its own visible frame" bug from earlier, again.
-   Using the identical formula for both is what guarantees that can't
-   happen: since "100vh - 196px" already reflects the true available
-   room, the ordinary flex-shrink safety net practically never needs
-   to actually engage - the two numbers stay in sync because they were
-   never allowed to disagree in the first place. */
-#pin-venus .scroll-cards {
-  height: min(900px, calc(100vh - 196px));
-  --card-frame-height: min(900px, calc(100vh - 196px));
+   "#pin-venus .pin-content" needs its OWN override here because the
+   shared ".pin-content" rule in base.css was built for the OPPOSITE
+   situation - a single screen's worth of content, deliberately taken
+   OUT of the page's normal flow ("position: absolute") so a pinned
+   stop's real height never adds any extra scroll distance beyond its
+   own hand-picked hold length (see the big comment on ".pin-marker" in
+   base.css for the full reasoning behind that). Case Studies is the
+   exact opposite now: its real height IS supposed to become real
+   scroll distance, for as long as 11 full cards actually take up, so
+   this box needs to sit back IN normal flow instead ("position:
+   relative"). "justify-content: flex-start" (instead of the shared
+   rule's "center") matters for the same reason - centering only makes
+   sense for a block shorter than the screen; once this block is many
+   screens tall, "center" would just push its top edge (and the "Case
+   Studies" heading on it) up off the top of the screen before the
+   visitor has scrolled to it at all. The shared "min-height: 100vh" is
+   deliberately LEFT ALONE (not overridden) - it still guarantees at
+   least one full screen's worth of breathing room right as this stop
+   is arrived at, before the visitor starts scrolling down into the
+   cards themselves. */
+#pin-venus .pin-content {
+  position: relative;
+  justify-content: flex-start;
 }
 
-/* This is what makes the shrinking described above possible at all.
-   "max-height: 100vh" caps this whole block (the heading, the card
-   frame, and the dots together) at the real screen height - without
-   this, the "100vh - 196px" formula above would still calculate a
-   smaller number on a short screen, but nothing would stop the
-   heading/dots around the card from simply pushing the whole block
-   taller than the screen regardless, since they aren't capped at all
-   otherwise.
+/* The column of 11 full-length case-study cards itself. Unlike
+   ".scroll-cards" above, this needs no fixed height and no
+   "--card-frame-height" custom property at all - by simply never
+   setting that custom property, ".card"'s own "max-height:
+   var(--card-frame-height, none)" (see src/styles/card.css) falls
+   back to "none" automatically, the exact same safe fallback that
+   already keeps Skills's and Testimonials's cards uncapped today.
+   Every card here is free to grow to whatever height its own image,
+   heading, meta line, and 4 sections actually need.
 
-   "overflow-y: auto" is the exact same last-resort safety net already
-   used on "#pin-moon .pin-content" in base.css - if a screen is short
-   enough that even a fully-shrunk card frame still doesn't leave
-   quite enough room for the heading and dots too, this whole block
-   gets its own scrollbar instead of quietly running off the top or
-   bottom of the screen. On any screen roomy enough to fit everything
-   already, this does nothing at all. */
-#pin-venus .pin-content {
-  max-height: 100vh;
-  overflow-y: auto;
+   "gap: 4rem" is the "generous spacing between cards" - noticeably
+   more breathing room than the small gaps used between short items
+   elsewhere on this page (like ".education-panel"'s 1.25rem), because
+   these are much bigger, denser cards that need a clear, unambiguous
+   break between "this case study is done" and "the next one starts".
+   The gap BETWEEN a card's own sections (Objective, Strategy, ...) is
+   a separate, smaller value - see ".card-body--structured" in
+   src/styles/card.css, untouched by this change.
+
+   "width: min(90vw, 640px)" gives each card noticeably more width to
+   breathe in than the old 480px crossfaded box did - wider than any
+   other single card on this page, on purpose: with 4 full sections of
+   real prose and bullet lists now always fully visible (never
+   clamped), a wider column means fewer, longer-wrapping lines instead
+   of a narrow column of many short, choppy ones. */
+.case-studies-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4rem;
+  width: min(90vw, 640px);
+  margin: 2rem auto 0;
+}
+
+/* Every card in the list should use the column's full width (up to
+   the 640px cap above) rather than shrinking to fit its own content -
+   without this, a card whose text happens to be short could end up
+   narrower than its neighbors, an inconsistent, uneven column. */
+.case-studies-list .card {
+  width: 100%;
 }
 
 /* The image placeholder itself. aspect-ratio is the important part

@@ -49,18 +49,31 @@ const STOPS = [
 
 export function initStopNav() {
   // ---- Reading each stop's real scroll position, ONCE ----------------------
-  // Every stop's pin (see src/motion/scrollTimeline.js) is already a
-  // real ScrollTrigger with its own already-measured start pixel by
-  // the time this function runs (initScrollTimeline() has already set
-  // all 10 up - see main.js for the call order). This just READS that
-  // existing value straight off it - it does not create, modify, or
-  // refresh any ScrollTrigger, and it only does this lookup ONE time
-  // right here, not repeatedly later. From this point on, every stop's
-  // target Y lives as a plain number on its own STOPS entry - nothing
-  // below this block ever calls ScrollTrigger again.
+  // Every stop already has its own real ScrollTrigger with an
+  // already-measured start pixel by the time this function runs (see
+  // src/motion/scrollTimeline.js - initScrollTimeline() has already
+  // set all 10 up - see main.js for the call order). This just READS
+  // that existing value straight off it - it does not create, modify,
+  // or refresh any ScrollTrigger, and it only does this lookup ONE
+  // time right here, not repeatedly later. From this point on, every
+  // stop's target Y lives as a plain number on its own STOPS entry -
+  // nothing below this block ever calls ScrollTrigger again.
+  //
+  // This used to also require "scrollTrigger.pin" to be true, back
+  // when every single stop was a real, page-freezing pin. Case Studies
+  // (venus) no longer is one (see the big comment on "naturalHeight"
+  // in scrollTimeline.js) - its own ScrollTrigger only ever MEASURES
+  // where its content naturally sits, it never pins anything - so
+  // requiring ".pin" here would have silently broken the "Case
+  // Studies" nav button, making it un-clickable. Matching by id alone
+  // is just as safe: each "#pin-<id>" element only ever has ONE
+  // ScrollTrigger of its own pointed straight at it (the crossfade
+  // ScrollTrigger some stops also have, in src/motion/scrollCards.js,
+  // is set up with plain numeric start/end values instead of pointing
+  // at a DOM element at all, so it can never accidentally match here).
   const stops = STOPS.map((stop) => {
     const trigger = ScrollTrigger.getAll().find(
-      (scrollTrigger) => scrollTrigger.trigger && scrollTrigger.trigger.id === `pin-${stop.id}` && scrollTrigger.pin,
+      (scrollTrigger) => scrollTrigger.trigger && scrollTrigger.trigger.id === `pin-${stop.id}`,
     )
     return { ...stop, targetY: trigger ? trigger.start : null }
   })
