@@ -371,6 +371,70 @@
   transform: translateY(24px);
 }
 
+/* ---- Skills' bulleted lists: multiple columns instead of one tall list --
+   Every skill list (see ".card-body--structured ul" in card.css, the
+   shared rule every labeled-list card on the site uses) normally
+   stacks its items in a single column, straight down the page - fine
+   for Case Studies's short "Key KPIs"/"Results" lists (2-6 items
+   each), but Skills's own lists run much longer (Technical Skills's
+   "Programmatic Platforms" alone has 14 items), which made both Skills
+   cards extremely tall. This rule is scoped to ONLY "#pin-satellites"
+   (Skills), so Case Studies/Certificates's own lists elsewhere on the
+   page are completely untouched by it.
+
+   "columns: 3 110px" is the standard CSS trick for a column count that
+   adjusts itself to the space available, with no media query needed
+   for the normal desktop-to-tablet range: it means "use up to 3
+   columns, but never make a column narrower than 110px" - the browser
+   works out how many columns (1, 2, or 3) actually fit the card's own
+   width at that moment and stretches them evenly to fill it. On this
+   site's own uniform card width, that comes out to 2 columns most of
+   the time (3 on a wider card, 1 once a card gets narrow enough) -
+   every item stays fully visible either way, just arranged sideways
+   instead of in one long column. The @media rule further down forces
+   a single column below 560px specifically, so a real phone always
+   gets a plain, single readable column rather than leaving that
+   entirely up to the width math above. */
+#pin-satellites .card-body--structured ul {
+  columns: 3 110px;
+  column-gap: 1.25rem;
+}
+
+/* Two small adjustments needed only because these lists now flow
+   sideways into columns instead of straight down:
+     - "break-inside: avoid" (plus its older "-webkit-" form, for
+       Safari) stops a single item's own text from being split with
+       half sitting at the bottom of one column and the rest
+       continuing at the top of the next - each item now always stays
+       together as one whole piece.
+     - "margin-top: 0" cancels out the normal spacing ".card-body--
+       structured li + li" (in card.css) puts above every item after
+       the first - that rule assumes a single column, where "the next
+       item down" is always directly below the previous one. In a
+       multi-column list, the first item of column 2 or 3 usually
+       ISN'T actually below the previous item (it's beside it), so
+       that same margin would just push it down and out of alignment
+       with the top of column 1. The line-height already inherited
+       from ".card-body" (card.css) still keeps comfortable breathing
+       room between the items stacked within any one column, without
+       needing an extra margin at all. */
+#pin-satellites .card-body--structured li {
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  margin-top: 0;
+}
+
+/* Below this width, even a single column of 110px would be too
+   cramped to read comfortably - the same breakpoint already used for
+   ".stats-row" above. This guarantees a real phone always gets one
+   plain, full-width column, rather than leaving that outcome up to
+   however the width math above happens to work out. */
+@media (max-width: 560px) {
+  #pin-satellites .card-body--structured ul {
+    columns: 1;
+  }
+}
+
 /* ---- The Earth stop's contact details -------------------------------
    ".contact-block" is the whole left-aligned column (heading + the
    frosted card below it) - overriding the centered text every stop
