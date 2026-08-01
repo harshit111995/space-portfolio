@@ -124,10 +124,11 @@ export const lookBaseRotation = { x: 0, y: 0 }
 // target that depends on how tall the WHOLE page ends up (which
 // changes as pins are added), so every hold is defined here in a
 // fixed, real unit instead, and turned into percent further down once
-// the actual page height is known. Venus is the one exception - it has
-// "naturalHeight: true" instead of a "holdLengthVh" number, because
-// its hold length isn't hand-picked at all anymore; see the big
-// comment on it below, and on "naturalHeight" further down this file.
+// the actual page height is known. Saturn, Mars, Venus, and Jupiter are
+// the exceptions - they each have "naturalHeight: true" instead of a
+// "holdLengthVh" number, because their hold length isn't hand-picked at
+// all anymore; see the big comment on Venus's entry below (the first of
+// the four to switch), and on "naturalHeight" further down this file.
 const BODIES = [
   {
     id: 'moon', // src/scene/moon.js - the small moon near the start
@@ -140,40 +141,53 @@ const BODIES = [
     id: 'saturn', // src/scene/saturn.js
     position: new THREE.Vector3(8, -8, -20),
     park: { x: -18, y: 18 }, // ~36.8 units out - reused from the Saturn/Mars proof phase
-    // 1.5vh = 3 entrepreneur cards (see src/motion/scrollCards.js) x
-    // ~0.5 screen-heights of scroll each - was 1.16vh, which testing
-    // found flipped through the 3 cards too fast to comfortably read.
-    holdLengthVh: 1.5,
+    // No "holdLengthVh" here anymore - this used to be a hand-picked
+    // 1.5vh (3 entrepreneur cards x ~0.5 screen-heights each, cross-
+    // fading one at a time inside a small fixed frame), but that made
+    // the longer cards feel cramped and cut off. Entrepreneur now works
+    // the same way Case Studies (Venus) does - see the big comment on
+    // Venus's own entry further down for the full story - so its 3
+    // cards scroll naturally instead, and this stop's hold length gets
+    // MEASURED from their real rendered height instead of picked by
+    // hand. See "naturalHeight" further down this file for exactly how.
+    naturalHeight: true,
     marker: false,
   },
   {
     id: 'mars', // src/scene/planets.js
     position: new THREE.Vector3(-10, 1, -50),
     park: { x: 12, y: -11 }, // ~25.1 units out - reused from the Saturn/Mars proof phase
-    // 4.0vh = 8 experience cards (the old "Creative Marketing Manager"/
-    // Vile Parle card moved to the Entrepreneur stop instead - see
-    // index.html - so this dropped from 9 cards/4.5vh) x ~0.5
-    // screen-heights each, matching Saturn's own per-card pacing.
-    holdLengthVh: 4.0,
+    // No "holdLengthVh" here anymore either, for the exact same reason
+    // as Saturn just above - this used to be a hand-picked 4.0vh (8
+    // experience cards x ~0.5 screen-heights each; the old "Creative
+    // Marketing Manager"/Vile Parle card moved to the Entrepreneur stop
+    // instead - see index.html - so this had already dropped from 9
+    // cards/4.5vh even before this change). Experience now scrolls
+    // naturally too, same fix as Case Studies (Venus) and Entrepreneur
+    // (Saturn) - see the big comment on Venus's entry below.
+    naturalHeight: true,
     marker: false,
   },
   {
     id: 'venus', // src/scene/planets.js
     position: new THREE.Vector3(-10, -2, -80),
     park: { x: -34, y: 12 }, // ~27.8 units out
-    // No "holdLengthVh" here, on purpose - every other body's hold
-    // length is a fixed, hand-picked number of screen-heights, but
-    // Case Studies (Venus) no longer works that way. Its 11 full-length
-    // cards now scroll past naturally instead of being frozen inside a
-    // small fixed box (see the big comment on "#pin-venus" in
-    // index.html), so there's no fixed length to pick by hand anymore -
-    // "naturalHeight: true" tells the setup code further down to
-    // MEASURE this stop's own real, rendered height instead, exactly
-    // the same way it already measures every pin's real pixel size,
-    // just without also freezing the page for that stretch. The camera
-    // still parks here and holds completely still, for however long
-    // that measured stretch of scrolling turns out to be - see
-    // "naturalHeight" further down in this file for exactly how.
+    // No "holdLengthVh" here, on purpose - this was the FIRST body to
+    // drop the fixed, hand-picked number of screen-heights every other
+    // body still used at the time. Its 11 full-length cards now scroll
+    // past naturally instead of being frozen inside a small fixed box
+    // (see the big comment on "#pin-venus" in index.html), so there's
+    // no fixed length to pick by hand anymore - "naturalHeight: true"
+    // tells the setup code further down to MEASURE this stop's own
+    // real, rendered height instead, exactly the same way it already
+    // measures every pin's real pixel size, just without also freezing
+    // the page for that stretch. The camera still parks here and holds
+    // completely still, for however long that measured stretch of
+    // scrolling turns out to be - see "naturalHeight" further down in
+    // this file for exactly how. Saturn, Mars, and Jupiter (see their
+    // own entries above/below) got this same fix afterwards, for the
+    // same reason - all 4 use the exact same "naturalHeight: true" +
+    // measureNaturalStop() mechanism, nothing body-specific about it.
     naturalHeight: true,
     marker: false,
   },
@@ -206,10 +220,13 @@ const BODIES = [
     id: 'jupiter', // src/scene/jupiter.js
     position: new THREE.Vector3(14, -10, -200),
     park: { x: -11, y: 18 }, // ~37.5 units out
-    // 1.5vh = 3 volunteering cards (not built yet, same reasoning as
-    // Mars/Venus above) x ~0.5 screen-heights each, same as Saturn's
-    // own 3-card pacing.
-    holdLengthVh: 1.5,
+    // No "holdLengthVh" here anymore - this used to be a hand-picked
+    // 1.5vh (3 volunteering cards x ~0.5 screen-heights each, same
+    // per-card pacing as Saturn used to have). Volunteering now scrolls
+    // naturally too, the same fix as Case Studies (Venus), Entrepreneur
+    // (Saturn), and Experience (Mars) - see the big comment on Venus's
+    // entry above for the full story.
+    naturalHeight: true,
     marker: false,
   },
   {
@@ -325,12 +342,12 @@ export function init(camera) {
   // avoid. Only the camera's off-axis framing/turning (built further
   // below) is skipped under reduced motion, same as before.
   //
-  // 9 of these 10 calls genuinely PIN the page (see setupParkedStop()
-  // above); Case Studies (Venus) is the one exception, using
-  // measureNaturalStop() instead, since it has "naturalHeight: true"
+  // 6 of these 10 calls genuinely PIN the page (see setupParkedStop()
+  // above); Saturn, Mars, Venus, and Jupiter are the exceptions, using
+  // measureNaturalStop() instead, since each has "naturalHeight: true"
   // on its BODIES entry rather than a "holdLengthVh" number (see the
-  // big comment there for why). Both functions return the same SHAPE
-  // of ScrollTrigger object (something with a real, measured
+  // big comment on Venus's entry for why). Both functions return the
+  // same SHAPE of ScrollTrigger object (something with a real, measured
   // ".start"/".end" in pixels), so every single line of code below
   // this point - the percent conversion, the camera's z/x/y holds, the
   // look-aim - can keep treating all 10 stops completely identically,
@@ -404,11 +421,12 @@ export function init(camera) {
   // Two kinds of segment make up the whole page:
   //   - a PIN HOLD (how long the camera stays frozen on one body) -
   //     these are set directly from holdLengthVh above, so they should
-  //     match that intended number exactly. Case Studies (Venus) is
-  //     the one exception - it has no hand-picked "intended" number to
-  //     compare against at all (see "naturalHeight" further up this
-  //     file), so its own line below just reports the real measured
-  //     length plainly, with no "intended" comparison alongside it.
+  //     match that intended number exactly. Saturn, Mars, Venus, and
+  //     Jupiter are the exceptions - each has no hand-picked "intended"
+  //     number to compare against at all (see "naturalHeight" further
+  //     up this file), so their own lines below just report the real
+  //     measured length plainly, with no "intended" comparison
+  //     alongside it.
   //   - a RUNWAY (the plain .pin-runway spacer before each pin, see
   //     index.html) - every one of these is meant to be exactly one
   //     screen-height (100vh in CSS, i.e. window.innerHeight in px).

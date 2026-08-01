@@ -245,75 +245,78 @@
 
       <div class="pin-runway" aria-hidden="true"></div>
 
-      <!-- 2. SATURN - Entrepreneur. This is the first "scroll-card" stop -
-           instead of one fixed block of text, there are 3 separate
-           cards stacked exactly on top of each other (see
-           ".scroll-card" in src/styles/content.css), and scrolling
-           THROUGH Saturn's hold - not just arriving at it - crosses
-           fades between them one at a time (see
-           src/motion/scrollCards.js, written generically so this same
-           pattern can be reused for other stops later, not just
-           Saturn).
+      <!-- 2. SATURN - Entrepreneur. This USED TO be a "scroll-card" stop -
+           3 cards cross-faded one at a time inside a frozen, fixed-height
+           box while the camera held still (see src/motion/scrollCards.js) -
+           but that made longer cards feel cramped, with content cut off
+           and only reachable via arrow buttons. It no longer works that
+           way: all 3 cards now sit in plain, ordinary document flow (see
+           ".natural-scroll-list" in content.css), each at its own real,
+           full height - no height cap, no clamp, no "Read more", no
+           arrows. As the visitor scrolls through them, Saturn itself
+           stays framed and completely still in the 3D background the
+           whole time (see the big comment on "naturalHeight" in
+           src/motion/scrollTimeline.js for exactly how the camera knows
+           how long to hold still here, now that this section's real
+           length depends on how tall 3 full cards turn out to be, not a
+           hand-picked number). This is the exact same fix already applied
+           to Case Studies (#pin-venus) - see the big comment there for
+           the full story; Mars/Experience and Jupiter/Volunteering just
+           below and further down got it too, so all four of these
+           "many cards in a row" stops now behave the same way.
 
-           These 3 cards now use the same uniform ".card" design as
-           Experience and Case Studies (see src/styles/card.css -
-           reused exactly as-is, nothing in that file changed). Like
-           Experience, these have no photo, so there's simply no
-           ".card-image" element - the uniform card was built to look
-           complete either way. Same read-more toggle too, via
-           src/ui/cardReadMore.js, just pointed at "pin-saturn" (see
-           src/main.js). -->
+           These 3 cards still use the same uniform ".card" design as
+           Experience and Case Studies (see src/styles/card.css - reused
+           exactly as-is, nothing in that file changed). Like Experience,
+           these have no photo, so there's simply no ".card-image"
+           element - the uniform card was built to look complete either
+           way. Unlike before, there's no read-more toggle anymore either -
+           each card just shows its full text all the time. -->
       <div id="pin-saturn" class="pin-marker">
         <div class="pin-content">
           <h2>Entrepreneur</h2>
 
-          <div class="scroll-cards">
-            <div class="scroll-card scroll-card--uniform">
-              <div class="card">
-                <h3 class="card-heading">The DigitalWit</h3>
-                <p class="card-meta">Founder · 2016–2021 · Mumbai</p>
-                <div class="card-body-wrapper">
-                  <p class="card-body">
-                    Founded and led a digital agency delivering comprehensive
-                    marketing solutions across digital advertising, branding,
-                    web development, and content creation. Built and managed
-                    a cross-functional team of designers, developers,
-                    marketers, and strategists to deliver client-focused
-                    campaigns, driving agency expansion and client
-                    acquisition to 64% of gross revenue. Oversaw end-to-end
-                    project management for high-impact campaigns, optimizing
-                    client ROI through data-driven insights, and led digital
-                    transformation projects that helped clients leverage
-                    emerging platforms and analytics across B2B, B2C, and D2C
-                    portfolios.
-                  </p>
-                  <button type="button" class="card-read-more">Read more</button>
-                </div>
+          <div class="natural-scroll-list">
+            <div class="card">
+              <h3 class="card-heading">The DigitalWit</h3>
+              <p class="card-meta">Founder · 2016–2021 · Mumbai</p>
+              <div class="card-body-wrapper">
+                <p class="card-body">
+                  Founded and led a digital agency delivering comprehensive
+                  marketing solutions across digital advertising, branding,
+                  web development, and content creation. Built and managed
+                  a cross-functional team of designers, developers,
+                  marketers, and strategists to deliver client-focused
+                  campaigns, driving agency expansion and client
+                  acquisition to 64% of gross revenue. Oversaw end-to-end
+                  project management for high-impact campaigns, optimizing
+                  client ROI through data-driven insights, and led digital
+                  transformation projects that helped clients leverage
+                  emerging platforms and analytics across B2B, B2C, and D2C
+                  portfolios.
+                </p>
               </div>
             </div>
 
-            <div class="scroll-card scroll-card--uniform">
-              <div class="card">
-                <h3 class="card-heading">Encube Enterprise</h3>
-                <p class="card-meta">Managing Partner · 2020–2021 · Mumbai</p>
-                <div class="card-body-wrapper">
-                  <p class="card-body">
-                    Led a 3D-printing company specializing in tailored
-                    solutions for the medical industry, overseeing
-                    operations, strategic planning, and growth. Directed
-                    development and production of custom medical devices —
-                    prosthetics, implants, and surgical guides — ensuring
-                    regulatory compliance, while cultivating relationships
-                    with hospitals and healthcare providers. Spearheaded
-                    R&amp;D in biocompatible materials and precision
-                    engineering, streamlined production processes, and
-                    positioned the company as a leader in medical 3D
-                    printing through industry partnerships and targeted
-                    marketing, achieving significant growth by expanding
-                    into new healthcare markets.
-                  </p>
-                  <button type="button" class="card-read-more">Read more</button>
-                </div>
+            <div class="card">
+              <h3 class="card-heading">Encube Enterprise</h3>
+              <p class="card-meta">Managing Partner · 2020–2021 · Mumbai</p>
+              <div class="card-body-wrapper">
+                <p class="card-body">
+                  Led a 3D-printing company specializing in tailored
+                  solutions for the medical industry, overseeing
+                  operations, strategic planning, and growth. Directed
+                  development and production of custom medical devices —
+                  prosthetics, implants, and surgical guides — ensuring
+                  regulatory compliance, while cultivating relationships
+                  with hospitals and healthcare providers. Spearheaded
+                  R&amp;D in biocompatible materials and precision
+                  engineering, streamlined production processes, and
+                  positioned the company as a leader in medical 3D
+                  printing through industry partnerships and targeted
+                  marketing, achieving significant growth by expanding
+                  into new healthcare markets.
+                </p>
               </div>
             </div>
 
@@ -325,200 +328,180 @@
                  running it was entrepreneurial work, not a job. Net
                  result: still exactly 3 cards here, just a different
                  3rd one. -->
-            <div class="scroll-card scroll-card--uniform">
-              <div class="card">
-                <h3 class="card-heading">Vile Parle Premier League</h3>
-                <p class="card-meta">Creative Marketing Manager &amp; Core Team Member · Dec 2014–Dec 2018 · Mumbai</p>
-                <div class="card-body-wrapper">
-                  <p class="card-body">
-                    Led creative direction and marketing for the Vile Parle
-                    Premier League, a 14-day community football event with
-                    nine regional teams. Developed cohesive advertising and
-                    marketing campaigns, designing layouts and visuals across
-                    logos, packaging, advertising materials, and digital
-                    assets. Managed creative content quality for client
-                    pitches and new-business opportunities, conducted press
-                    checks for print accuracy, and coordinated all aspects of
-                    the event — establishing the league as a model of
-                    impactful marketing, creative vision, and community
-                    engagement.
-                  </p>
-                  <button type="button" class="card-read-more">Read more</button>
-                </div>
+            <div class="card">
+              <h3 class="card-heading">Vile Parle Premier League</h3>
+              <p class="card-meta">Creative Marketing Manager &amp; Core Team Member · Dec 2014–Dec 2018 · Mumbai</p>
+              <div class="card-body-wrapper">
+                <p class="card-body">
+                  Led creative direction and marketing for the Vile Parle
+                  Premier League, a 14-day community football event with
+                  nine regional teams. Developed cohesive advertising and
+                  marketing campaigns, designing layouts and visuals across
+                  logos, packaging, advertising materials, and digital
+                  assets. Managed creative content quality for client
+                  pitches and new-business opportunities, conducted press
+                  checks for print accuracy, and coordinated all aspects of
+                  the event — establishing the league as a model of
+                  impactful marketing, creative vision, and community
+                  engagement.
+                </p>
               </div>
             </div>
           </div>
 
-          <!-- 3 small dots showing which of the 3 cards is currently
-               shown - purely visual feedback, entirely controlled by
-               src/motion/scrollCards.js (which one has the
-               "is-active" class). -->
-          <div class="scroll-cards-dots">
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-          </div>
         </div>
       </div>
 
       <div class="pin-runway" aria-hidden="true"></div>
 
-      <!-- 3. MARS - Experience. The second "scroll-card" stop (see the
-           big comment on Saturn's own cards further up for how this
-           mechanic works) - reuses src/motion/scrollCards.js completely
-           unchanged, just called with a different pin id and a
-           different card count (8, in src/main.js - was 9, until the
-           old "Creative Marketing Manager"/Vile Parle card moved out to
-           the Entrepreneur stop instead, see the comment further down
-           where it used to sit). Mars's own pinned-hold length (see
-           src/motion/scrollTimeline.js) was shortened to match, from
-           9 cards down to 8, at the same 0.5 screen-heights-per-card
-           pace every other card stop uses.
+      <!-- 3. MARS - Experience. Used to be a "scroll-card" stop just like
+           Saturn above (8 cards cross-faded one at a time inside a
+           frozen, fixed-height box - see src/motion/scrollCards.js) -
+           card count here was 8, not 9, since the old "Creative
+           Marketing Manager"/Vile Parle card moved out to the
+           Entrepreneur stop instead (see the comment further down where
+           it used to sit). Just like Saturn, that fixed-frame approach
+           made the longer cards here feel cramped and cut off, so it no
+           longer works that way: all 8 cards now sit in plain, ordinary
+           document flow (see ".natural-scroll-list" in content.css),
+           each at its own real, full height - no height cap, no clamp,
+           no "Read more", no arrows. As the visitor scrolls through
+           them, Mars itself stays framed and completely still in the 3D
+           background the whole time (see the big comment on
+           "naturalHeight" in src/motion/scrollTimeline.js for exactly
+           how the camera knows how long to hold still here, now that
+           this section's real length depends on how tall 8 full cards
+           turn out to be, not a hand-picked number). Same fix as Case
+           Studies (#pin-venus) and Saturn above; see their big comments
+           for the full story.
 
-           These 8 cards now use the same uniform ".card" design as
+           These 8 cards still use the same uniform ".card" design as
            Case Studies (see src/styles/card.css - untouched here, just
            reused) instead of Mars's own older styling. The difference
            from Case Studies: these cards have NO photo, so there's
            simply no ".card-image" element inside - card.css was built
            from the start to leave a complete-looking card even with
            that piece missing entirely, nothing needs to be added to
-           "fill the gap." Same read-more behavior as Case Studies too,
-           via the same src/ui/cardReadMore.js, just pointed at
-           "pin-mars" instead (see src/main.js).
+           "fill the gap." Unlike before, there's no read-more toggle
+           anymore either - each card just shows its full text all the
+           time, the same as Case Studies and Saturn.
 
-           All 8 cards below now have their real, full body text (the
-           first 7 of them did - the 8th, "Marketing Coordinator", was
-           already filled in earlier and is left exactly as it was).
-           Every body here is plain, real prose - no structural changes
-           were needed to show it; the card component already handles
-           prose the same way it always has. Some of these are dense
-           enough to trigger the built-in "Read more" truncation (see
-           src/ui/cardReadMore.js), especially the very first card. -->
+           All 8 cards below have their real, full body text (the first
+           7 of them did - the 8th, "Marketing Coordinator", was already
+           filled in earlier and is left exactly as it was). Every body
+           here is plain, real prose - no structural changes were needed
+           to show it; the card component already handles prose the
+           same way it always has. -->
       <div id="pin-mars" class="pin-marker">
         <div class="pin-content">
           <h2>Experience</h2>
 
-          <div class="scroll-cards">
-            <div class="scroll-card scroll-card--uniform">
-              <div class="card">
-                <h3 class="card-heading">Performance &amp; Programmatic Media Manager</h3>
-                <p class="card-meta">Media Agency Group · Feb 2024–Present · Dubai</p>
-                <div class="card-body-wrapper">
-                  <p class="card-body">
-                    Managing global programmatic campaigns for clients
-                    including NHS, Binance, DWF Labs, Komatsu &amp; F1 Abu
-                    Dhabi, Lexis Nexis, HP, Interactive Brokers, Kuwait
-                    Airways, and Klarna. Collaborate and negotiate with major
-                    DSPs — DV360, The Trade Desk, Amazon, StackAdapt, and
-                    Quantcast — to secure better media costs and precise
-                    audience targeting, working with inventory suppliers
-                    across MENA, Asia, Russia, the Americas, and Europe.
-                    Reduced dead inbound leads by 74% month-over-month,
-                    improved MQL-to-SQL inquiries from 11% to 38%, and
-                    generated an average 6:1 ROI — recognized as best
-                    performer for consecutive quarters. Also manage internal
-                    global PPC campaigns on a £100K monthly budget, implement
-                    tracking and analytics via GA4, Tableau, and Salesforce,
-                    and report campaign performance directly to director and
-                    chairperson level.
-                  </p>
-                  <button type="button" class="card-read-more">Read more</button>
-                </div>
+          <div class="natural-scroll-list">
+            <div class="card">
+              <h3 class="card-heading">Performance &amp; Programmatic Media Manager</h3>
+              <p class="card-meta">Media Agency Group · Feb 2024–Present · Dubai</p>
+              <div class="card-body-wrapper">
+                <p class="card-body">
+                  Managing global programmatic campaigns for clients
+                  including NHS, Binance, DWF Labs, Komatsu &amp; F1 Abu
+                  Dhabi, Lexis Nexis, HP, Interactive Brokers, Kuwait
+                  Airways, and Klarna. Collaborate and negotiate with major
+                  DSPs — DV360, The Trade Desk, Amazon, StackAdapt, and
+                  Quantcast — to secure better media costs and precise
+                  audience targeting, working with inventory suppliers
+                  across MENA, Asia, Russia, the Americas, and Europe.
+                  Reduced dead inbound leads by 74% month-over-month,
+                  improved MQL-to-SQL inquiries from 11% to 38%, and
+                  generated an average 6:1 ROI — recognized as best
+                  performer for consecutive quarters. Also manage internal
+                  global PPC campaigns on a £100K monthly budget, implement
+                  tracking and analytics via GA4, Tableau, and Salesforce,
+                  and report campaign performance directly to director and
+                  chairperson level.
+                </p>
               </div>
             </div>
 
-            <div class="scroll-card scroll-card--uniform">
-              <div class="card">
-                <h3 class="card-heading">Performance Marketing Manager</h3>
-                <p class="card-meta">Vazir Group · Feb 2023–Feb 2024 · Dubai</p>
-                <div class="card-body-wrapper">
-                  <p class="card-body">
-                    Developed and executed paid media strategies for
-                    investment and migration programs across North America,
-                    EMEA, GCC, APAC, the Caribbean, and Turkey. Led media
-                    buying on Google Ads, Meta, LinkedIn, and Waze — driving
-                    a 126% increase in website traffic, a 1,173% boost in
-                    social engagement, an 86% lift in click-through rate,
-                    and a 62.7% rise in conversions. Launched specialized
-                    campaigns for Caribbean citizenship and European
-                    residency programs with precise targeting, increased
-                    qualified US-migration inquiries by 11%, and used
-                    Microsoft Clarity to cut bounce rates by 88%. Reported
-                    paid media and PPC performance directly to the Managing
-                    Director and Chairperson.
-                  </p>
-                  <button type="button" class="card-read-more">Read more</button>
-                </div>
+            <div class="card">
+              <h3 class="card-heading">Performance Marketing Manager</h3>
+              <p class="card-meta">Vazir Group · Feb 2023–Feb 2024 · Dubai</p>
+              <div class="card-body-wrapper">
+                <p class="card-body">
+                  Developed and executed paid media strategies for
+                  investment and migration programs across North America,
+                  EMEA, GCC, APAC, the Caribbean, and Turkey. Led media
+                  buying on Google Ads, Meta, LinkedIn, and Waze — driving
+                  a 126% increase in website traffic, a 1,173% boost in
+                  social engagement, an 86% lift in click-through rate,
+                  and a 62.7% rise in conversions. Launched specialized
+                  campaigns for Caribbean citizenship and European
+                  residency programs with precise targeting, increased
+                  qualified US-migration inquiries by 11%, and used
+                  Microsoft Clarity to cut bounce rates by 88%. Reported
+                  paid media and PPC performance directly to the Managing
+                  Director and Chairperson.
+                </p>
               </div>
             </div>
 
-            <div class="scroll-card scroll-card--uniform">
-              <div class="card">
-                <h3 class="card-heading">Digital &amp; Marketing Manager</h3>
-                <p class="card-meta">UNO Capital · Jan 2022–Feb 2023 · Dubai</p>
-                <div class="card-body-wrapper">
-                  <p class="card-body">
-                    Developed targeted digital strategies to reach
-                    high-net-worth and ultra-high-net-worth individuals,
-                    achieving a 1.68% conversion rate — the highest in the
-                    industry. Led a team of digital marketers and media
-                    specialists across Google Search and Display, Meta,
-                    LinkedIn, Snapchat, and TikTok, driving brand awareness
-                    and high-quality leads in new markets across Nigeria,
-                    EMEA, and North Africa. Enhanced lead quality by 34.8%
-                    within six months and grew lead generation 77.8%
-                    year-over-year through performance-focused paid media,
-                    native advertising, and AI-driven engagement tools.
-                    Managed $100K in quarterly and annual paid-media budgets
-                    with a focus on ROAS.
-                  </p>
-                  <button type="button" class="card-read-more">Read more</button>
-                </div>
+            <div class="card">
+              <h3 class="card-heading">Digital &amp; Marketing Manager</h3>
+              <p class="card-meta">UNO Capital · Jan 2022–Feb 2023 · Dubai</p>
+              <div class="card-body-wrapper">
+                <p class="card-body">
+                  Developed targeted digital strategies to reach
+                  high-net-worth and ultra-high-net-worth individuals,
+                  achieving a 1.68% conversion rate — the highest in the
+                  industry. Led a team of digital marketers and media
+                  specialists across Google Search and Display, Meta,
+                  LinkedIn, Snapchat, and TikTok, driving brand awareness
+                  and high-quality leads in new markets across Nigeria,
+                  EMEA, and North Africa. Enhanced lead quality by 34.8%
+                  within six months and grew lead generation 77.8%
+                  year-over-year through performance-focused paid media,
+                  native advertising, and AI-driven engagement tools.
+                  Managed $100K in quarterly and annual paid-media budgets
+                  with a focus on ROAS.
+                </p>
               </div>
             </div>
 
-            <div class="scroll-card scroll-card--uniform">
-              <div class="card">
-                <h3 class="card-heading">Digital Marketing Specialist</h3>
-                <p class="card-meta">Samana Group · Sep 2021–Dec 2021 · Dubai</p>
-                <div class="card-body-wrapper">
-                  <p class="card-body">
-                    Ran lead-generation campaigns for the group's real
-                    estate and immigration businesses, managing an ad
-                    budget of approximately $100K and achieving an average
-                    ROAS of 483.2% across campaigns. Implemented Google
-                    Analytics and Tag Manager for daily data analysis,
-                    curated and published Arabic-language social and search
-                    ads in coordination with an Arabic content writer, and
-                    optimized campaigns daily. Executed display and
-                    geo-targeted campaigns to reach new audiences for
-                    business immigration and investment opportunities
-                    across the GCC and wider Middle East.
-                  </p>
-                  <button type="button" class="card-read-more">Read more</button>
-                </div>
+            <div class="card">
+              <h3 class="card-heading">Digital Marketing Specialist</h3>
+              <p class="card-meta">Samana Group · Sep 2021–Dec 2021 · Dubai</p>
+              <div class="card-body-wrapper">
+                <p class="card-body">
+                  Ran lead-generation campaigns for the group's real
+                  estate and immigration businesses, managing an ad
+                  budget of approximately $100K and achieving an average
+                  ROAS of 483.2% across campaigns. Implemented Google
+                  Analytics and Tag Manager for daily data analysis,
+                  curated and published Arabic-language social and search
+                  ads in coordination with an Arabic content writer, and
+                  optimized campaigns daily. Executed display and
+                  geo-targeted campaigns to reach new audiences for
+                  business immigration and investment opportunities
+                  across the GCC and wider Middle East.
+                </p>
               </div>
             </div>
 
-            <div class="scroll-card scroll-card--uniform">
-              <div class="card">
-                <h3 class="card-heading">Digital Marketing Strategist</h3>
-                <p class="card-meta">Espada Group · Feb 2021–Sep 2021 · UAE</p>
-                <div class="card-body-wrapper">
-                  <p class="card-body">
-                    Curated digital marketing and content strategy for
-                    three group entities — Espada Business Center, Espada
-                    Technical Services, and Dental Hub Clinic. Built monthly
-                    content calendars, formulated data-driven Google Ads and
-                    social media strategies, and managed online presence,
-                    local SEO, and website development. Delivered a
-                    consistent 8.4% click-through rate and 6.3% conversion
-                    rate on PPC campaigns, and grew organic impressions and
-                    reach by over 200% across all entities within six
-                    months.
-                  </p>
-                  <button type="button" class="card-read-more">Read more</button>
-                </div>
+            <div class="card">
+              <h3 class="card-heading">Digital Marketing Strategist</h3>
+              <p class="card-meta">Espada Group · Feb 2021–Sep 2021 · UAE</p>
+              <div class="card-body-wrapper">
+                <p class="card-body">
+                  Curated digital marketing and content strategy for
+                  three group entities — Espada Business Center, Espada
+                  Technical Services, and Dental Hub Clinic. Built monthly
+                  content calendars, formulated data-driven Google Ads and
+                  social media strategies, and managed online presence,
+                  local SEO, and website development. Delivered a
+                  consistent 8.4% click-through rate and 6.3% conversion
+                  rate on PPC campaigns, and grew organic impressions and
+                  reach by over 200% across all entities within six
+                  months.
+                </p>
               </div>
             </div>
 
@@ -528,98 +511,81 @@
                  Premier League" in #pin-saturn, further up) - running
                  it was entrepreneurial work, not a job, so it belongs
                  there instead. This dropped Experience from 9 cards to
-                 8 - see the card count passed to initScrollCards() in
-                 src/main.js and the matching dot count just below. -->
-            <div class="scroll-card scroll-card--uniform">
-              <div class="card">
-                <h3 class="card-heading">Startup Ambassador</h3>
-                <p class="card-meta">Startup Jalsa · Sep 2017–Sep 2018 · Mumbai</p>
-                <div class="card-body-wrapper">
-                  <p class="card-body">
-                    Facilitated 50+ startup-investor matches resulting in
-                    $3M+ in seed funding, and built a community of 2,000+
-                    entrepreneurs across LinkedIn and Instagram. Organized
-                    25+ networking and pitch events connecting 200+
-                    startups with top-tier VCs, mentored 30+ early-stage
-                    startups on pitch decks and investor outreach, and
-                    achieved an 80% success rate placing startups into
-                    leading accelerator programs. Developed relationships
-                    with 100+ angel investors and 30+ VC firms, launched a
-                    digital mentorship program, and ran a weekly newsletter
-                    reaching 5,000+ ecosystem stakeholders.
-                  </p>
-                  <button type="button" class="card-read-more">Read more</button>
-                </div>
+                 8 - see the 8 cards below (there's no dot count to
+                 match anymore now that Experience scrolls naturally,
+                 see the big comment on "#pin-mars" further up). -->
+            <div class="card">
+              <h3 class="card-heading">Startup Ambassador</h3>
+              <p class="card-meta">Startup Jalsa · Sep 2017–Sep 2018 · Mumbai</p>
+              <div class="card-body-wrapper">
+                <p class="card-body">
+                  Facilitated 50+ startup-investor matches resulting in
+                  $3M+ in seed funding, and built a community of 2,000+
+                  entrepreneurs across LinkedIn and Instagram. Organized
+                  25+ networking and pitch events connecting 200+
+                  startups with top-tier VCs, mentored 30+ early-stage
+                  startups on pitch decks and investor outreach, and
+                  achieved an 80% success rate placing startups into
+                  leading accelerator programs. Developed relationships
+                  with 100+ angel investors and 30+ VC firms, launched a
+                  digital mentorship program, and ran a weekly newsletter
+                  reaching 5,000+ ecosystem stakeholders.
+                </p>
               </div>
             </div>
 
-            <div class="scroll-card scroll-card--uniform">
-              <div class="card">
-                <h3 class="card-heading">Digital Marketing Intern</h3>
-                <p class="card-meta">The Marketing Nerdz · Apr 2016–May 2016 · Mumbai</p>
-                <div class="card-body-wrapper">
-                  <p class="card-body">
-                    Created and scheduled daily social media content across
-                    Instagram, LinkedIn, and Facebook, increasing follower
-                    engagement by 25%. Assisted with email marketing
-                    campaigns reaching 10,000+ subscribers at a 22% average
-                    open rate, wrote and optimized 2–3 SEO blog posts
-                    weekly, and designed social graphics and marketing
-                    collateral. Tracked and reported campaign metrics via
-                    Google Analytics, supported competitor and market
-                    research, and collaborated on content-calendar
-                    planning.
-                  </p>
-                  <button type="button" class="card-read-more">Read more</button>
-                </div>
+            <div class="card">
+              <h3 class="card-heading">Digital Marketing Intern</h3>
+              <p class="card-meta">The Marketing Nerdz · Apr 2016–May 2016 · Mumbai</p>
+              <div class="card-body-wrapper">
+                <p class="card-body">
+                  Created and scheduled daily social media content across
+                  Instagram, LinkedIn, and Facebook, increasing follower
+                  engagement by 25%. Assisted with email marketing
+                  campaigns reaching 10,000+ subscribers at a 22% average
+                  open rate, wrote and optimized 2–3 SEO blog posts
+                  weekly, and designed social graphics and marketing
+                  collateral. Tracked and reported campaign metrics via
+                  Google Analytics, supported competitor and market
+                  research, and collaborated on content-calendar
+                  planning.
+                </p>
               </div>
             </div>
 
-            <div class="scroll-card scroll-card--uniform">
-              <div class="card">
-                <h3 class="card-heading">Marketing Coordinator</h3>
-                <p class="card-meta">Massive Advertising · Sep 2015–Mar 2016 · Mumbai</p>
-                <div class="card-body-wrapper">
-                  <p class="card-body">
-                    Led 12+ integrated marketing campaigns across digital
-                    channels, achieving 40% higher engagement than previous
-                    efforts. Grew social media following 65% through
-                    strategic content planning, lifted email open rates from
-                    18% to 28% via A/B testing and segmentation, and
-                    increased organic blog traffic 45%. Managed a $50K
-                    quarterly budget across concurrent projects, produced
-                    marketing materials for three major product launches,
-                    and streamlined the marketing–sales approval process to
-                    cut campaign deployment time 30%.
-                  </p>
-                  <button type="button" class="card-read-more">Read more</button>
-                </div>
+            <div class="card">
+              <h3 class="card-heading">Marketing Coordinator</h3>
+              <p class="card-meta">Massive Advertising · Sep 2015–Mar 2016 · Mumbai</p>
+              <div class="card-body-wrapper">
+                <p class="card-body">
+                  Led 12+ integrated marketing campaigns across digital
+                  channels, achieving 40% higher engagement than previous
+                  efforts. Grew social media following 65% through
+                  strategic content planning, lifted email open rates from
+                  18% to 28% via A/B testing and segmentation, and
+                  increased organic blog traffic 45%. Managed a $50K
+                  quarterly budget across concurrent projects, produced
+                  marketing materials for three major product launches,
+                  and streamlined the marketing–sales approval process to
+                  cut campaign deployment time 30%.
+                </p>
               </div>
             </div>
           </div>
 
-          <div class="scroll-cards-dots">
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-          </div>
+
         </div>
       </div>
 
       <div class="pin-runway" aria-hidden="true"></div>
 
-      <!-- 4. VENUS - Case Studies. UNLIKE every other card stop on this
-           page (Entrepreneur, Experience, Certificates, Volunteering -
-           all of which freeze the camera in a small, fixed-height card
-           frame and cross-fade between cards, see
-           src/motion/scrollCards.js), Case Studies deliberately does
-           NOT do that anymore. Cramming 11 detailed case studies (each
-           with an image, a heading, a meta line, and 4 labeled
+      <!-- 4. VENUS - Case Studies. This was the FIRST card stop to move
+           away from the old fixed-frame model (Entrepreneur, Experience,
+           and Volunteering all got the same fix afterwards - see their
+           own big comments further up/down; only Certificates still
+           freezes the camera and cross-fades cards, see
+           src/motion/scrollCards.js). Cramming 11 detailed case studies
+           (each with an image, a heading, a meta line, and 4 labeled
            sections) into a small fixed box meant most of each card was
            always hidden behind "Read more" and the ▲▼ scroll arrows -
            technically working, but genuinely hard to read.
@@ -627,7 +593,7 @@
            The fix: this stop now scrolls NATURALLY, like an ordinary
            long webpage section, instead of being pinned/frozen at all.
            All 11 cards sit in plain, ordinary document flow (see
-           ".case-studies-list" in content.css), each at its own real,
+           ".natural-scroll-list" in content.css), each at its own real,
            full height - no height cap, no clamp, no "Read more", no
            arrows. As the visitor scrolls through them, Venus itself
            stays framed and completely still in the 3D background the
@@ -653,7 +619,7 @@
         <div class="pin-content">
           <h2>Case Studies</h2>
 
-          <div class="case-studies-list">
+          <div class="natural-scroll-list">
             <div class="card">
               <div class="card-image"><span class="card-image-label">Campaign image</span></div>
               <h3 class="card-heading">Binance — DOOH · UAE Domination with Cristiano Ronaldo</h3>
@@ -1179,13 +1145,18 @@
            visual field the camera flies past, still twinkling and
            drifting - see src/scene/constellations.js, itself
            unchanged), and the 8 issuers are shown instead as 8
-           scroll-cards, exactly like Entrepreneur/Experience/
-           Volunteering elsewhere on this page (Case Studies used to
-           work this same way too, but no longer does - see the big
-           comment on "#pin-venus" further up for why) - same
-           src/motion/scrollCards.js mechanic, cross-fading one at a
-           time as the visitor scrolls through this stop's hold, called
-           with pin-constellations and 8 (see src/main.js).
+           scroll-cards, cross-fading one at a time inside a frozen,
+           fixed-height frame as the visitor scrolls through this stop's
+           hold (see src/motion/scrollCards.js, called with
+           pin-constellations and 8 in src/main.js). This is now the
+           LAST stop still using that fixed-frame/cross-fade approach -
+           Case Studies, Entrepreneur, Experience, and Volunteering all
+           used to work this same way too, but have since switched to
+           scrolling naturally instead (see the big comment on
+           "#pin-venus" further up for why, and why this one hasn't
+           needed the same change - its cards are short single bulleted
+           lists, not long multi-section write-ups, so they were never
+           actually cramped the way those four were).
 
            These cards use the same uniform ".card" design as every
            other card stop (see src/styles/card.css - reused exactly
@@ -1586,108 +1557,108 @@
 
       <div class="pin-runway" aria-hidden="true"></div>
 
-      <!-- 8. JUPITER - Volunteering. The fourth and last "scroll-card"
-           stop for now - same src/motion/scrollCards.js mechanic,
-           unchanged, called with pin-jupiter and 3 (see src/main.js).
+      <!-- 8. JUPITER - Volunteering. Used to be a "scroll-card" stop like
+           Saturn/Mars/Case Studies above (3 cards cross-faded one at a
+           time inside a frozen, fixed-height box - see
+           src/motion/scrollCards.js), and had the exact same cramped,
+           cut-off problem on longer cards. It no longer works that way:
+           all 3 cards now sit in plain, ordinary document flow (see
+           ".natural-scroll-list" in content.css), each at its own real,
+           full height - no height cap, no clamp, no "Read more", no
+           arrows. As the visitor scrolls through them, Jupiter itself
+           stays framed and completely still in the 3D background the
+           whole time (see the big comment on "naturalHeight" in
+           src/motion/scrollTimeline.js for exactly how the camera knows
+           how long to hold still here, now that this section's real
+           length depends on how tall 3 full cards turn out to be, not a
+           hand-picked number). Same fix as Case Studies/Saturn/Mars
+           above - see their big comments for the full story; all four
+           "many cards in a row" stops now behave the same way.
 
-           These 3 cards now use the same uniform ".card" design as
+           These 3 cards still use the same uniform ".card" design as
            the other three converted stops (see src/styles/card.css -
            reused exactly as-is, nothing in that file changed). Unlike
-           Experience/Entrepreneur, these DO have a photo, so like
-           Case Studies each one also gets a ".card-image" slot at the
-           top (see the big comment on ".card-image" in card.css for
-           why it's sized the way it is - a placeholder standing in
-           for a real photo later, without anything else needing to
-           move when that photo is added).
+           Experience/Entrepreneur, these DO have a photo, so like Case
+           Studies each one also gets a ".card-image" slot at the top
+           (see the big comment on ".card-image" in card.css for why
+           it's sized the way it is - a placeholder standing in for a
+           real photo later, without anything else needing to move when
+           that photo is added).
 
            Each body is plain prose (a single <p class="card-body">),
            same shape it always had - unlike Case Studies/Skills/
            Certificates, nothing here needed breaking into labeled
            sections or bulleted lists, so ".card-body--structured" is
-           deliberately NOT used on these three. Same read-more toggle
-           as every other stop, via src/ui/cardReadMore.js, pointed at
-           "pin-jupiter" (see src/main.js) - all three of these are
-           long enough now to actually need it. -->
+           deliberately NOT used on these three. Unlike before, there's
+           no read-more toggle anymore either - each card just shows its
+           full text all the time. -->
       <div id="pin-jupiter" class="pin-marker">
         <div class="pin-content">
           <h2>Volunteering</h2>
 
-          <div class="scroll-cards scroll-cards--with-image">
-            <div class="scroll-card scroll-card--with-image scroll-card--uniform">
-              <div class="card">
-                <div class="card-image"><span class="card-image-label">Volunteering photo</span></div>
-                <h3 class="card-heading">FIFA</h3>
-                <p class="card-meta">Competition Management Volunteer · Dec 2023–Present</p>
-                <div class="card-body-wrapper">
-                  <p class="card-body">
-                    Assisted in planning and executing the FIFA Beach Soccer
-                    World Cup, contributing to the management of a
-                    high-profile international sporting event. Coordinated
-                    logistics with event organizers — match scheduling,
-                    participant registrations, and FIFA-regulation
-                    compliance — and supported the competition management
-                    team in match-day operations, including team warm-ups,
-                    briefings, and timely game starts. Engaged with players,
-                    coaches, and officials to enhance their experience, and
-                    contributed to fan engagement and community outreach
-                    programs promoting the tournament.
-                  </p>
-                  <button type="button" class="card-read-more">Read more</button>
-                </div>
+          <div class="natural-scroll-list">
+            <div class="card">
+              <div class="card-image"><span class="card-image-label">Volunteering photo</span></div>
+              <h3 class="card-heading">FIFA</h3>
+              <p class="card-meta">Competition Management Volunteer · Dec 2023–Present</p>
+              <div class="card-body-wrapper">
+                <p class="card-body">
+                  Assisted in planning and executing the FIFA Beach Soccer
+                  World Cup, contributing to the management of a
+                  high-profile international sporting event. Coordinated
+                  logistics with event organizers — match scheduling,
+                  participant registrations, and FIFA-regulation
+                  compliance — and supported the competition management
+                  team in match-day operations, including team warm-ups,
+                  briefings, and timely game starts. Engaged with players,
+                  coaches, and officials to enhance their experience, and
+                  contributed to fan engagement and community outreach
+                  programs promoting the tournament.
+                </p>
               </div>
             </div>
 
-            <div class="scroll-card scroll-card--with-image scroll-card--uniform">
-              <div class="card">
-                <div class="card-image"><span class="card-image-label">Volunteering photo</span></div>
-                <h3 class="card-heading">Robin Hood Army</h3>
-                <p class="card-meta">Strategist · Mar 2014–Present</p>
-                <div class="card-body-wrapper">
-                  <p class="card-body">
-                    Implemented diverse CSR projects across 28 academies in
-                    Mumbai, engaging 16,000 volunteers to make a meaningful
-                    community impact. Provided professional exposure and
-                    learning opportunities for underprivileged children,
-                    inspiring youth and community members to participate in
-                    service initiatives and fostering social responsibility.
-                    Focused on combating hunger and promoting access to
-                    quality education, striving for equality and
-                    opportunity across communities.
-                  </p>
-                  <button type="button" class="card-read-more">Read more</button>
-                </div>
+            <div class="card">
+              <div class="card-image"><span class="card-image-label">Volunteering photo</span></div>
+              <h3 class="card-heading">Robin Hood Army</h3>
+              <p class="card-meta">Strategist · Mar 2014–Present</p>
+              <div class="card-body-wrapper">
+                <p class="card-body">
+                  Implemented diverse CSR projects across 28 academies in
+                  Mumbai, engaging 16,000 volunteers to make a meaningful
+                  community impact. Provided professional exposure and
+                  learning opportunities for underprivileged children,
+                  inspiring youth and community members to participate in
+                  service initiatives and fostering social responsibility.
+                  Focused on combating hunger and promoting access to
+                  quality education, striving for equality and
+                  opportunity across communities.
+                </p>
               </div>
             </div>
 
-            <div class="scroll-card scroll-card--with-image scroll-card--uniform">
-              <div class="card">
-                <div class="card-image"><span class="card-image-label">Volunteering photo</span></div>
-                <h3 class="card-heading">United Nations Volunteers</h3>
-                <p class="card-meta">Volunteer · Oct 2019–Dec 2019</p>
-                <div class="card-body-wrapper">
-                  <p class="card-body">
-                    Facilitated digital literacy workshops empowering
-                    underserved communities with essential technology
-                    skills. Developed training materials covering internet
-                    navigation, software applications, and online safety,
-                    and collaborated with local organizations to tailor
-                    workshops to specific community needs. Engaged
-                    participants through interactive, hands-on sessions to
-                    build confidence with technology, supporting efforts to
-                    bridge the digital divide and advance the UN's mission
-                    of sustainable development through digital inclusion.
-                  </p>
-                  <button type="button" class="card-read-more">Read more</button>
-                </div>
+            <div class="card">
+              <div class="card-image"><span class="card-image-label">Volunteering photo</span></div>
+              <h3 class="card-heading">United Nations Volunteers</h3>
+              <p class="card-meta">Volunteer · Oct 2019–Dec 2019</p>
+              <div class="card-body-wrapper">
+                <p class="card-body">
+                  Facilitated digital literacy workshops empowering
+                  underserved communities with essential technology
+                  skills. Developed training materials covering internet
+                  navigation, software applications, and online safety,
+                  and collaborated with local organizations to tailor
+                  workshops to specific community needs. Engaged
+                  participants through interactive, hands-on sessions to
+                  build confidence with technology, supporting efforts to
+                  bridge the digital divide and advance the UN's mission
+                  of sustainable development through digital inclusion.
+                </p>
               </div>
             </div>
           </div>
 
-          <div class="scroll-cards-dots">
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-          </div>
+
         </div>
       </div>
 

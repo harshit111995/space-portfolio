@@ -429,21 +429,17 @@
   border-bottom-color: rgba(255, 255, 255, 0.9);
 }
 
-/* ---- Scroll-cards (Saturn, Mars, Constellations, Jupiter all reuse
-   this - Case Studies used to as well, but no longer does, see the
-   big ".case-studies-list" comment further down) ---------------------
-   Every card at every one of these 4 stops sits in this exact same
-   spot, one on top of the other - src/motion/scrollCards.js is what
-   fades between them as the visitor scrolls, this file just controls
-   how the whole thing looks. It's the SAME styling and the SAME
-   mechanic reused 4 times over, not 4 separate systems.
-   ".scroll-cards" needs a real, fixed height for that stacking to
-   work (an absolutely positioned child needs to know what box it's
-   centering inside) - sized generously enough for Saturn's, Mars's,
-   and Constellations's text-only cards to fit comfortably. Jupiter's
-   cards are taller (they also show an image placeholder - see
-   ".scroll-cards--with-image" further below), so they use their own,
-   taller version of this same height. */
+/* ---- Scroll-cards (ONLY Constellations still uses this) ----------------
+   This used to be shared by Saturn, Mars, Constellations, and Jupiter -
+   4 stops all cross-fading cards one at a time inside a frozen,
+   fixed-height frame (src/motion/scrollCards.js). Saturn, Mars, and
+   Jupiter have all since switched to scrolling naturally instead (same
+   fix Case Studies got first - see the big ".natural-scroll-list"
+   comment further down), so Constellations is the only stop left using
+   this fixed-frame approach. ".scroll-cards" needs a real, fixed height
+   for that stacking to work (an absolutely positioned child needs to
+   know what box it's centering inside) - sized generously enough for
+   Constellations's text-only cards to fit comfortably. */
 .scroll-cards {
   position: relative;
   width: min(90vw, 480px);
@@ -485,10 +481,9 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* ---- Every remaining scroll-card stop uses the uniform card design -----
-   Saturn, Mars, Constellations, and Jupiter's cards (see
-   src/styles/card.css) all carry both ".scroll-card" (for the
-   positioning above - the crossfade mechanic in
+/* ---- The last scroll-card stop uses the uniform card design too --------
+   Constellations's cards (see src/styles/card.css) carry both
+   ".scroll-card" (for the positioning above - the crossfade mechanic in
    src/motion/scrollCards.js needs that to keep working exactly as-is)
    AND this modifier, which strips back out every VISUAL property
    ".scroll-card" set above - the padding, the background, the blur,
@@ -516,94 +511,83 @@
    overriding card.css's own if the two were ever changed to different
    values. */
 
-/* ---- Cards that also carry an image (Jupiter) -----------------------
-   ".scroll-cards--with-image" is added to both the outer ".scroll-cards"
-   box AND each individual ".scroll-card" inside it, wherever a stop's
-   cards include a photo slot - it just means "make room for an image
-   at the top of each card," on top of everything ".scroll-cards"/
-   ".scroll-card" already do above. Case Studies used to use this too,
-   back when it was also a fixed-height, cross-faded scroll-card stop -
-   it isn't anymore (see the big ".case-studies-list" comment further
-   down), so this is Jupiter's alone now. */
-.scroll-cards--with-image {
-  /* Tall enough for the worst case: an image, a heading, a meta line,
-     a clamped body, AND a "Read more" button underneath - all at once.
-     Jupiter's uniform cards (src/styles/card.css) can hit every one of
-     those at the same time; the old, shorter 480px here was sized
-     back when this card only ever held a single short line of
-     placeholder text, and left the "Read more" button clipped below
-     the fold with no visible way to scroll down to it. */
-  height: 580px;
+/* Note: ".scroll-cards--with-image" (a taller version of ".scroll-cards"
+   for cards with a photo slot) used to live here - it was only ever
+   used by Jupiter, and Jupiter has since switched to scrolling
+   naturally (see below), so nothing uses it anymore. Removed rather
+   than left in place unused. */
 
-  /* Same idea as "--card-frame-height" on ".scroll-cards" above, just
-     the taller number that matches THIS box's own height instead -
-     see the comment there for why a custom property (not a
-     percentage) is what actually gets this hard ceiling down to
-     ".card". */
-  --card-frame-height: 580px;
-}
+/* ---- The natural-scroll stops: full height instead of a fixed frame ----
+   Four stops now work this way: Case Studies (Venus) was the first -
+   see the big comment on "#pin-venus" in index.html for why (cramming
+   11 detailed case studies into a small box made most of each one
+   hidden behind "Read more" and the ▲▼ arrows) - and Entrepreneur
+   (Saturn), Experience (Mars), and Volunteering (Jupiter) got the same
+   fix afterwards, for the same reason. All four deliberately do NOT
+   use the fixed-height, cross-faded ".scroll-cards" system above
+   anymore. Instead, their cards live in ".natural-scroll-list" below: a
+   plain column that just grows as tall as its content genuinely needs,
+   exactly like normal body text on any other webpage would.
 
-/* ---- Case Studies: natural scroll instead of a fixed frame --------------
-   This is the one stop that deliberately does NOT use the fixed-height,
-   cross-faded ".scroll-cards" system above at all anymore - see the
-   big comment on "#pin-venus" in index.html for why (cramming 11
-   detailed case studies into a small box made most of each one hidden
-   behind "Read more" and the ▲▼ arrows). Instead, its cards live in
-   ".case-studies-list" below: a plain column that just grows as tall
-   as its content genuinely needs, exactly like normal body text on any
-   other webpage would.
-
-   "#pin-venus .pin-content" needs its OWN override here because the
-   shared ".pin-content" rule in base.css was built for the OPPOSITE
-   situation - a single screen's worth of content, deliberately taken
-   OUT of the page's normal flow ("position: absolute") so a pinned
-   stop's real height never adds any extra scroll distance beyond its
-   own hand-picked hold length (see the big comment on ".pin-marker" in
-   base.css for the full reasoning behind that). Case Studies is the
-   exact opposite now: its real height IS supposed to become real
-   scroll distance, for as long as 11 full cards actually take up, so
-   this box needs to sit back IN normal flow instead ("position:
-   relative"). "justify-content: flex-start" (instead of the shared
-   rule's "center") matters for the same reason - centering only makes
-   sense for a block shorter than the screen; once this block is many
-   screens tall, "center" would just push its top edge (and the "Case
-   Studies" heading on it) up off the top of the screen before the
-   visitor has scrolled to it at all. The shared "min-height: 100vh" is
-   deliberately LEFT ALONE (not overridden) - it still guarantees at
-   least one full screen's worth of breathing room right as this stop
-   is arrived at, before the visitor starts scrolling down into the
-   cards themselves. */
-#pin-venus .pin-content {
+   Each of these 4 stops' own "#pin-<id> .pin-content" needs this SAME
+   override because the shared ".pin-content" rule in base.css was
+   built for the OPPOSITE situation - a single screen's worth of
+   content, deliberately taken OUT of the page's normal flow
+   ("position: absolute") so a pinned stop's real height never adds any
+   extra scroll distance beyond its own hand-picked hold length (see
+   the big comment on ".pin-marker" in base.css for the full reasoning
+   behind that). These 4 stops are the exact opposite now: their real
+   height IS supposed to become real scroll distance, for as long as
+   their own full cards actually take up, so each one needs to sit back
+   IN normal flow instead ("position: relative"). "justify-content:
+   flex-start" (instead of the shared rule's "center") matters for the
+   same reason - centering only makes sense for a block shorter than
+   the screen; once a block is many screens tall, "center" would just
+   push its top edge (and its heading) up off the top of the screen
+   before the visitor has scrolled to it at all. The shared
+   "min-height: 100vh" is deliberately LEFT ALONE (not overridden) on
+   all 4 - it still guarantees at least one full screen's worth of
+   breathing room right as each stop is arrived at, before the visitor
+   starts scrolling down into its cards. */
+#pin-saturn .pin-content,
+#pin-mars .pin-content,
+#pin-venus .pin-content,
+#pin-jupiter .pin-content {
   position: relative;
   justify-content: flex-start;
 }
 
-/* The column of 11 full-length case-study cards itself. Unlike
-   ".scroll-cards" above, this needs no fixed height and no
+/* The column of full-length cards itself - shared by all 4 stops above
+   (11 cards for Case Studies, 8 for Experience, 3 each for Entrepreneur
+   and Volunteering) so they all look and feel consistent. Unlike
+   ".scroll-cards" further up, this needs no fixed height and no
    "--card-frame-height" custom property at all - by simply never
    setting that custom property, ".card"'s own "max-height:
    var(--card-frame-height, none)" (see src/styles/card.css) falls
    back to "none" automatically, the exact same safe fallback that
    already keeps Skills's and Testimonials's cards uncapped today.
    Every card here is free to grow to whatever height its own image,
-   heading, meta line, and 4 sections actually need.
+   heading, meta line, and body text actually need.
 
    "gap: 4rem" is the "generous spacing between cards" - noticeably
    more breathing room than the small gaps used between short items
    elsewhere on this page (like ".education-panel"'s 1.25rem), because
    these are much bigger, denser cards that need a clear, unambiguous
-   break between "this case study is done" and "the next one starts".
-   The gap BETWEEN a card's own sections (Objective, Strategy, ...) is
-   a separate, smaller value - see ".card-body--structured" in
-   src/styles/card.css, untouched by this change.
+   break between "this one is done" and "the next one starts". The gap
+   BETWEEN a card's own sections (Objective, Strategy, ... on Case
+   Studies specifically) is a separate, smaller value - see
+   ".card-body--structured" in src/styles/card.css, untouched by this
+   change.
 
    "width: min(90vw, 640px)" gives each card noticeably more width to
    breathe in than the old 480px crossfaded box did - wider than any
-   other single card on this page, on purpose: with 4 full sections of
-   real prose and bullet lists now always fully visible (never
-   clamped), a wider column means fewer, longer-wrapping lines instead
-   of a narrow column of many short, choppy ones. */
-.case-studies-list {
+   other single card on this page, on purpose: with every card's full
+   content now always visible (never clamped), a wider column means
+   fewer, longer-wrapping lines instead of a narrow column of many
+   short, choppy ones. Used as-is for all 4 stops, even the shorter
+   plain-prose cards (Entrepreneur, Experience), so every natural-scroll
+   stop shares the exact same width and feel. */
+.natural-scroll-list {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -616,7 +600,7 @@
    the 640px cap above) rather than shrinking to fit its own content -
    without this, a card whose text happens to be short could end up
    narrower than its neighbors, an inconsistent, uneven column. */
-.case-studies-list .card {
+.natural-scroll-list .card {
   width: 100%;
 }
 
@@ -661,9 +645,11 @@
   color: rgba(255, 255, 255, 0.35);
 }
 
-/* The 3 small dots below the cards - purely a "you are here" hint,
-   entirely controlled by src/motion/scrollCards.js toggling
-   "is-active" on whichever one matches the currently-shown card. */
+/* The small dots below the cards (8, for Constellations - the only
+   stop still using this dots-and-crossfade mechanic) - purely a "you
+   are here" hint, entirely controlled by src/motion/scrollCards.js
+   toggling "is-active" on whichever one matches the currently-shown
+   card. */
 .scroll-cards-dots {
   display: flex;
   justify-content: center;
@@ -686,17 +672,17 @@
   transform: scale(1.3);
 }
 
-/* ---- Reduced motion: all 3 cards stacked and readable normally ---------
+/* ---- Reduced motion: all cards stacked and readable normally -----------
    src/motion/scrollCards.js adds this class instead of doing any
    scroll-driven cross-fading when the visitor has reduced motion
    turned on - a scroll-scrubbed fade between cards is exactly the
    kind of motion that setting asks to avoid. With this class added,
    every card becomes normal, ordinary stacked content instead of
    overlapping absolutely-positioned layers - max-height + overflow-y
-   here specifically make sure all 3 stay reachable by scrolling
+   here specifically make sure all of them stay reachable by scrolling
    WITHIN this box, even though the page's own scroll is busy holding
-   the camera still on Saturn rather than moving further down the
-   page. */
+   the camera still on Constellations (the only stop left using this
+   mechanic) rather than moving further down the page. */
 .scroll-cards--stacked {
   display: flex;
   flex-direction: column;
