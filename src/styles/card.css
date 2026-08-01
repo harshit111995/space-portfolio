@@ -22,6 +22,15 @@
                             src/ui/cardReadMore.js for how that toggle
                             actually works. This file only styles what
                             "truncated" and "expanded" look like.
+     5. .card-scroll-arrows - OPTIONAL. A tiny ▲▼ control in the
+                            card's bottom-right corner, only for a
+                            card that's been expanded AND still
+                            doesn't fully fit - see src/ui/cardScroll.js
+                            for how it's built and wired up, and the
+                            big comment on ".card-body--expanded"
+                            further down for why reading a long card
+                            works this way instead of by scrolling it
+                            with the mouse wheel.
    =================================================================== */
 
 /* ---- The card box itself ------------------------------------------------
@@ -64,6 +73,10 @@
   padding: 1.5rem 1.75rem;
   border-radius: 18px;
   text-align: left;
+
+  /* An anchor for ".card-scroll-arrows" further down, which is
+     positioned absolutely relative to this card's own corner. */
+  position: relative;
 
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(18px) saturate(150%);
@@ -270,17 +283,39 @@
    the full, un-clamped text becomes visible again. On a short card
    that's the end of the story. On a long one, though, the FULL text
    can easily be taller than the room actually left inside the card's
-   fixed frame - "overflow-y: auto" is what makes THIS text scroll
-   internally to reach the rest, instead of the old behavior, where
-   the text (and the whole rest of the card along with it) just kept
-   growing straight past the card's own bottom border with nothing
-   stopping it. Because ".card-body" above already gets its real,
-   bounded height from the surrounding flex layout (not just
-   "however tall its text wants to be"), this scrollbar only ever
-   appears when it's actually needed - a card whose full text already
-   fits within the space available shows no scrollbar at all. */
+   fixed frame - it needs to scroll internally to reach the rest,
+   instead of the old behavior, where the text (and the whole rest of
+   the card along with it) just kept growing straight past the card's
+   own bottom border with nothing stopping it.
+
+   "overflow-y: hidden" (not "auto") is deliberate, and is the fix for
+   a SEPARATE bug this same internal scrolling used to cause: these
+   cards sit on top of a page whose own scrolling is what drives the
+   camera and cross-fades to the NEXT card (see src/motion/lenis.js
+   and src/motion/scrollCards.js) - and that page-level scroll already
+   swallows every mouse-wheel turn everywhere on the page, including
+   over a card. With "overflow-y: auto" here, wheeling over a long,
+   open card did nothing to this text at all (it never actually
+   scrolled) and STILL silently advanced to the next card underneath -
+   confusing, since the visitor's own scroll gesture looked like it
+   should be reading more of THIS card, not leaving it. "hidden"
+   removes any possibility of that tug-of-war by making this box simply
+   impossible to scroll via wheel/touch/scrollbar-drag at all - reading
+   a long card now happens ONLY through the two small ▲▼ buttons added
+   by src/ui/cardScroll.js (see ".card-scroll-arrows" below), which
+   move this same text by calling scrollTo()/scrollBy() on it directly
+   in JavaScript. That still works perfectly fine on an
+   "overflow: hidden" box - hidden only turns off the INTERACTIVE ways
+   of scrolling it (wheel, touch, dragging a scrollbar), not
+   programmatic scrolling - so the arrows keep working exactly as
+   before, while the wheel now does one single, unambiguous thing
+   everywhere on the page: advance the journey. Because ".card-body"
+   above already gets its real, bounded height from the surrounding
+   flex layout (not just "however tall its text wants to be"), this
+   only ever actually needs to be scrolled (visibly missing the tail
+   end of the text) when the arrows are showing in the first place. */
 .card-body--expanded {
-  overflow-y: auto;
+  overflow-y: hidden;
 }
 
 /* A soft fade over the last line of clamped text, hinting that more
@@ -338,4 +373,73 @@
    before any of this file's CSS has finished loading. */
 .card-read-more[hidden] {
   display: none;
+}
+
+/* ---- 5. The ▲▼ scroll arrows (only for long, expanded cards) -------------
+   src/ui/cardScroll.js builds this whole little control (the outer
+   ".card-scroll-arrows" box plus its two buttons) in JavaScript and
+   drops it into every card, right next to the "Read more" button -
+   nothing here needs adding to index.html by hand for it to show up.
+   It starts out hidden on every card, and that file only ever reveals
+   it for a card that's BOTH been expanded (via "Read more") AND still
+   doesn't fully fit even then - see the big comment on
+   ".card-body--expanded" above for why wheel-scrolling can't be used
+   to reach the rest of a card like that instead. Short cards, and
+   cards that fit once expanded, never see this at all. */
+.card-scroll-arrows {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  z-index: 2; /* sits above the card's own text and its fade effect */
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* "hidden" here works exactly like "[hidden]" on ".card-read-more"
+   above - a real HTML attribute src/ui/cardScroll.js toggles, not a
+   CSS class, so the whole control is removed from the page entirely
+   (not just made invisible) whenever it doesn't apply. */
+.card-scroll-arrows[hidden] {
+  display: none;
+}
+
+/* Each of the two arrow buttons - a small round dark button sitting
+   on top of the card's own frosted background, so it reads clearly as
+   a control rather than blending into whatever text happens to be
+   showing behind it at that moment. */
+.card-scroll-arrow {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(10, 12, 18, 0.8);
+  color: rgba(255, 255, 255, 0.85);
+
+  font-size: 0.6rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.card-scroll-arrow:hover,
+.card-scroll-arrow:focus-visible {
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Requirement: the ▲ greys out once scrolled all the way to the top,
+   and the ▼ greys out once scrolled all the way to the bottom -
+   src/ui/cardScroll.js sets the real, native "disabled" attribute on
+   whichever button doesn't currently apply (rather than a separate
+   CSS class), which also means a disabled arrow genuinely can't be
+   clicked at all, not just look greyed out. */
+.card-scroll-arrow:disabled {
+  opacity: 0.35;
+  cursor: default;
 }

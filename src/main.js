@@ -33,6 +33,7 @@ import { initSkillsReveal } from './motion/skillsReveal.js'
 import { initContactReveal } from './motion/contactReveal.js'
 import { initScrollCards } from './motion/scrollCards.js'
 import { initCardReadMore } from './ui/cardReadMore.js'
+import { initCardScroll } from './ui/cardScroll.js'
 import { initStopNav } from './ui/stopNav.js'
 
 // Importing scene.js above runs its setup code right away: it builds
@@ -183,6 +184,23 @@ initCardReadMore('pin-mars')
 initCardReadMore('pin-saturn')
 initCardReadMore('pin-constellations')
 initCardReadMore('pin-jupiter')
+
+// Add the ▲▼ "read the rest" arrows to whichever of the same five
+// stops' cards actually need them (see src/ui/cardScroll.js) - a long
+// card only ever gets these once BOTH "Read more" has been clicked AND
+// its full text still doesn't fit. Each call here MUST come after that
+// same stop's own initCardReadMore() call directly above, since this
+// file reads the clamped/expanded state that call's own click handler
+// sets up, the moment its own button is clicked. Skills and
+// Testimonials don't get this at all - their cards (see
+// src/styles/card.css) were never height-capped in the first place, so
+// they can never end up in the "expanded but still doesn't fit" state
+// this exists for.
+initCardScroll('pin-venus')
+initCardScroll('pin-mars')
+initCardScroll('pin-saturn')
+initCardScroll('pin-constellations')
+initCardScroll('pin-jupiter')
 
 // Same toggle for the Skills stop's 2 static cards - Technical Skills
 // is dense enough to actually need it; Soft Skills just automatically
