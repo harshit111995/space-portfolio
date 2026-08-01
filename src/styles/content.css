@@ -16,47 +16,47 @@
    stop's content, not something that fades in on hover.
    =================================================================== */
 
-/* ---- Keeping this content off of the Moon's actual surface --------------
-   Every stop's content normally sits dead-center on screen (see
-   ".pin-content" in base.css) - fine for a single short heading, but
-   the Moon's own content here is much taller (a name, subtitle, 4
-   body paragraphs, AND a whole row of 6 stats), and the Moon itself
-   sits low in the frame with its lit face cropped off by the bottom
-   of the screen rather than fitting neatly inside it. Centering this
-   much content would push a good chunk of it down onto the Moon's
-   actual surface. Pinning it to the TOP of the screen instead (with a
-   bit of breathing room above it) keeps it clear of the Moon entirely,
-   in the open space above where the Moon rises into frame.
-
-   max-height + overflow-y: auto is the safety net for whatever's left
-   over: on a short screen (a phone, especially in landscape, or a
-   shallow browser window), name + subtitle + 4 paragraphs + 6 stats
-   can add up to more than the screen is actually tall. That matters
-   more here than it would on an ordinary page, because this stop's
-   own scroll is PINNED while it's held (see
-   src/motion/scrollTimeline.js) - the normal page scroll is busy
-   holding the camera still, so it can't also be used to reveal
-   anything that runs past the bottom edge of the screen. Giving this
-   block its own independent scrollbar means it can always be scrolled
-   into view by itself (a mouse wheel or touch drag directly over it),
-   no matter how short the screen is. On any screen roomy enough to
-   fit everything already, this does nothing at all - max-height only
-   ever kicks in once the content actually would have overflowed. */
+/* ---- About/Moon: natural scroll instead of a fixed, cut-off frame ------
+   This used to be pinned into a single fixed-height screen, the same
+   as every "simple heading + paragraph" stop (see ".pin-content" in
+   base.css) - fine for a short heading, but the Moon's own content
+   here is much taller (a name, subtitle, 4 body paragraphs, AND a
+   whole row of 6 stats). A "max-height: 100vh; overflow-y: auto;"
+   safety net used to sit here to catch whatever didn't fit, but that
+   meant the bottom row of stats was only reachable by scrolling
+   INSIDE that one small box specifically - not obvious at all, and
+   easy to mistake for the stats simply being cut off and broken (which
+   is exactly what happened). This is the same fix already applied to
+   the four card stops (Case Studies/Entrepreneur/Experience/
+   Volunteering - see the big ".natural-scroll-list" comment further
+   down) and to Skills just below: the content now scrolls naturally,
+   at its own real, full height, instead of being squeezed into one
+   screen. "position: relative" (instead of the shared rule's
+   "position: absolute") is what makes that possible - see the big
+   comment on "#pin-venus" in index.html for the full reasoning, and
+   "naturalHeight" in src/motion/scrollTimeline.js for how the camera
+   knows how long to hold still here now that this section's real
+   length depends on its own real content height, not a hand-picked
+   number. "justify-content: flex-start" (instead of the shared rule's
+   "center") keeps this content pinned to the top of the screen at
+   first arrival - the Moon itself sits low in the frame with its lit
+   face cropped off by the bottom of the screen, so starting the text
+   block right at the top keeps it clear of the Moon's actual surface,
+   the same reason this override existed in the first place. */
 #pin-moon .pin-content {
+  position: relative;
   justify-content: flex-start;
   padding-top: 3.5vh;
-  max-height: 100vh;
-  overflow-y: auto;
 }
 
 /* ---- The Moon stop's intro text -----------------------------------------
    "Harshit Dabhi" (the page's one H1 - see index.html) gets its OWN,
    slightly smaller heading size and tighter gap below it here
-   (overriding the bigger, bolder shared h1 default in base.css)
-   specifically to help this whole block fit into the limited safe
-   space above the Moon - see the comment above this rule for why that
-   space is limited, and the comment on .stats-row below for the same
-   reasoning applied to ITS spacing. It keeps the shared h1's bold
+   (overriding the bigger, bolder shared h1 default in base.css) - a
+   plain visual choice to keep it in proportion with the rest of this
+   stop's content, nothing to do with fitting into limited space
+   anymore now that this stop scrolls naturally (see the big comment on
+   "#pin-moon .pin-content" above). It keeps the shared h1's bold
    weight and tight letter-spacing, just sized down. */
 .intro h1 {
   font-size: 2rem;
@@ -65,21 +65,23 @@
 
 /* ---- Side by side with the 6 stats on a wide screen ----------------------
    ".about-layout" (see index.html) is the flex row that holds both
-   ".intro" (this text column) and ".stats-row" side by side - the
-   whole point being that the block's total height only ever needs to
-   be as tall as its TALLER column, not both stacked one on top of the
-   other, which is what keeps it clear of the Moon's lit surface
-   further down the screen (see the comment on "#pin-moon .pin-content"
-   above). flex-wrap on the row is what drops ".stats-row" underneath
-   ".intro" automatically once the screen is too narrow to fit both
-   columns side by side - the exact same trick already used by
-   ".skills-cards"/".testimonials-row" further down this file. */
+   ".intro" (this text column) and ".stats-row" side by side. flex-wrap
+   on the row is what drops ".stats-row" underneath ".intro"
+   automatically once the screen is too narrow to fit both columns side
+   by side - the exact same trick already used by ".skills-cards"/
+   ".testimonials-row" further down this file. "gap: 2.5rem" (rather
+   than a small gap like 1.5rem) is the "generous spacing" between the
+   intro text and the stats once they wrap into a single stacked column
+   on a narrower screen - now that this whole block scrolls at its own
+   natural height instead of being squeezed to fit one screen (see the
+   big comment on "#pin-moon .pin-content" above), there's no reason to
+   keep that gap tight anymore. */
 .about-layout {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-items: flex-start;
-  gap: 1.5rem;
+  gap: 2.5rem;
   width: 100%;
 }
 
@@ -126,11 +128,16 @@
    item stranded by itself on its own row ("orphan"). Below the
    media query further down, it switches to 2 columns x 3 rows instead
    - still a clean, even grid, just taller instead of wider, so a
-   narrow phone never has to squeeze 3 columns into too little room. */
+   narrow phone never has to squeeze 3 columns into too little room.
+   "gap: 2rem 2rem" (row-gap first, then column-gap) gives clear,
+   generous breathing room between the two rows of 3, now that this
+   whole stop scrolls at its own natural height instead of being
+   squeezed to fit one screen (see the big comment on "#pin-moon
+   .pin-content" above). */
 .stats-row {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1.5rem 2rem;
+  gap: 2rem 2rem;
   max-width: 640px;
   padding: 1.5rem 2rem;
   border-radius: 18px;
@@ -312,12 +319,20 @@
    styling here at all - ".skills-card" is just a plain positioning
    wrapper (sizing + the reveal's starting hidden state); every bit of
    the actual look (background, blur, border) comes from the shared
-   ".card" (see src/styles/card.css) nested inside each one. */
+   ".card" (see src/styles/card.css) nested inside each one.
+
+   "gap: 2.5rem" (rather than a small gap like 1.5rem) is the
+   "generous spacing" between the two cards once they wrap into a
+   single stacked column on a narrower screen - now that this stop
+   scrolls at its own natural height instead of being squeezed into
+   one screen (see the big comment on "#pin-satellites .pin-content"
+   further down), each card can be quite tall, so a clear, unambiguous
+   gap between them matters more than it used to. */
 .skills-cards {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 1.5rem;
+  gap: 2.5rem;
   max-width: 960px;
 
   /* Without an explicit width, this box was sizing itself to its own
@@ -518,41 +533,54 @@
    than left in place unused. */
 
 /* ---- The natural-scroll stops: full height instead of a fixed frame ----
-   Four stops now work this way: Case Studies (Venus) was the first -
+   Five stops now work this way: Case Studies (Venus) was the first -
    see the big comment on "#pin-venus" in index.html for why (cramming
    11 detailed case studies into a small box made most of each one
    hidden behind "Read more" and the ▲▼ arrows) - and Entrepreneur
-   (Saturn), Experience (Mars), and Volunteering (Jupiter) got the same
-   fix afterwards, for the same reason. All four deliberately do NOT
-   use the fixed-height, cross-faded ".scroll-cards" system above
-   anymore. Instead, their cards live in ".natural-scroll-list" below: a
-   plain column that just grows as tall as its content genuinely needs,
-   exactly like normal body text on any other webpage would.
+   (Saturn), Experience (Mars), Volunteering (Jupiter), and Skills
+   (Satellites) got the same fix afterwards, for the same reason
+   (Skills's own version of the bug was slightly different - its 2
+   cards' combined height overflowed the fixed frame and visibly bled
+   down into Volunteering, the stop right after it, rather than just
+   hiding text behind "Read more" - but the fix is identical). About
+   (Moon) got this fix too, for the same reason again, but needs one
+   extra property of its own - see its own separate "#pin-moon
+   .pin-content" rule further up instead of being listed here.
 
-   Each of these 4 stops' own "#pin-<id> .pin-content" needs this SAME
+   The first four of these deliberately do NOT use the fixed-height,
+   cross-faded ".scroll-cards" system above anymore - instead, their
+   cards live in ".natural-scroll-list" below, a plain column that just
+   grows as tall as its content genuinely needs. Skills is a little
+   different (it was never a ".scroll-cards" stop to begin with - it
+   has its own ".skills-cards" side-by-side layout, untouched by this
+   change) - what it shares with the other four is just this same
+   ".pin-content" fix below, not the ".natural-scroll-list" markup.
+
+   Each of these stops' own "#pin-<id> .pin-content" needs this SAME
    override because the shared ".pin-content" rule in base.css was
    built for the OPPOSITE situation - a single screen's worth of
    content, deliberately taken OUT of the page's normal flow
    ("position: absolute") so a pinned stop's real height never adds any
    extra scroll distance beyond its own hand-picked hold length (see
    the big comment on ".pin-marker" in base.css for the full reasoning
-   behind that). These 4 stops are the exact opposite now: their real
+   behind that). These stops are the exact opposite now: their real
    height IS supposed to become real scroll distance, for as long as
-   their own full cards actually take up, so each one needs to sit back
-   IN normal flow instead ("position: relative"). "justify-content:
+   their own full content actually takes up, so each one needs to sit
+   back IN normal flow instead ("position: relative"). "justify-content:
    flex-start" (instead of the shared rule's "center") matters for the
    same reason - centering only makes sense for a block shorter than
    the screen; once a block is many screens tall, "center" would just
    push its top edge (and its heading) up off the top of the screen
    before the visitor has scrolled to it at all. The shared
-   "min-height: 100vh" is deliberately LEFT ALONE (not overridden) on
-   all 4 - it still guarantees at least one full screen's worth of
-   breathing room right as each stop is arrived at, before the visitor
-   starts scrolling down into its cards. */
+   "min-height: 100vh" is deliberately LEFT ALONE (not overridden) -
+   it still guarantees at least one full screen's worth of breathing
+   room right as each stop is arrived at, before the visitor starts
+   scrolling down into its content. */
 #pin-saturn .pin-content,
 #pin-mars .pin-content,
 #pin-venus .pin-content,
-#pin-jupiter .pin-content {
+#pin-jupiter .pin-content,
+#pin-satellites .pin-content {
   position: relative;
   justify-content: flex-start;
 }

@@ -124,17 +124,28 @@ export const lookBaseRotation = { x: 0, y: 0 }
 // target that depends on how tall the WHOLE page ends up (which
 // changes as pins are added), so every hold is defined here in a
 // fixed, real unit instead, and turned into percent further down once
-// the actual page height is known. Saturn, Mars, Venus, and Jupiter are
-// the exceptions - they each have "naturalHeight: true" instead of a
-// "holdLengthVh" number, because their hold length isn't hand-picked at
-// all anymore; see the big comment on Venus's entry below (the first of
-// the four to switch), and on "naturalHeight" further down this file.
+// the actual page height is known. Moon, Saturn, Mars, Venus, Satellites,
+// and Jupiter are the exceptions - they each have "naturalHeight: true"
+// instead of a "holdLengthVh" number, because their hold length isn't
+// hand-picked at all anymore; see the big comment on Venus's entry below
+// (the first of the six to switch), and on "naturalHeight" further down
+// this file.
 const BODIES = [
   {
     id: 'moon', // src/scene/moon.js - the small moon near the start
     position: new THREE.Vector3(0, -3.2, 0),
     park: { x: 13, y: -16.2 }, // ~18.4 units out - small object, close-up
-    holdLengthVh: 1.972,
+    // No "holdLengthVh" here anymore - this used to be a hand-picked
+    // 1.972vh, with a "max-height + overflow-y: auto" safety net on the
+    // content itself (see "#pin-moon .pin-content" in content.css)
+    // catching whatever didn't fit inside that fixed length. That
+    // safety net meant the bottom row of stats was only reachable by
+    // scrolling INSIDE that one small box, not the normal page scroll -
+    // which in practice just looked like the stats were cut off and
+    // broken. About now scrolls naturally instead, the same fix as
+    // Case Studies (Venus) and the other stops below - see the big
+    // comment on Venus's entry for the full story.
+    naturalHeight: true,
     marker: false,
   },
   {
@@ -184,10 +195,11 @@ const BODIES = [
     // the page for that stretch. The camera still parks here and holds
     // completely still, for however long that measured stretch of
     // scrolling turns out to be - see "naturalHeight" further down in
-    // this file for exactly how. Saturn, Mars, and Jupiter (see their
-    // own entries above/below) got this same fix afterwards, for the
-    // same reason - all 4 use the exact same "naturalHeight: true" +
-    // measureNaturalStop() mechanism, nothing body-specific about it.
+    // this file for exactly how. Saturn, Mars, Jupiter, Moon, and
+    // Satellites (see their own entries above/below) got this same fix
+    // afterwards, for the same reason - all 6 use the exact same
+    // "naturalHeight: true" + measureNaturalStop() mechanism, nothing
+    // body-specific about it.
     naturalHeight: true,
     marker: false,
   },
@@ -213,7 +225,16 @@ const BODIES = [
     id: 'satellites', // src/scene/satellites.js - center of the satellite ring
     position: new THREE.Vector3(-10, 0, -170),
     park: { x: 8, y: -20 }, // ~26.9 units out
-    holdLengthVh: 1.479,
+    // No "holdLengthVh" here anymore - this used to be a hand-picked
+    // 1.479vh, which worked fine until Technical Skills's full list of
+    // sections grew long enough that both cards' combined height (side
+    // by side, whichever one came out taller) overflowed past the
+    // bottom of that fixed length and visibly bled down into
+    // Volunteering, the stop right after it. Skills now scrolls
+    // naturally instead, the same fix as Case Studies (Venus) and the
+    // other stops above - see the big comment on Venus's entry for the
+    // full story.
+    naturalHeight: true,
     marker: false,
   },
   {
@@ -342,11 +363,12 @@ export function init(camera) {
   // avoid. Only the camera's off-axis framing/turning (built further
   // below) is skipped under reduced motion, same as before.
   //
-  // 6 of these 10 calls genuinely PIN the page (see setupParkedStop()
-  // above); Saturn, Mars, Venus, and Jupiter are the exceptions, using
-  // measureNaturalStop() instead, since each has "naturalHeight: true"
-  // on its BODIES entry rather than a "holdLengthVh" number (see the
-  // big comment on Venus's entry for why). Both functions return the
+  // 4 of these 10 calls genuinely PIN the page (see setupParkedStop()
+  // above); Moon, Saturn, Mars, Venus, Satellites, and Jupiter are the
+  // exceptions, using measureNaturalStop() instead, since each has
+  // "naturalHeight: true" on its BODIES entry rather than a
+  // "holdLengthVh" number (see the big comment on Venus's entry for
+  // why). Both functions return the
   // same SHAPE of ScrollTrigger object (something with a real, measured
   // ".start"/".end" in pixels), so every single line of code below
   // this point - the percent conversion, the camera's z/x/y holds, the
@@ -421,12 +443,12 @@ export function init(camera) {
   // Two kinds of segment make up the whole page:
   //   - a PIN HOLD (how long the camera stays frozen on one body) -
   //     these are set directly from holdLengthVh above, so they should
-  //     match that intended number exactly. Saturn, Mars, Venus, and
-  //     Jupiter are the exceptions - each has no hand-picked "intended"
-  //     number to compare against at all (see "naturalHeight" further
-  //     up this file), so their own lines below just report the real
-  //     measured length plainly, with no "intended" comparison
-  //     alongside it.
+  //     match that intended number exactly. Moon, Saturn, Mars, Venus,
+  //     Satellites, and Jupiter are the exceptions - each has no
+  //     hand-picked "intended" number to compare against at all (see
+  //     "naturalHeight" further up this file), so their own lines
+  //     below just report the real measured length plainly, with no
+  //     "intended" comparison alongside it.
   //   - a RUNWAY (the plain .pin-runway spacer before each pin, see
   //     index.html) - every one of these is meant to be exactly one
   //     screen-height (100vh in CSS, i.e. window.innerHeight in px).

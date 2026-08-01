@@ -182,10 +182,11 @@ initCardReadMore('pin-constellations')
 // "expanded but still doesn't fit" state this exists for.
 initCardScroll('pin-constellations')
 
-// Same toggle for the Skills stop's 2 static cards - Technical Skills
-// is dense enough to actually need it; Soft Skills just automatically
-// gets no button, since its own text already fits without truncating.
-initCardReadMore('pin-satellites')
+// Skills is deliberately NOT called here anymore either - it used to
+// get the same "Read more" toggle as Testimonials just below, but its
+// 2 cards now show their full text all the time instead, the same
+// natural-scroll fix as About/Moon just above and the four card stops
+// (see the big comment on "#pin-satellites" in index.html).
 
 // Same toggle for the Testimonials stop's 2 static cards - only shows
 // a "Read more" button on a quote actually long enough to overflow.

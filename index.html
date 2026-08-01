@@ -134,15 +134,32 @@
            not from anything here. -->
       <div class="pin-runway" aria-hidden="true"></div>
 
-      <!-- 1. MOON - the opening stop: who this site is about, plus 5
+      <!-- 1. MOON - the opening stop: who this site is about, plus 6
            headline numbers. This stop's content is taller than the
-           other stops' simple heading+paragraph, and the Moon itself
+           other stops' simple heading+paragraph (a name, subtitle, 4
+           body paragraphs, AND a row of 6 stats), and the Moon itself
            sits low in the frame (its lit face crops off the bottom of
-           the screen rather than fitting neatly inside it) - so this
-           one stop's content is pinned toward the TOP of the screen
-           instead of dead-center (see the "#pin-moon .pin-content"
-           rule in src/styles/content.css), keeping it clear of the
-           Moon's actual surface instead of sitting on top of it. -->
+           the screen rather than fitting neatly inside it).
+
+           This stop used to be pinned into a single fixed-height
+           screen, with a "max-height + overflow-y: auto" safety net
+           catching whatever didn't fit - but that meant the bottom row
+           of stats was only reachable by scrolling INSIDE that one
+           small box specifically, not the normal page scroll, which
+           in practice just looked like the stats were cut off and
+           broken. It no longer works that way: this stop now scrolls
+           NATURALLY instead, at its own real, full height - the same
+           fix already applied to Skills further down, and to the four
+           card stops before that (Case Studies/Entrepreneur/
+           Experience/Volunteering - see the big comment on
+           "#pin-venus" for the full story on why and how). This
+           stop's content is still pinned toward the TOP of the screen
+           at first arrival, not dead-center (see the "#pin-moon
+           .pin-content" rule in src/styles/content.css), keeping it
+           clear of the Moon's actual surface instead of sitting on top
+           of it. The Moon itself stays framed and completely still in
+           the 3D background the whole time the visitor scrolls through
+           this content, exactly like every other natural-scroll stop. -->
       <div id="pin-moon" class="pin-marker">
         <div class="pin-content">
           <!-- ".about-layout" is what actually puts the intro text and
@@ -1376,21 +1393,30 @@
            nothing in that file changed). Skills have no photo, so
            neither card has a ".card-image" slot.
 
-           Both bodies now use the STRUCTURED body shape (see the big
+           Both bodies use the STRUCTURED body shape (see the big
            comment on ".card-body--structured" in src/styles/card.css -
-           the same one Case Studies already uses) instead of the old
-           single flowing paragraph with bolded in-line labels - six
-           small labeled sections each, most of them a bulleted list of
-           short tools/skills rather than a paragraph, since that's
-           what each one actually is (a list of items), not a
-           sentence. Neither card has a ".card-image", and neither sits
-           inside a height-capped frame the way the scroll-card stops
-           do (see "--card-frame-height" in content.css - nothing sets
-           that custom property for "#pin-satellites", so it falls back
-           to no cap at all, and these cards simply grow as tall as
-           they need to) - so the ▲▼ scroll arrows never apply here,
-           only the "Read more" truncation. Technical Skills is dense
-           enough to need that; Soft Skills is close but still fits. -->
+           the same one Case Studies already uses) instead of a single
+           flowing paragraph with bolded in-line labels - six small
+           labeled sections each, most of them a bulleted list of short
+           tools/skills rather than a paragraph, since that's what each
+           one actually is (a list of items), not a sentence.
+
+           This used to be a "Read more"-truncated stop, capped inside
+           this stop's own single pinned screen - once Technical
+           Skills's full list of sections grew long enough, that
+           combined height (both cards, side by side, whichever one
+           came out taller) overflowed past the bottom of that pinned
+           screen and visibly bled down into the Volunteering stop
+           right after it. It no longer works that way: this stop now
+           scrolls NATURALLY instead, at its own real, full height, the
+           same fix already applied to the four card stops before it
+           (Case Studies/Entrepreneur/Experience/Volunteering - see the
+           big comment on "#pin-venus" for the full story) and to About
+           just above. Both cards show their full text all the time now
+           - no "Read more" truncation, no ▲▼ scroll arrows, no height
+           cap - and the satellites stay framed and completely still in
+           the 3D background the whole time the visitor scrolls through
+           them. -->
       <div id="pin-satellites" class="pin-marker">
         <div class="pin-content">
           <h2>Skills</h2>
@@ -1482,7 +1508,6 @@
                       </ul>
                     </div>
                   </div>
-                  <button type="button" class="card-read-more">Read more</button>
                 </div>
               </div>
             </div>
@@ -1547,7 +1572,6 @@
                       </p>
                     </div>
                   </div>
-                  <button type="button" class="card-read-more">Read more</button>
                 </div>
               </div>
             </div>
