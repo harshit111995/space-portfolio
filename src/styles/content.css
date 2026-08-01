@@ -523,6 +523,91 @@
   --card-frame-height: 580px;
 }
 
+/* ---- Case Studies specifically gets an even taller frame ------------------
+   Every other card stop - including Jupiter, which also uses
+   ".scroll-cards--with-image" right above - keeps that same 580px
+   frame untouched. This rule ONLY applies inside "#pin-venus" (an ID
+   selector always wins over ".scroll-cards--with-image" alone, no
+   matter which one is written first in this file, so this reliably
+   overrides it here without needing to touch that shared rule at
+   all), because Case Studies cards hold noticeably more text per card
+   (a name, a meta line, and 4 labeled sections) than Jupiter's do -
+   the old shared 580px frame left only about 110px of that actually
+   visible before needing "Read more" and the ▲▼ arrows, which meant a
+   lot of back-and-forth clicking just to read one card.
+
+   900px is the TARGET height - tall enough that on a roomy screen
+   (about 1100px tall or more, where this hits its full 900px), the
+   visible body text runs to roughly 430px, comfortably covering
+   Objective, Strategy, and Key KPIs with Results already starting,
+   before any clicking at all. On the very common ~900px-tall laptop
+   window, this comes out shorter (around 700px of frame, ~230px of
+   visible body) - a real, roughly 2x improvement over the old 110px,
+   just not the full target, because the image alone (see
+   ".card-image" in src/styles/card.css) already takes up close to
+   280px of every card regardless of how tall the frame is. Making the
+   image itself smaller on a shorter screen, to free up more room for
+   the text, was considered and deliberately NOT done here - it would
+   mean the image looks different size to size, stop to stop, which
+   was judged worse than the body text simply having less room to
+   breathe on a shorter screen.
+
+   "min(900px, calc(100vh - 196px))" is what makes the frame shrink on
+   a shorter screen instead of just spilling off of it - "196px" is a
+   REAL, precisely measured number (not a rough guess): it's exactly
+   how much room the Case Studies heading above the cards, the gaps
+   above/below them, the row of dots underneath, and this whole
+   block's own top/bottom padding always take up together, confirmed
+   by checking directly in a real browser. On a screen shorter than
+   about 1100px tall, "100vh - 196px" comes out smaller than 900px,
+   and "min()" always picks whichever of the two numbers is smaller -
+   so this box shrinks right along with the screen.
+
+   IMPORTANT: both this "height" AND the "--card-frame-height" custom
+   property just below it use this exact same formula, character for
+   character, on purpose - a custom property is a plain, literal value
+   (whatever its own formula works out to), completely separate from
+   whatever the ACTUAL rendered box ends up being after layout. Every
+   flex child (this box included) is also normally allowed to shrink
+   itself smaller than its own stated height if its flex container
+   ever runs short on room (browsers do this completely automatically) -
+   so if this box's OWN formula were even slightly too generous, the
+   real rendered box could end up shrunk smaller than what
+   "--card-frame-height" still claims, and ".card" further down (see
+   src/styles/card.css) would then size itself to that now-WRONG,
+   too-tall number instead of the real one - which is exactly the
+   "card grows past its own visible frame" bug from earlier, again.
+   Using the identical formula for both is what guarantees that can't
+   happen: since "100vh - 196px" already reflects the true available
+   room, the ordinary flex-shrink safety net practically never needs
+   to actually engage - the two numbers stay in sync because they were
+   never allowed to disagree in the first place. */
+#pin-venus .scroll-cards {
+  height: min(900px, calc(100vh - 196px));
+  --card-frame-height: min(900px, calc(100vh - 196px));
+}
+
+/* This is what makes the shrinking described above possible at all.
+   "max-height: 100vh" caps this whole block (the heading, the card
+   frame, and the dots together) at the real screen height - without
+   this, the "100vh - 196px" formula above would still calculate a
+   smaller number on a short screen, but nothing would stop the
+   heading/dots around the card from simply pushing the whole block
+   taller than the screen regardless, since they aren't capped at all
+   otherwise.
+
+   "overflow-y: auto" is the exact same last-resort safety net already
+   used on "#pin-moon .pin-content" in base.css - if a screen is short
+   enough that even a fully-shrunk card frame still doesn't leave
+   quite enough room for the heading and dots too, this whole block
+   gets its own scrollbar instead of quietly running off the top or
+   bottom of the screen. On any screen roomy enough to fit everything
+   already, this does nothing at all. */
+#pin-venus .pin-content {
+  max-height: 100vh;
+  overflow-y: auto;
+}
+
 /* The image placeholder itself. aspect-ratio is the important part
    here: it reserves the box's shape (3 wide for every 2 tall, roughly
    matching a normal landscape photo) BEFORE any real image exists -
