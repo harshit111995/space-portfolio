@@ -599,7 +599,7 @@
 /* ---- The natural-scroll stops: full height instead of a fixed frame ----
    Five stops now work this way: Case Studies (Venus) was the first -
    see the big comment on "#pin-venus" in index.html for why (cramming
-   11 detailed case studies into a small box made most of each one
+   detailed case studies into a small box made most of each one
    hidden behind "Read more" and the ▲▼ arrows) - and Entrepreneur
    (Saturn), Experience (Mars), Volunteering (Jupiter), and Skills
    (Satellites) got the same fix afterwards, for the same reason
@@ -650,7 +650,7 @@
 }
 
 /* The column of full-length cards itself - shared by all 4 stops above
-   (11 cards for Case Studies, 8 for Experience, 3 each for Entrepreneur
+   (14 cards for Case Studies, 8 for Experience, 3 each for Entrepreneur
    and Volunteering) so they all look and feel consistent. Unlike
    ".scroll-cards" further up, this needs no fixed height and no
    "--card-frame-height" custom property at all - by simply never

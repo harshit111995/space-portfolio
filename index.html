@@ -601,7 +601,7 @@
            and Volunteering all got the same fix afterwards - see their
            own big comments further up/down; only Certificates still
            freezes the camera and cross-fades cards, see
-           src/motion/scrollCards.js). Cramming 11 detailed case studies
+           src/motion/scrollCards.js). Cramming detailed case studies
            (each with an image, a heading, a meta line, and 4 labeled
            sections) into a small fixed box meant most of each card was
            always hidden behind "Read more" and the ▲▼ scroll arrows -
@@ -609,16 +609,19 @@
 
            The fix: this stop now scrolls NATURALLY, like an ordinary
            long webpage section, instead of being pinned/frozen at all.
-           All 11 cards sit in plain, ordinary document flow (see
-           ".natural-scroll-list" in content.css), each at its own real,
-           full height - no height cap, no clamp, no "Read more", no
-           arrows. As the visitor scrolls through them, Venus itself
-           stays framed and completely still in the 3D background the
-           whole time (see the big comment on "naturalHeight" in
+           All 14 cards (11 to start with, then 3 more added later - S&amp;P
+           Global, SAP, and APM Monaco) sit in plain, ordinary document
+           flow (see ".natural-scroll-list" in content.css), each at its
+           own real, full height - no height cap, no clamp, no "Read
+           more", no arrows. As the visitor scrolls through them, Venus
+           itself stays framed and completely still in the 3D background
+           the whole time (see the big comment on "naturalHeight" in
            src/motion/scrollTimeline.js for exactly how the camera
            knows how long to hold still here, now that this section's
-           real length depends on how tall 11 full cards turn out to
-           be, not a hand-picked number).
+           real length depends on how tall all 14 full cards turn out
+           to be, not a hand-picked number - adding those last 3 cards
+           needed no changes there at all, it just measures however
+           tall the section turns out to be).
 
            Each card still uses the exact same reusable ".card" design
            as every other stop (see src/styles/card.css - nothing in
@@ -628,17 +631,18 @@
            Results) - only the OUTER wrapping changed here, from the
            old absolutely-positioned, cross-faded ".scroll-card" boxes
            to plain ".card"s stacked directly one after another. Each
-           card also keeps its image placeholder above the text (see
-           the big comment on ".card-image" in src/styles/card.css for
-           why it's built the way it is) - a real campaign photo can
-           drop straight into that same slot later. -->
+           card also has a real campaign photo in its image slot now
+           (see the big comment on ".card-image" in src/styles/card.css
+           for how that slot is built) - a plain <img>, sized and
+           cropped to fill the slot automatically, no matter what shape
+           the original photo happened to be. -->
       <div id="pin-venus" class="pin-marker">
         <div class="pin-content">
           <h2>Case Studies</h2>
 
           <div class="natural-scroll-list">
             <div class="card">
-              <div class="card-image"><span class="card-image-label">Campaign image</span></div>
+              <div class="card-image"><img src="/case-studies/binance.webp" alt="Binance" loading="lazy" /></div>
               <h3 class="card-heading">Binance — DOOH · UAE Domination with Cristiano Ronaldo</h3>
               <p class="card-meta">UAE · Binance Week 2025, Dubai</p>
               <div class="card-body-wrapper">
@@ -688,7 +692,7 @@
             </div>
 
             <div class="card">
-              <div class="card-image"><span class="card-image-label">Campaign image</span></div>
+              <div class="card-image"><img src="/case-studies/informa.webp" alt="Informa" loading="lazy" /></div>
               <h3 class="card-heading">Informa — Middle East Energy · Programmatic DOOH + Performance</h3>
               <p class="card-meta">UAE / GCC · Middle East Energy cycle</p>
               <div class="card-body-wrapper">
@@ -735,7 +739,7 @@
             </div>
 
             <div class="card">
-              <div class="card-image"><span class="card-image-label">Campaign image</span></div>
+              <div class="card-image"><img src="/case-studies/dwf-labs.webp" alt="DWF Labs" loading="lazy" /></div>
               <h3 class="card-heading">DWF Labs — Dubai Airport · Programmatic DOOH</h3>
               <p class="card-meta">Dubai International Airport</p>
               <div class="card-body-wrapper">
@@ -780,7 +784,7 @@
             </div>
 
             <div class="card">
-              <div class="card-image"><span class="card-image-label">Campaign image</span></div>
+              <div class="card-image"><img src="/case-studies/solarwinds.webp" alt="SolarWinds" loading="lazy" /></div>
               <h3 class="card-heading">SolarWinds — GITEX 2025 · Airport &amp; Citywide Programmatic DOOH</h3>
               <p class="card-meta">Dubai · GITEX Global 2025</p>
               <div class="card-body-wrapper">
@@ -824,7 +828,7 @@
             </div>
 
             <div class="card">
-              <div class="card-image"><span class="card-image-label">Campaign image</span></div>
+              <div class="card-image"><img src="/case-studies/komatsu.webp" alt="Komatsu" loading="lazy" /></div>
               <h3 class="card-heading">Komatsu × F1 Abu Dhabi · Programmatic DOOH</h3>
               <p class="card-meta">Abu Dhabi · F1 Grand Prix weekend</p>
               <div class="card-body-wrapper">
@@ -867,7 +871,7 @@
             </div>
 
             <div class="card">
-              <div class="card-image"><span class="card-image-label">Campaign image</span></div>
+              <div class="card-image"><img src="/case-studies/lexis-nexis.webp" alt="LexisNexis" loading="lazy" /></div>
               <h3 class="card-heading">LexisNexis — Global Programmatic · New Product Launch</h3>
               <p class="card-meta">Global · 12 markets</p>
               <div class="card-body-wrapper">
@@ -914,7 +918,7 @@
             </div>
 
             <div class="card">
-              <div class="card-image"><span class="card-image-label">Campaign image</span></div>
+              <div class="card-image"><img src="/case-studies/ariana-grande.webp" alt="Ariana Grande Perfume" loading="lazy" /></div>
               <h3 class="card-heading">Ariana Grande Perfume — Global Full-Funnel</h3>
               <p class="card-meta">Global · Fragrance launch</p>
               <div class="card-body-wrapper">
@@ -965,13 +969,14 @@
           <!-- This card used to be labeled "Digibet / NHS" - Digibet and
                NHS were originally thought to be two halves of one
                combined campaign, back when Case Studies was trimmed from
-               12 cards to 11 (see the big comment on this stop further
-               up for that count change, which still stands). Real
-               content below now confirms this is specifically Digibet's
-               own UK app-install campaign, not a merge of two - only the
-               heading/body changed here, the card count is unaffected. -->
+               12 cards to 11 (this was all well before the 3 more cards -
+               S&amp;P Global, SAP, APM Monaco - got added further down,
+               bringing today's count to 14). Real content below now
+               confirms this is specifically Digibet's own UK app-install
+               campaign, not a merge of two - only the heading/body
+               changed here, the card count is unaffected. -->
             <div class="card">
-              <div class="card-image"><span class="card-image-label">Campaign image</span></div>
+              <div class="card-image"><img src="/case-studies/digibet.webp" alt="Digibet" loading="lazy" /></div>
               <h3 class="card-heading">Digibet — UK · App Downloads Campaign</h3>
               <p class="card-meta">United Kingdom · App-install</p>
               <div class="card-body-wrapper">
@@ -1016,7 +1021,7 @@
             </div>
 
             <div class="card">
-              <div class="card-image"><span class="card-image-label">Campaign image</span></div>
+              <div class="card-image"><img src="/case-studies/hp.webp" alt="HP" loading="lazy" /></div>
               <h3 class="card-heading">HP — GITEX Dubai · Programmatic DOOH</h3>
               <p class="card-meta">Dubai · GITEX Global</p>
               <div class="card-body-wrapper">
@@ -1059,7 +1064,7 @@
             </div>
 
             <div class="card">
-              <div class="card-image"><span class="card-image-label">Campaign image</span></div>
+              <div class="card-image"><img src="/case-studies/interactive-brokers.webp" alt="Interactive Brokers" loading="lazy" /></div>
               <h3 class="card-heading">Interactive Brokers — UAE · Programmatic DOOH</h3>
               <p class="card-meta">UAE</p>
               <div class="card-body-wrapper">
@@ -1102,7 +1107,7 @@
             </div>
 
             <div class="card">
-              <div class="card-image"><span class="card-image-label">Campaign image</span></div>
+              <div class="card-image"><img src="/case-studies/clearblue.webp" alt="Clearblue" loading="lazy" /></div>
               <h3 class="card-heading">Clearblue — UAE / GCC · E-commerce, Amazon, Noon &amp; YouTube</h3>
               <p class="card-meta">UAE / GCC</p>
               <div class="card-body-wrapper">
@@ -1141,6 +1146,154 @@
                       <li>Noon 11% CVR</li>
                       <li>YouTube 36% VTR at $0.03 CPV</li>
                       <li>9M total reach</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-image"><img src="/case-studies/sp-global.webp" alt="S&amp;P Global" loading="lazy" /></div>
+              <h3 class="card-heading">S&amp;P Global × FIFA 2026 — Programmatic Display</h3>
+              <p class="card-meta">USA · FIFA World Cup 2026, New York / New Jersey</p>
+              <div class="card-body-wrapper">
+                <div class="card-body card-body--structured">
+                  <div class="card-body-section">
+                    <span class="card-body-label">Objective</span>
+                    <p>
+                      Capitalise on the FIFA 2026 moment to drive brand
+                      favourability and consideration for S&amp;P Global
+                      among a US professional and finance-adjacent
+                      audience, geo-focused on the New York games.
+                    </p>
+                  </div>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Strategy</span>
+                    <p>
+                      Programmatic display and companion video
+                      geo-targeted to the NY/NJ metro and match daypart
+                      windows, layered with professional/business
+                      audience segments across premium inventory in
+                      high-impact and standard IAB formats.
+                    </p>
+                  </div>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Key KPIs</span>
+                    <ul>
+                      <li>Impressions &amp; unique reach</li>
+                      <li>CTR &amp; viewability</li>
+                      <li>Video Completion Rate</li>
+                      <li>Brand favourability / consideration lift</li>
+                      <li>Site visits / engaged sessions</li>
+                    </ul>
+                  </div>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Results</span>
+                    <ul>
+                      <li>32M impressions across the match window</li>
+                      <li>6.5M unique reach in the US, concentrated in NY/NJ metro</li>
+                      <li>CTR 0.35% with 74% viewability</li>
+                      <li>VCR 66% on companion video</li>
+                      <li>+18% brand favourability lift vs. control</li>
+                      <li>45,000 site visits from exposed audiences</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-image"><img src="/case-studies/sap.webp" alt="SAP" loading="lazy" /></div>
+              <h3 class="card-heading">SAP × F1 USA Sprints — Programmatic Display</h3>
+              <p class="card-meta">USA · F1 US sprint weekends (Miami / Austin)</p>
+              <div class="card-body-wrapper">
+                <div class="card-body card-body--structured">
+                  <div class="card-body-section">
+                    <span class="card-body-label">Objective</span>
+                    <p>
+                      Align SAP with the premium F1 audience during US
+                      sprint weekends to build enterprise brand presence
+                      and drive qualified engagement among business
+                      decision-makers.
+                    </p>
+                  </div>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Strategy</span>
+                    <p>
+                      Programmatic display + video with B2B/enterprise
+                      audience targeting (job role, industry, intent),
+                      geo- and daypart-weighted around the US sprint
+                      events across premium business and sports
+                      inventory.
+                    </p>
+                  </div>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Key KPIs</span>
+                    <ul>
+                      <li>Impressions &amp; unique reach</li>
+                      <li>CTR &amp; viewability</li>
+                      <li>Video Completion Rate</li>
+                      <li>Qualified / engaged visits</li>
+                      <li>Leads / engaged accounts</li>
+                    </ul>
+                  </div>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Results</span>
+                    <ul>
+                      <li>18M impressions across the US sprint weekends</li>
+                      <li>3.2M unique reach against a B2B enterprise audience</li>
+                      <li>CTR 0.31% with 72% viewability</li>
+                      <li>VCR 70% on video</li>
+                      <li>22,000 qualified visits and 800 engaged accounts / leads</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-image"><img src="/case-studies/apm-monaco.webp" alt="APM Monaco" loading="lazy" /></div>
+              <h3 class="card-heading">APM Monaco — Display Across Major Fashion Websites</h3>
+              <p class="card-meta">Global / key fashion markets</p>
+              <div class="card-body-wrapper">
+                <div class="card-body card-body--structured">
+                  <div class="card-body-section">
+                    <span class="card-body-label">Objective</span>
+                    <p>
+                      Build brand desirability and drive e-commerce
+                      traffic for APM Monaco by placing high-impact
+                      display within premium, contextually relevant
+                      fashion environments.
+                    </p>
+                  </div>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Strategy</span>
+                    <p>
+                      Programmatic and direct display across major
+                      fashion publishers (fashion, beauty, lifestyle
+                      inventory), using rich/high-impact formats to
+                      capture a style-led consumer audience and route
+                      them to the e-commerce store.
+                    </p>
+                  </div>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Key KPIs</span>
+                    <ul>
+                      <li>Impressions &amp; unique reach</li>
+                      <li>Viewability &amp; CTR</li>
+                      <li>Engagement rate</li>
+                      <li>E-commerce site visits</li>
+                      <li>ROAS / add-to-cart</li>
+                    </ul>
+                  </div>
+                  <div class="card-body-section">
+                    <span class="card-body-label">Results</span>
+                    <ul>
+                      <li>40M impressions across premium fashion websites</li>
+                      <li>9M unique reach among a fashion-led audience</li>
+                      <li>76% viewability at 0.28% CTR</li>
+                      <li>130,000 e-commerce site visits from display</li>
+                      <li>ROAS 3.4:1 with +29% add-to-cart uplift</li>
                     </ul>
                   </div>
                 </div>
@@ -1604,10 +1757,9 @@
            reused exactly as-is, nothing in that file changed). Unlike
            Experience/Entrepreneur, these DO have a photo, so like Case
            Studies each one also gets a ".card-image" slot at the top
-           (see the big comment on ".card-image" in card.css for why
-           it's sized the way it is - a placeholder standing in for a
-           real photo later, without anything else needing to move when
-           that photo is added).
+           (see the big comment on ".card-image" in card.css for how
+           that slot is built) - each one now holds a real volunteering
+           photo, the same plain <img> approach as Case Studies.
 
            Each body is plain prose (a single <p class="card-body">),
            same shape it always had - unlike Case Studies/Skills/
@@ -1622,7 +1774,7 @@
 
           <div class="natural-scroll-list">
             <div class="card">
-              <div class="card-image"><span class="card-image-label">Volunteering photo</span></div>
+              <div class="card-image"><img src="/volunteering/fifa.webp" alt="FIFA" loading="lazy" /></div>
               <h3 class="card-heading">FIFA</h3>
               <p class="card-meta">Competition Management Volunteer · Dec 2023–Present</p>
               <div class="card-body-wrapper">
@@ -1643,7 +1795,7 @@
             </div>
 
             <div class="card">
-              <div class="card-image"><span class="card-image-label">Volunteering photo</span></div>
+              <div class="card-image"><img src="/volunteering/robin-hood-army.webp" alt="Robin Hood Army" loading="lazy" /></div>
               <h3 class="card-heading">Robin Hood Army</h3>
               <p class="card-meta">Strategist · Mar 2014–Present</p>
               <div class="card-body-wrapper">
@@ -1662,7 +1814,7 @@
             </div>
 
             <div class="card">
-              <div class="card-image"><span class="card-image-label">Volunteering photo</span></div>
+              <div class="card-image"><img src="/volunteering/un.webp" alt="United Nations Volunteers" loading="lazy" /></div>
               <h3 class="card-heading">United Nations Volunteers</h3>
               <p class="card-meta">Volunteer · Oct 2019–Dec 2019</p>
               <div class="card-body-wrapper">

@@ -185,7 +185,7 @@ const BODIES = [
     park: { x: -34, y: 12 }, // ~27.8 units out
     // No "holdLengthVh" here, on purpose - this was the FIRST body to
     // drop the fixed, hand-picked number of screen-heights every other
-    // body still used at the time. Its 11 full-length cards now scroll
+    // body still used at the time. Its 14 full-length cards now scroll
     // past naturally instead of being frozen inside a small fixed box
     // (see the big comment on "#pin-venus" in index.html), so there's
     // no fixed length to pick by hand anymore - "naturalHeight: true"
@@ -328,7 +328,7 @@ function setupParkedStop(elementId, holdLengthPx) {
 
 // ---- Measuring a stop that scrolls naturally instead of pinning -----------
 // This is Case Studies (Venus)'s equivalent of setupParkedStop() above,
-// for a stop that doesn't freeze the page at all. Its 11 full-length
+// for a stop that doesn't freeze the page at all. Its 14 full-length
 // cards already sit in plain, ordinary document flow (see
 // "#pin-venus .pin-content" in src/styles/content.css - unlike every
 // other stop, it's deliberately NOT taken out of the page's normal

@@ -144,14 +144,25 @@
 
 /* ---- 1. The image slot (optional) ----------------------------------------
    aspect-ratio is the important part: it reserves this box's shape (3
-   wide for every 2 tall, roughly a normal landscape photo) BEFORE any
-   real image exists. Whoever adds a real photo later just needs to
-   put an <img> where the <span> label currently sits, inside this
-   same box - because the box's shape is already fixed by
-   aspect-ratio (not by whatever image happens to load), swapping in a
-   real photo won't shift or resize anything else on the card even
-   slightly. Cards that don't need a photo simply don't include this
-   element at all - nothing in this file assumes every card has one. */
+   wide for every 2 tall, roughly a normal landscape photo) no matter
+   what shape the real photo inside it actually is - the box's shape
+   comes from aspect-ratio, not from whatever image happens to load,
+   so every card in a row lines up the same height regardless of each
+   photo's own original proportions. Cards that don't need a photo
+   simply don't include this element at all - nothing in this file
+   assumes every card has one.
+
+   Every card that uses this slot now holds a real photo (a plain
+   <img> - see index.html) instead of the plain placeholder text this
+   used to show before real photos existed. The faint background tint
+   and dashed border that used to mark this box out as "empty, photo
+   coming later" are gone now for that reason - a real photo already
+   fills the box completely (see ".card-image img" just below), so
+   there's nothing left for that placeholder look to usefully show
+   through anymore. A plain, subtle solid border (the same style
+   ".card" itself already uses) now frames the photo instead, so it
+   reads as a normal, finished photo frame rather than a leftover
+   empty slot. */
 .card-image {
   width: 100%;
   aspect-ratio: 3 / 2;
@@ -163,8 +174,7 @@
   align-items: center;
   justify-content: center;
 
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px dashed rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 
   /* ".card" is a flex column now (see the big comment on it above) -
      without this, a flex child is allowed to shrink itself smaller
@@ -175,22 +185,15 @@
   flex-shrink: 0;
 }
 
-/* Once a real photo is added (as an <img> inside ".card-image"), this
-   makes it fill the box completely without stretching - any part of
-   the photo that doesn't match the 3:2 shape just gets cropped
-   instead of squashed. */
+/* Makes the real photo fill the box completely without stretching -
+   any part of the photo that doesn't match the box's 3:2 shape just
+   gets cropped instead of squashed, so it always looks like a
+   properly framed photo rather than a distorted one. */
 .card-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
-}
-
-.card-image-label {
-  font-size: 0.7rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.35);
 }
 
 /* ---- 2 & 3. Heading and meta line -----------------------------------------
@@ -317,9 +320,8 @@
 
 /* The small label itself ("Objective", "Strategy", ...) - styled the
    same quiet, small-caps way every other short label on this site
-   already is (see ".contact-label" in content.css and
-   ".card-image-label" above in this file) rather than inventing a new
-   look just for this one. */
+   already is (see ".contact-label" in content.css) rather than
+   inventing a new look just for this one. */
 .card-body-label {
   font-size: 0.7rem;
   font-weight: 700;
