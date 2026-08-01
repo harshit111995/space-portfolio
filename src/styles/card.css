@@ -21,7 +21,15 @@
                             long, and can expand back out - see
                             src/ui/cardReadMore.js for how that toggle
                             actually works. This file only styles what
-                            "truncated" and "expanded" look like.
+                            "truncated" and "expanded" look like. A
+                            body is normally one flowing paragraph of
+                            prose, but can OPTIONALLY instead be a
+                            handful of small labeled sections (a
+                            label like "Objective" followed by its own
+                            paragraph or bulleted list) - see
+                            ".card-body--structured" further down for
+                            that opt-in shape. Nothing about this
+                            changes for a card that doesn't use it.
      5. .card-scroll-arrows - OPTIONAL. A tiny ▲▼ control in the
                             card's bottom-right corner, only for a
                             card that's been expanded AND still
@@ -252,6 +260,99 @@
   min-height: 0;
 }
 
+/* ---- Optional: labeled sections + bulleted lists inside a body -----------
+   Every card body so far has been one flowing paragraph of prose -
+   this is the ADDITIONAL, opt-in shape a body can take instead: a
+   handful of small labeled sections (a short label like "Objective"
+   or "Key KPIs", each followed by its own paragraph or a bulleted
+   list), for cards where breaking things into labeled chunks reads
+   better than one long paragraph - Case Studies is the first place
+   this gets used.
+
+   Using this needs a slightly different HTML shape: instead of
+   ".card-body" being a single <p>, it's a <div> (a <p> can't legally
+   contain block-level children like a heading or a list) holding one
+   or more ".card-body-section" blocks, each with its own
+   ".card-body-label" plus a <p> or <ul>:
+
+     <div class="card-body card-body--structured">
+       <div class="card-body-section">
+         <span class="card-body-label">Objective</span>
+         <p>...</p>
+       </div>
+       <div class="card-body-section">
+         <span class="card-body-label">Key KPIs</span>
+         <ul><li>...</li><li>...</li></ul>
+       </div>
+     </div>
+
+   "card-body--structured" is the switch: it's what tells this file
+   (and the clamped-preview override just below) that this particular
+   body isn't plain flowing text. A PROSE card never gets this class
+   at all, so none of this touches it - every existing prose card
+   (Experience, Entrepreneur, ...) keeps looking exactly as it always
+   has. Everything else about the body - the font-size/line-height/
+   color set on ".card-body" above, the height cap, the "Read more"
+   toggle, the ▲▼ scroll arrows - is untouched and works exactly the
+   same either way, since none of that cares what's actually inside
+   the box. */
+.card-body--structured {
+  display: flex;
+  flex-direction: column;
+  /* The "clear vertical spacing between sub-sections" that keeps the
+     four sections reading as visually distinct chunks rather than
+     running together. */
+  gap: 1rem;
+}
+
+/* One label + its own paragraph/list, stacked with a small gap
+   between them - the same "a little label sitting right above its
+   own content" shape already used elsewhere on this site (see
+   ".contact-details li" in content.css). */
+.card-body-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+/* The small label itself ("Objective", "Strategy", ...) - styled the
+   same quiet, small-caps way every other short label on this site
+   already is (see ".contact-label" in content.css and
+   ".card-image-label" above in this file) rather than inventing a new
+   look just for this one. */
+.card-body-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* The bulleted list itself. "list-style: disc" plus a real, deliberate
+   indent (rather than leaving it at whatever a browser's own default
+   happens to be) is what gives it a clean, consistent look. The
+   bullets themselves inherit the same soft off-white text color
+   already set on ".card-body" - that's what keeps them "subtle"
+   (matching the text, not a harsh pure-white or pure-black dot)
+   without needing a color rule of their own. */
+.card-body--structured ul {
+  margin: 0;
+  padding-left: 1.2rem;
+  list-style: disc;
+}
+
+/* Comfortable breathing room between one bullet and the next - the
+   1.6 line-height already inherited from ".card-body" is enough space
+   WITHIN a single wrapped bullet, but adjacent bullets still need a
+   bit more room BETWEEN them so a multi-bullet list doesn't feel
+   cramped. Only added ABOVE every bullet except the first (same
+   "space between, not around" idea as the site's shared "p + p"
+   rule in base.css) so the list doesn't end up with extra, unwanted
+   space hugging its own top or bottom edge. */
+.card-body--structured li + li {
+  margin-top: 0.4rem;
+}
+
 /* ---- The clamped (truncated) state ---------------------------------------
    src/ui/cardReadMore.js adds this class to EVERY card's body at
    first, then measures whether the text actually got cut off by it -
@@ -275,6 +376,35 @@
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
   overflow: hidden;
+}
+
+/* ---- The clamped preview of a STRUCTURED body -----------------------
+   "-webkit-line-clamp" above works by counting LINES of plain,
+   flowing text - which only makes sense for a single block of prose.
+   It has no sensible way to count "lines" across a label, a
+   paragraph, AND a bulleted list all mixed together (browsers either
+   ignore it or clip it somewhere mid-element when asked to try), so a
+   structured body's preview uses a different, simpler kind of clamp
+   instead: a plain fixed height. The fade-then-"Read more" hint
+   layered on top (see ".card-body--clamped::after" further down)
+   doesn't care what's underneath it either way, so that part is
+   reused completely as-is.
+
+   This selector only matches a body that's BOTH "--structured" AND
+   currently "--clamped" - so switching the line-clamp rule above back
+   off ("display"/"-webkit-line-clamp" both reset to their normal,
+   unset values) only ever happens for this one specific combination,
+   never touching a plain prose card's own clamp behavior.
+
+   4.3rem is chosen to roughly match how much a PROSE card's preview
+   already shows (3 lines at this same body text's own line-height) -
+   short enough to clearly read as "there's more below," but long
+   enough to actually show a real label plus the start of its content,
+   not just an empty sliver. */
+.card-body--structured.card-body--clamped {
+  display: block;
+  -webkit-line-clamp: unset;
+  max-height: 4.3rem;
 }
 
 /* ---- The expanded (fully open) state --------------------------------------
